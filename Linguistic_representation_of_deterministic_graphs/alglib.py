@@ -2,9 +2,8 @@
 
 from typing import Tuple, List, Union, Dict
 from math import ceil, sqrt
-import random
 import copy
-import networkx as nx               # type: ignore
+import networkx as nx # type: ignore
 
 
 def ar_nodes(graph: nx.Graph) -> nx.Graph:
@@ -49,13 +48,6 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
 def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
     """ build graph on pair of words, algorithm AP """
 
-    def random_color():
-        red = random.randint(100, 255)
-        green = random.randint(100, 255)
-        blue = random.randint(100, 255)
-        hex_color = '#{:02x}{:02x}{:02x}'.format(red, green, blue)
-        return hex_color
-
     def counter():
         if not hasattr(counter, 'count'):
             counter.count = 0
@@ -73,15 +65,13 @@ def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
     root = 0
     check_leaf_node = None
     G = nx.Graph()
-    G.add_node(root, label=x_, color="red")
+    G.add_node(root, label=x_)
 
     # STEP 1
     for word in C:
         for i, l in enumerate(word[1:-1], start=1):
-            #print("C1: ", i, l)
             custom_id = counter()
-            #print("C1: ", id)
-            G.add_node(custom_id, label=l, color=random_color())
+            G.add_node(custom_id, label=l)
             if i == 1:
                 G.add_edge(root, custom_id)
             else:
@@ -92,13 +82,12 @@ def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
 
     # STEP 2
     q = get_all_leaf_nodes_from_graph(G)
-    print(q)
 
     # STEP 3
     for word in L:
         for i, l in enumerate(word[1:], start=1):
             node_id = counter()
-            G.add_node(node_id, label=l, color=random_color())
+            G.add_node(node_id, label=l)
             if i == 1:
                 G.add_edge(root, node_id)
             else:
