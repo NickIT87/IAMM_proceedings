@@ -69,14 +69,14 @@ def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
 
     # STEP 1
     for word in C:
-        for i, l in enumerate(word[1:-1], start=1):
+        for index, label in enumerate(word[1:-1], start=1):
             custom_id = counter()
-            G.add_node(custom_id, label=l)
-            if i == 1:
+            G.add_node(custom_id, label=label)
+            if index == 1:
                 G.add_edge(root, custom_id)
             else:
                 G.add_edge(custom_id - 1, custom_id)
-            if i == len(word) - 2:
+            if index == len(word) - 2:
                 G.add_edge(custom_id, root)
         G = ar_nodes(G)
 
@@ -85,14 +85,14 @@ def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
 
     # STEP 3
     for word in L:
-        for i, l in enumerate(word[1:], start=1):
+        for index, label in enumerate(word[1:], start=1):
             node_id = counter()
-            G.add_node(node_id, label=l)
-            if i == 1:
+            G.add_node(node_id, label=label)
+            if index == 1:
                 G.add_edge(root, node_id)
             else:
                 G.add_edge(node_id - 1, node_id)
-            if i == len(word) - 1:
+            if index == len(word) - 1:
                 check_leaf_node = node_id
         G = ar_nodes(G)
         if G.has_node(check_leaf_node):
@@ -112,9 +112,9 @@ def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
         all_paths_labels = ["".join([G.nodes[id]['label'] for id in path]) for path in all_paths]
         print(key_id, val_label, all_paths_labels)
         checked = False
-        for w in all_paths_labels:
-            for p in L:
-                if w in p:
+        for path in all_paths_labels:
+            for word in L:
+                if path in word:
                     checked = True
         if not checked:
             print("Incorrect data. Graph is not exists!")
@@ -152,16 +152,16 @@ def ak_pair(graph: nx.Graph) -> Union[Tuple[List[str], List[str]], int, str]:
     ni.pop(root)
 
     # Find cycles by ni and fill sigma_g
-    for i, p in enumerate(ni):
-        for q in ni[i+1:]:
-            if p not in q[:len(p)]:
+    for index, p_path in enumerate(ni):
+        for q_path in ni[index+1:]:
+            if p_path not in q_path[:len(p_path)]:
                 if graph.has_edge(
-                    reachability_basis[p][-1],
-                    reachability_basis[q][-1]
+                    reachability_basis[p_path][-1],
+                    reachability_basis[q_path][-1]
                 ) is False:
                     continue
-                pqr = p + q[::-1]
-                qpr = q + p[::-1]
+                pqr = p_path + q_path[::-1]
+                qpr = q_path + p_path[::-1]
                 if pqr < qpr:
                     sigma_g.append(pqr)
                 else:
