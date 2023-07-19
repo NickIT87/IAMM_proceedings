@@ -46,9 +46,10 @@ if __name__ == "__main__":
     # print_data(ar_nodes(G))
     # ============================== AP GRAPH =================================
     # print_data(ap_graph(testC1, testL1))
-    print_data(ap_graph(testC2, testL2))
-    # MyGraph = ap_graph(testC1, testL1)
+    # print_data(ap_graph(testC2, testL2))
+    MyGraph = ap_graph(testC1, testL1)
+    #print(walk(MyGraph, "123241", 0))
     # print(ak_pair(MyGraph))
-    # print_data(MyGraph)
+    print_data(MyGraph)
     # ============================= PAIR METRICS ================+=============
     # print(get_pair_metrics(14, 7))

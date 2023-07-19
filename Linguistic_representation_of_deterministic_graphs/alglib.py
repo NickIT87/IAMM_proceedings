@@ -5,23 +5,57 @@ from math import ceil, sqrt
 import copy
 import networkx as nx # type: ignore
 
+# =========================== HELPERS FUNCTIONS ===============================
+def counter():
+    """helper for AP alg. generate IDs for nodes"""
+    if not hasattr(counter, 'count'):
+        counter.count = 0
+    counter.count += 1
+    return counter.count
 
+
+def get_all_leaf_nodes_from_graph(G: nx.Graph) -> dict:
+    """helper for AP alg. for checking leafs nodes"""
+    leaf_nodes = [node for node, degree in G.degree() if degree == 1]
+    node_labels = [G.nodes[id]['label'] for id in leaf_nodes]
+    return dict(zip(leaf_nodes, node_labels))
+
+
+def find_neighbours_with_the_same_labels(nghb: List, lbls: List) -> Dict:
+    """ helper for AR reduction algorithm """
+    element_positions: Dict = {}
+    for index, element in enumerate(lbls):
+        if element in element_positions:
+            element_positions[element].append(nghb[index])
+        else:
+            element_positions[element] = [nghb[index]]
+    equal_elements: Dict = {
+        element: positions for element,
+        positions in element_positions.items() if len(positions) > 1
+    }
+    return equal_elements
+
+
+def walk_by_word( graph: nx.Graph,
+          word: str,
+          root_node: int ) -> int:
+    """ get last node id by label (word) path in graph """
+    current_node = root_node
+    for symbol in word[1:]:
+        neighbors = list(graph.neighbors(current_node))
+        labels = [graph.nodes[id]['label'] for id in neighbors]
+        try:
+            next_node = neighbors[labels.index(symbol)]
+        except Exception as exc:
+            raise ValueError(
+                f"{exc} Invalid data. No symbol as label. Graph is not exists!"
+            ) from exc
+        current_node = next_node
+    return current_node
+
+# ======================== ALGORITHMS REALIZATION =============================
 def ar_nodes(graph: nx.Graph) -> nx.Graph:
     """ reduction algorithm AR """
-
-    def find_neighbours_with_the_same_labels(nghb: List, lbls: List) -> Dict:
-        element_positions: Dict = {}
-        for index, element in enumerate(lbls):
-            if element in element_positions:
-                element_positions[element].append(nghb[index])
-            else:
-                element_positions[element] = [nghb[index]]
-        equal_elements: Dict = {
-            element: positions for element,
-            positions in element_positions.items() if len(positions) > 1
-        }
-        return equal_elements
-
     G_ = copy.deepcopy(graph)
     trigger = True
     while trigger:
@@ -31,7 +65,7 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
             labels = [G_.nodes[id]['label'] for id in neighbors]
             equals_labels = find_neighbours_with_the_same_labels(neighbors, labels)
             if equals_labels:
-                for key_lbl, neighbours_ids in equals_labels.items():
+                for neighbours_ids in equals_labels.values():
                     not_changeble_node = min(neighbours_ids)
                     neighbours_ids.remove(not_changeble_node)
                     for vertex in neighbours_ids:
@@ -47,52 +81,39 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
 
 def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
     """ build graph on pair of words, algorithm AP """
-
-    def counter():
-        if not hasattr(counter, 'count'):
-            counter.count = 0
-        counter.count += 1
-        return counter.count
-
-    def get_all_leaf_nodes_from_graph(G: nx.Graph) -> dict:
-        leaf_nodes = [node for node, degree in G.degree() if degree == 1]
-        node_labels = [G.nodes[id]['label'] for id in leaf_nodes]
-        return dict(zip(leaf_nodes, node_labels))
-
-    # STEP 0
+    # =============================== STEP 0 ======================================
     q: Dict = {}
     trash: Dict = {}
     root = 0
     check_leaf_node = None
     G = nx.Graph()
     G.add_node(root, label=x_)
-
-    # STEP 1
-    for word in C:
-        for index, label in enumerate(word[1:-1], start=1):
+    # =============================== STEP 1 ======================================
+    for c_word in C:
+        for index, label in enumerate(c_word[1:-1], start=1):
             custom_id = counter()
             G.add_node(custom_id, label=label)
             if index == 1:
                 G.add_edge(root, custom_id)
             else:
                 G.add_edge(custom_id - 1, custom_id)
-            if index == len(word) - 2:
+            if index == len(c_word) - 2:
                 G.add_edge(custom_id, root)
         G = ar_nodes(G)
-
-    # STEP 2
+    # =============================== STEP 2 ======================================
     q = get_all_leaf_nodes_from_graph(G)
-
-    # STEP 3
-    for word in L:
-        for index, label in enumerate(word[1:], start=1):
+    # =============================== STEP 3 ======================================
+    for l_word in L:
+        if l_word[0] != x_:
+            raise ValueError("Incorrect data. Graph is not exists!")
+        for index, label in enumerate(l_word[1:], start=1):
             node_id = counter()
             G.add_node(node_id, label=label)
             if index == 1:
                 G.add_edge(root, node_id)
             else:
                 G.add_edge(node_id - 1, node_id)
-            if index == len(word) - 1:
+            if index == len(l_word) - 1:
                 check_leaf_node = node_id
         G = ar_nodes(G)
         if G.has_node(check_leaf_node):
@@ -100,13 +121,12 @@ def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
                 raise ValueError("Incorrect data. Graph is not exists!")
         all_leafs = get_all_leaf_nodes_from_graph(G)
         for key_id, val_label in all_leafs.items():
-            if val_label != word[-1] \
+            if val_label != l_word[-1] \
                     and key_id not in q and key_id not in trash:
                 q[key_id] = val_label
             else:
                 trash[key_id] = val_label
-
-    # STEP 4
+    # =============================== STEP 4 ======================================
     for key_id, val_label in q.items():
         all_paths = list(nx.all_simple_paths(G, source=root, target=key_id))
         all_paths_labels = ["".join([G.nodes[id]['label'] for id in path]) for path in all_paths]
@@ -118,13 +138,20 @@ def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
                     checked = True
         if not checked:
             print("Incorrect data. Graph is not exists!")
+    # =============================== STEP 5 ======================================
+    for p_word_index, p_word in enumerate(L):
+        checked_node = walk_by_word(G, p_word, root)
+        if G.degree(checked_node) != 1:
+            print(f"""Incorrect data, invalid pair.
+            \nWord {p_word_index + 1} in the set L does not end with a hanging vertex.
+            \nGraph is not exists!""")
 
     return G
 
 
 def ak_pair(graph: nx.Graph) -> Union[Tuple[List[str], List[str]], int, str]:
     """ get canonical pair of words, algorithm AK """
-
+    # =============================== base checks =================================
     if len(graph.nodes) == 0:
         return 0
     if len(graph.nodes) == 1:
@@ -132,13 +159,12 @@ def ak_pair(graph: nx.Graph) -> Union[Tuple[List[str], List[str]], int, str]:
             return graph.nodes[0]['label']
         except KeyError:
             return list(graph.nodes)[0]
-
+    # =========================== local definitions ===============================
     root = list(graph.nodes)[0]
     sigma_g: List = []
     lambda_g: List = []
     reachability_basis: Dict = {}
-
-    # Find reachability basis in the graph and fill lambda_g
+    # =========== Find reachability basis in the graph and fill lambda_g ==========
     ms_tree = nx.minimum_spanning_tree(graph)
     for node in ms_tree.nodes:
         node_path_id = nx.shortest_path(ms_tree, source=root, target=node)
@@ -146,12 +172,10 @@ def ak_pair(graph: nx.Graph) -> Union[Tuple[List[str], List[str]], int, str]:
         reachability_basis[''.join(node_path_labels)] = node_path_id
         if graph.degree(node) == 1 and node != root:
             lambda_g.append(''.join(node_path_labels))
-
-    # create ni var as reachibility basis list without lambda_g values
+    # ====== create ni var as reachibility basis list without lambda_g values =====
     ni = [w for w in reachability_basis if w not in lambda_g]
     ni.pop(root)
-
-    # Find cycles by ni and fill sigma_g
+    # =================== Find cycles by ni and fill sigma_g ======================
     for index, p_path in enumerate(ni):
         for q_path in ni[index+1:]:
             if p_path not in q_path[:len(p_path)]:
@@ -169,7 +193,7 @@ def ak_pair(graph: nx.Graph) -> Union[Tuple[List[str], List[str]], int, str]:
 
     return (sigma_g, lambda_g)
 
-
+# ================ CANONICAL PAIR METRICS DEV IN PROGRESS =====================
 def get_pair_metrics(n: int, m: int) -> Dict:
     """ find canonical pair metrics """
     mat = ceil(3/2 + sqrt(9/4 - 2 * n + 2 * m))
