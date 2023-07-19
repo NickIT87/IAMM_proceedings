@@ -1,8 +1,6 @@
 """ IAMM - Graphs - ASP Work """
-
 from typing import Tuple, List, Union, Dict
 from math import ceil, sqrt
-import copy
 import networkx as nx # type: ignore
 
 # =========================== HELPERS FUNCTIONS ===============================
@@ -56,7 +54,7 @@ def walk_by_word( graph: nx.Graph,
 # ======================== ALGORITHMS REALIZATION =============================
 def ar_nodes(graph: nx.Graph) -> nx.Graph:
     """ reduction algorithm AR """
-    G_ = copy.deepcopy(graph)
+    G_ = graph.copy()
     trigger = True
     while trigger:
         trigger = False
@@ -66,13 +64,13 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
             equals_labels = find_neighbours_with_the_same_labels(neighbors, labels)
             if equals_labels:
                 for neighbours_ids in equals_labels.values():
-                    not_changeble_node = min(neighbours_ids)
-                    neighbours_ids.remove(not_changeble_node)
+                    not_changeable_node = min(neighbours_ids)
+                    neighbours_ids.remove(not_changeable_node)
                     for vertex in neighbours_ids:
                         nghb_of_del_node = list(G_.neighbors(vertex))
                         nghb_of_del_node.remove(node)
-                        for v_node in nghb_of_del_node:
-                            G_.add_edge(v_node, not_changeble_node)
+                        G_.add_edges_from((v_node, not_changeable_node)
+                                          for v_node in nghb_of_del_node)
                         G_.remove_node(vertex)
                 trigger = True
                 break
@@ -88,7 +86,7 @@ def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
     check_leaf_node = None
     G = nx.Graph()
     G.add_node(root, label=x_)
-    # =============================== STEP 1 ======================================
+    # ================= STEP 1 Construct the graph for C ==========================
     for c_word in C:
         for index, label in enumerate(c_word[1:-1], start=1):
             custom_id = counter()
@@ -100,9 +98,9 @@ def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
             if index == len(c_word) - 2:
                 G.add_edge(custom_id, root)
         G = ar_nodes(G)
-    # =============================== STEP 2 ======================================
+    # =============== STEP 2 Get all leaf nodes from the graph ====================
     q = get_all_leaf_nodes_from_graph(G)
-    # =============================== STEP 3 ======================================
+    # ============= STEP 3 Add nodes for L and check if the graph is valid ========
     for l_word in L:
         if l_word[0] != x_:
             raise ValueError("Incorrect data. Graph is not exists!")
@@ -126,7 +124,7 @@ def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
                 q[key_id] = val_label
             else:
                 trash[key_id] = val_label
-    # =============================== STEP 4 ======================================
+    # =================== STEP 4 Check if the graph is valid ======================
     for key_id, val_label in q.items():
         all_paths = list(nx.all_simple_paths(G, source=root, target=key_id))
         all_paths_labels = ["".join([G.nodes[id]['label'] for id in path]) for path in all_paths]
@@ -138,7 +136,7 @@ def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
                     checked = True
         if not checked:
             print("Incorrect data. Graph is not exists!")
-    # =============================== STEP 5 ======================================
+    # ========== STEP 5 Check if each word in L ends with a hanging vertex ========
     for p_word_index, p_word in enumerate(L):
         checked_node = walk_by_word(G, p_word, root)
         if G.degree(checked_node) != 1:
@@ -161,9 +159,9 @@ def ak_pair(graph: nx.Graph) -> Union[Tuple[List[str], List[str]], int, str]:
             return list(graph.nodes)[0]
     # =========================== local definitions ===============================
     root = list(graph.nodes)[0]
-    sigma_g: List = []
-    lambda_g: List = []
-    reachability_basis: Dict = {}
+    sigma_g: List[str] = []
+    lambda_g: List[str] = []
+    reachability_basis: Dict[str, List[int]] = {}
     # =========== Find reachability basis in the graph and fill lambda_g ==========
     ms_tree = nx.minimum_spanning_tree(graph)
     for node in ms_tree.nodes:
@@ -179,10 +177,8 @@ def ak_pair(graph: nx.Graph) -> Union[Tuple[List[str], List[str]], int, str]:
     for index, p_path in enumerate(ni):
         for q_path in ni[index+1:]:
             if p_path not in q_path[:len(p_path)]:
-                if graph.has_edge(
-                    reachability_basis[p_path][-1],
-                    reachability_basis[q_path][-1]
-                ) is False:
+                if not graph.has_edge(reachability_basis[p_path][-1],
+                                      reachability_basis[q_path][-1]):
                     continue
                 pqr = p_path + q_path[::-1]
                 qpr = q_path + p_path[::-1]
