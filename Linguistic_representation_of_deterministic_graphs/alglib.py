@@ -51,6 +51,35 @@ def walk_by_word( graph: nx.Graph,
         current_node = next_node
     return current_node
 
+
+def check_q_node(graph: nx.Graph,
+                 l_set: Tuple[str],
+                 vq_id: int,
+                 vq_label: str,
+                 root: int) -> bool:
+    """ helper function, check node is valid by step 4 in AP alg """
+    state = False
+    if graph.degree(vq_id) > 1:
+        for word_l in l_set:
+            if vq_label in word_l and word_l[-1] != vq_label:
+                f_pattern = word_l[:word_l.rfind(vq_label) + 1]
+                l_pattern = word_l[word_l.rfind(vq_label) + 1:]
+                checked_label = f_pattern[-2]
+                if vq_id == walk_by_word(graph, f_pattern, root):
+                    if checked_label != l_pattern[0]:
+                        state = True
+    elif graph.degree(vq_id) == 1:
+        for word_l in l_set:
+            if vq_label in word_l and word_l[-1] == vq_label:
+                if vq_id == walk_by_word(graph, word_l, root):
+                    state = True
+    else:
+        raise ValueError(
+            f"Id: {vq_id} Lbl:{vq_label} not in graph. Graph is not exists!"
+        )
+    return state
+
+
 # ======================== ALGORITHMS REALIZATION =============================
 def ar_nodes(graph: nx.Graph) -> nx.Graph:
     """ reduction algorithm AR """
@@ -77,7 +106,7 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
     return G_
 
 
-def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
+def ap_graph(C:Tuple[str], L:Tuple[str], x_='1') -> Union[nx.Graph, str]:
     """ build graph on pair of words, algorithm AP """
     # =============================== STEP 0 ======================================
     q: Dict = {}
@@ -125,17 +154,9 @@ def ap_graph(C:tuple, L:tuple, x_='1') -> Union[nx.Graph, str]:
             else:
                 trash[key_id] = val_label
     # =================== STEP 4 Check if the graph is valid ======================
-    for key_id, val_label in q.items():
-        all_paths = list(nx.all_simple_paths(G, source=root, target=key_id))
-        all_paths_labels = ["".join([G.nodes[id]['label'] for id in path]) for path in all_paths]
-        print(key_id, val_label, all_paths_labels)
-        checked = False
-        for path in all_paths_labels:
-            for word in L:
-                if path in word:
-                    checked = True
-        if not checked:
-            print("Incorrect data. Graph is not exists!")
+    for vq_id, vq_label in q.items():
+        if not check_q_node(G, L, vq_id, vq_label, root):
+            print(f"Incorrect data ID: {vq_id}, LBL: {vq_label}. Graph is not exists!")
     # ========== STEP 5 Check if each word in L ends with a hanging vertex ========
     for p_word_index, p_word in enumerate(L):
         checked_node = walk_by_word(G, p_word, root)
