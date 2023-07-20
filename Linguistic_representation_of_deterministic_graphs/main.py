@@ -47,7 +47,8 @@ if __name__ == "__main__":
     # ============================== AP GRAPH =================================
     # print_data(ap_graph(testC1, testL1))
     # print_data(ap_graph(testC2, testL2))
-    MyGraph = ap_graph(testC1, testL1)
+    # MyGraph = ap_graph(testC1, testL1)
+    MyGraph = ap_graph(testC1a, testL1a, 'a')
     # print(ak_pair(MyGraph))
     print_data(MyGraph)
     # ============================= PAIR METRICS ================+=============
