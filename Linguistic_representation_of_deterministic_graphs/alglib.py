@@ -1,6 +1,7 @@
 """ IAMM - Graphs - ASP Work """
 from typing import Tuple, List, Union, Dict
 from math import ceil, sqrt
+import re
 import networkx as nx # type: ignore
 
 # =========================== HELPERS FUNCTIONS ===============================
@@ -80,6 +81,23 @@ def check_q_node(graph: nx.Graph,
     return state
 
 
+def word_pair_data_validation(c_tuple: Tuple[str], l_tuple: Tuple[str]) -> bool:
+    """ rules for using a pair of words in an algorithm """
+    root = c_tuple[0][0]
+    pattern = r"(.)\1"
+    for c_word in c_tuple:
+        if c_word[0] != c_word[-1]:
+            return False
+        if bool(re.search(pattern, c_word)):
+            return False
+    for l_word in l_tuple:
+        if l_word[0] != root:
+            return False
+        if bool(re.search(pattern, l_word)):
+            return False
+    return True
+
+
 # ======================== ALGORITHMS REALIZATION =============================
 def ar_nodes(graph: nx.Graph) -> nx.Graph:
     """ reduction algorithm AR """
@@ -109,6 +127,8 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
 def ap_graph(C:Tuple[str], L:Tuple[str], x_='1') -> Union[nx.Graph, str]:
     """ build graph on pair of words, algorithm AP """
     # =============================== STEP 0 ======================================
+    if not word_pair_data_validation(C, L):
+        raise ValueError("Incorrect data. Graph is not exists!")
     q: Dict = {}
     trash: Dict = {}
     root = 0
@@ -131,8 +151,6 @@ def ap_graph(C:Tuple[str], L:Tuple[str], x_='1') -> Union[nx.Graph, str]:
     q = get_all_leaf_nodes_from_graph(G)
     # ============= STEP 3 Add nodes for L and check if the graph is valid ========
     for l_word in L:
-        if l_word[0] != x_:
-            raise ValueError("Incorrect data. Graph is not exists!")
         for index, label in enumerate(l_word[1:], start=1):
             node_id = counter()
             G.add_node(node_id, label=label)
