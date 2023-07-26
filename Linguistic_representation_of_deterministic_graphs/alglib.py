@@ -228,9 +228,32 @@ def ak_pair(graph: nx.Graph) -> Union[Tuple[List[str], List[str]], int, str]:
 
     return (sigma_g, lambda_g)
 
-# ================ CANONICAL PAIR METRICS DEV IN PROGRESS =====================
-def get_pair_metrics(n: int, m: int) -> Dict:
-    """ find canonical pair metrics """
-    mat = ceil(3/2 + sqrt(9/4 - 2 * n + 2 * m))
-    result = 2 * (m - n + 1) * (n - mat + 2)
-    return {"mat": mat, "result": result}
+# ======================== CANONICAL PAIR METRICS =============================
+def get_canonical_pair_metrics_from_graph(graph: nx.Graph) -> dict:
+    """ find canonical pair metrics by graph values"""
+    canonical_pair: Union[Tuple[List[str], List[str]], int, str] = ak_pair(graph)
+    total_pair_count = 0
+    if isinstance(canonical_pair, tuple):
+        for c_word in canonical_pair[0]:
+            total_pair_count += len(c_word)
+        for l_word in canonical_pair[1]:
+            total_pair_count += len(l_word)
+    else:
+        raise ValueError("Incorrect data. Graph is not exists!")
+    n_nodes = graph.number_of_nodes()
+    m_edges = graph.number_of_edges()
+    delta = ceil(3/2 + sqrt(9/4 - 2 * n_nodes + 2 * m_edges))
+    result = 2 * (m_edges - n_nodes + 1) * (n_nodes - delta + 2)
+    mu_mn = int(delta*(delta-1)/2-(m_edges-n_nodes+delta))
+    power_of_sigma_g = int((delta-mu_mn -1)*(delta-mu_mn-2)*(n_nodes-delta+2)+\
+                       mu_mn*(mu_mn-1)*(n_nodes-delta+3)+\
+                       mu_mn*(delta-mu_mn-2)*(2*n_nodes-2*delta+5))
+    return {
+        "n": n_nodes,
+        "m": m_edges,
+        "delta": delta,
+        "result": result,
+        "total_p_count": total_pair_count,
+        "mu": mu_mn,
+        "power_sigma_G": power_of_sigma_g
+    }
