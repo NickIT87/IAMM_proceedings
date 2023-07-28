@@ -29,13 +29,13 @@ def create_custom_graph(num_vertices):
     G.add_edges_from((i, j) for i in range(1, num_vertices) for j in range(i + 1, num_vertices + 1))
     return G
 
-num_vertices = 6
-custom_graph = create_custom_graph(num_vertices)
+# num_vertices = 6
+# custom_graph = create_custom_graph(num_vertices)
 #custom_graph = create_flower_graph(num_vertices)
 
 # Draw the graph
-plt.figure(figsize=(12, 8))
-pos = nx.spring_layout(custom_graph, seed=42)  # Adjust the layout for better visualization
-nx.draw(custom_graph, pos, with_labels=True, node_size=300, node_color='skyblue', font_size=8, font_weight='bold')
-plt.title("Custom Graph with 50 vertices")
-plt.show()
+# plt.figure(figsize=(12, 8))
+# pos = nx.spring_layout(custom_graph, seed=42)  # Adjust the layout for better visualization
+# nx.draw(custom_graph, pos, with_labels=True, node_size=300, node_color='skyblue', font_size=8, font_weight='bold')
+# plt.title("Custom Graph with 50 vertices")
+# plt.show()
