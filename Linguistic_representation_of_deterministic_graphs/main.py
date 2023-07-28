@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt     # type: ignore
+from flowerGraph import create_flower_graph, create_custom_graph
 from data import *
 from alglib import *
 
@@ -52,5 +53,17 @@ if __name__ == "__main__":
     # print(ak_pair(MyGraph))
     # print_data(MyGraph)
     # ============================= PAIR METRICS ================+=============
-    print_data(G)
+    #print_data(G)
     print(get_canonical_pair_metrics_from_graph(G))
+    MyGraph = create_custom_graph(6)
+    #print_data(MyGraph)
+    print(get_canonical_pair_metrics_from_graph(MyGraph))
+    # Remove multiple edges at once
+    edges_to_remove = [(1, 5), (1, 6)]
+    MyGraph.remove_edges_from(edges_to_remove)
+    print(get_canonical_pair_metrics_from_graph(MyGraph))
+
+    BigG = create_custom_graph(50)
+    e_to_r = [(1, 5), (1, 6)]
+    print(get_canonical_pair_metrics_from_graph(BigG))
+
