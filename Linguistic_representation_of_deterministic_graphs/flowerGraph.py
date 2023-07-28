@@ -18,11 +18,12 @@ def create_flower_graph(num_vertices):
 
 
 def create_custom_graph(num_vertices):
+    alphabet = "0123456789abcdefghijklmnopqrstuvwxyz"
     G = nx.Graph()
     # Add vertices from 0 to num_vertices
     G.add_nodes_from(range(num_vertices + 1))
     for i in range(num_vertices + 1):
-        G.nodes[i]['label'] = str(i)
+        G.nodes[i]['label'] = alphabet[i]
     # Create edges from vertex 0 to vertex 1
     G.add_edge(0, 1)
     # Create a complete graph starting from vertex 1

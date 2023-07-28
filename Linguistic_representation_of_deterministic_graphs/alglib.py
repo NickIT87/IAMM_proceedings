@@ -85,16 +85,20 @@ def word_pair_data_validation(c_tuple: Tuple[str], l_tuple: Tuple[str]) -> bool:
     """ rules for using a pair of words in an algorithm """
     root = c_tuple[0][0]
     pattern = r"(.)\1"
-    for c_word in c_tuple:
-        if c_word[0] != c_word[-1]:
-            return False
-        if bool(re.search(pattern, c_word)):
-            return False
-    for l_word in l_tuple:
-        if l_word[0] != root:
-            return False
-        if bool(re.search(pattern, l_word)):
-            return False
+    if not c_tuple and not l_tuple:
+        return False
+    if c_tuple:
+        for c_word in c_tuple:
+            if c_word[0] != c_word[-1]:
+                return False
+            if bool(re.search(pattern, c_word)):
+                return False
+    if l_tuple:
+        for l_word in l_tuple:
+            if l_word[0] != root:
+                return False
+            if bool(re.search(pattern, l_word)):
+                return False
     return True
 
 

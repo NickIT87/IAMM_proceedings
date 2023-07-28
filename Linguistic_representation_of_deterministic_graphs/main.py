@@ -52,30 +52,33 @@ if __name__ == "__main__":
     # MyGraph = ap_graph(testC1a, testL1a, 'a')
     # print(ak_pair(MyGraph))
     # print_data(MyGraph)
+    mg = ap_graph(tgc, tgl)
+    print_data(mg)
     # ============================= PAIR METRICS ================+=============
-    print(get_canonical_pair_metrics_from_graph(G))
-    # print_data(G)
-
-    MyGraph = create_custom_graph(6)
-    print(get_canonical_pair_metrics_from_graph(MyGraph))
-    # print_data(MyGraph)
-
-    edges_to_remove = [(1, 5), (1, 6)]
-    MyGraph.remove_edges_from(edges_to_remove)
-    print(get_canonical_pair_metrics_from_graph(MyGraph))
-    # print_data(MyGraph)
-
-    BigG = create_custom_graph(9)
-    e_to_r = [(1, 5), (1, 6)]
-    BigG.remove_edges_from(e_to_r)
-    print(get_canonical_pair_metrics_from_graph(BigG))
-    # print_data(BigG)
-
-    BigG2 = create_custom_graph(10)
-    e_to_r2 = [(1, 5), (1, 6)]
-    BigG2.remove_edges_from(e_to_r2)
-    print(get_canonical_pair_metrics_from_graph(BigG2))
-    print_data(BigG2)
+    # print(get_canonical_pair_metrics_from_graph(G))
+    # # print_data(G)
+    #
+    # MyGraph = create_custom_graph(6)
+    # print(get_canonical_pair_metrics_from_graph(MyGraph))
+    # # print_data(MyGraph)
+    #
+    # edges_to_remove = [(1, 5), (1, 6)]
+    # MyGraph.remove_edges_from(edges_to_remove)
+    # print(get_canonical_pair_metrics_from_graph(MyGraph))
+    # # print_data(MyGraph)
+    #
+    # BigG = create_custom_graph(9)
+    # e_to_r = [(1, 5), (1, 6)]
+    # BigG.remove_edges_from(e_to_r)
+    # print(get_canonical_pair_metrics_from_graph(BigG))
+    # # print_data(BigG)
+    #
+    # BigG2 = create_custom_graph(10)
+    # e_to_r2 = [(1, 5), (1, 6)]
+    # BigG2.remove_edges_from(e_to_r2)
+    # print(get_canonical_pair_metrics_from_graph(BigG2))
+    # print(list(BigG2.nodes()))
+    # print_data(BigG2)
 
     # BigG3 = create_flower_graph(8)
     # e_to_r3 = [(2, 5), (2, 6)]
