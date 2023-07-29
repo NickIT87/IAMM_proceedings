@@ -35,9 +35,9 @@ def find_neighbours_with_the_same_labels(nghb: List, lbls: List) -> Dict:
     return equal_elements
 
 
-def walk_by_word( graph: nx.Graph,
-                  word: str,
-                  root_node: int ) -> int:
+def walk_by_word(graph: nx.Graph,
+                 word: str,
+                 root_node: int) -> int:
     """ get last node id by label (word) path in graph """
     current_node = root_node
     for symbol in word[1:]:

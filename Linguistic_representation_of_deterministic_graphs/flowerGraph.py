@@ -2,18 +2,19 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-def create_flower_graph(num_vertices):
+def create_flower_graph(num_vertices, path=1):
+    alphabet = "0123456789abcdefghijklmnopqrstuvwxyz~!@#$%^&*()_+[]|/:;"
     G = nx.Graph()
     # Add vertices from 0 to num_vertices + 1
-    G.add_nodes_from(range(num_vertices + 2))
+    G.add_nodes_from(range(num_vertices + path))
     # Add 'label' attribute to each vertex with the string value of the vertex number
-    for i in range(num_vertices + 2):
-        G.nodes[i]['label'] = str(i)
+    for i in range(num_vertices + path):
+        G.nodes[i]['label'] = alphabet[i]
     # Create edges to form the path from 0 to num_vertices + 1
-    for i in range(num_vertices + 1):
-        G.add_edge(i, i + 1)
+    for i in range(1, num_vertices):
+        G.add_edge(i-1, i)
     # Create a complete graph starting from vertex 2
-    G.add_edges_from((i, j) for i in range(2, num_vertices + 2) for j in range(i + 1, num_vertices + 2))
+    G.add_edges_from((i, j) for i in range(path, num_vertices + path) for j in range(i + 1, num_vertices + path))
     return G
 
 
@@ -32,7 +33,7 @@ def create_custom_graph(num_vertices):
 
 # num_vertices = 6
 # custom_graph = create_custom_graph(num_vertices)
-#custom_graph = create_flower_graph(num_vertices)
+# custom_graph = create_flower_graph(num_vertices)
 
 # Draw the graph
 # plt.figure(figsize=(12, 8))

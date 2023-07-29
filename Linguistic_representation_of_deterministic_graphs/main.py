@@ -52,8 +52,8 @@ if __name__ == "__main__":
     # MyGraph = ap_graph(testC1a, testL1a, 'a')
     # print(ak_pair(MyGraph))
     # print_data(MyGraph)
-    mg = ap_graph(tgc, tgl)
-    print_data(mg)
+    # mg = ap_graph(tgc1, tgl)
+    # print_data(mg)
     # ============================= PAIR METRICS ================+=============
     # print(get_canonical_pair_metrics_from_graph(G))
     # # print_data(G)
@@ -73,15 +73,15 @@ if __name__ == "__main__":
     # print(get_canonical_pair_metrics_from_graph(BigG))
     # # print_data(BigG)
     #
-    # BigG2 = create_custom_graph(10)
+    # BigG2 = create_custom_graph(50)
     # e_to_r2 = [(1, 5), (1, 6)]
     # BigG2.remove_edges_from(e_to_r2)
     # print(get_canonical_pair_metrics_from_graph(BigG2))
-    # print(list(BigG2.nodes()))
     # print_data(BigG2)
 
-    # BigG3 = create_flower_graph(8)
-    # e_to_r3 = [(2, 5), (2, 6)]
-    # BigG3.remove_edges_from(e_to_r3)
-    # print(get_canonical_pair_metrics_from_graph(BigG3))
-    # print_data(BigG3)
+    BigG3 = create_flower_graph(num_vertices=50, path=5)
+    # e_to_r3 = [(1, 5), (1, 6)]
+    e_to_r3 = [(5, 7), (5, 18), (5, 31)]
+    BigG3.remove_edges_from(e_to_r3)
+    print(get_canonical_pair_metrics_from_graph(BigG3))
+    print_data(BigG3)
