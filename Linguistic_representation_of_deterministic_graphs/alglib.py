@@ -36,8 +36,8 @@ def find_neighbours_with_the_same_labels(nghb: List, lbls: List) -> Dict:
 
 
 def walk_by_word( graph: nx.Graph,
-          word: str,
-          root_node: int ) -> int:
+                  word: str,
+                  root_node: int ) -> int:
     """ get last node id by label (word) path in graph """
     current_node = root_node
     for symbol in word[1:]:
@@ -60,6 +60,8 @@ def check_q_node(graph: nx.Graph,
                  root: int) -> bool:
     """ helper function, check node is valid by step 4 in AP alg """
     state = False
+    if vq_id == root:
+        state = True
     if graph.degree(vq_id) > 1:
         for word_l in l_set:
             if vq_label in word_l and word_l[-1] != vq_label:
@@ -81,15 +83,16 @@ def check_q_node(graph: nx.Graph,
     return state
 
 
-def word_pair_data_validation(c_tuple: Tuple[str], l_tuple: Tuple[str]) -> bool:
+def word_pair_data_validation(c_tuple: Tuple[str],
+                              l_tuple: Tuple[str],
+                              root: str) -> bool:
     """ rules for using a pair of words in an algorithm """
-    root = c_tuple[0][0]
     pattern = r"(.)\1"
     if not c_tuple and not l_tuple:
         return False
     if c_tuple:
         for c_word in c_tuple:
-            if c_word[0] != c_word[-1]:
+            if c_word[0] != c_word[-1] and c_word[0] != root:
                 return False
             if bool(re.search(pattern, c_word)):
                 return False
@@ -131,7 +134,7 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
 def ap_graph(C:Tuple[str], L:Tuple[str], x_='1') -> Union[nx.Graph, str]:
     """ build graph on pair of words, algorithm AP """
     # =============================== STEP 0 ======================================
-    if not word_pair_data_validation(C, L):
+    if not word_pair_data_validation(C, L, x_):
         raise ValueError("Incorrect data. Graph is not exists!")
     q: Dict = {}
     trash: Dict = {}
