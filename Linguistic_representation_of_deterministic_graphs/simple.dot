@@ -1,0 +1,7 @@
+strict graph  {
+0 [label=1];
+1 [label=2];
+2 [label=3];
+0 -- 1;
+1 -- 2;
+}

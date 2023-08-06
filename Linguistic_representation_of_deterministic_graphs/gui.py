@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from networkx.drawing.nx_pydot import to_pydot
 from data import random_color
 from alglib import *
 
@@ -19,7 +20,7 @@ def get_info():
     return (tuple(c_string.split()), tuple(l_string.split()), r_text.get())
 
 
-def update_text_area(graph=None):
+def update_text_area(graph=None, message=None):
     if graph:
         data = get_canonical_pair_metrics_from_graph(graph)
         text_area.config(state=tk.NORMAL)
@@ -27,17 +28,14 @@ def update_text_area(graph=None):
         text_area.insert(tk.END, data)  # Insert new text
         text_area.config(state=tk.DISABLED)  # Disable editing
     else:
-        text = "This is a big text area.\n"
-        text += "You can display large amounts of text here.\n"
-        text += "It supports multiple lines and scrollbars.\n"
-        text += "You can add more text programmatically as well."
         text_area.config(state=tk.NORMAL)
         text_area.delete("1.0", tk.END)  # Clear existing text
-        text_area.insert(tk.END, text)  # Insert new text
+        text_area.insert(tk.END, message)  # Insert new text
         text_area.config(state=tk.DISABLED)  # Disable editing
 
 
 def build_graph():
+    global G
     data = get_info()
     try:
         G = ap_graph(data[0], data[1], data[2])
@@ -79,9 +77,40 @@ def build_graph():
                                                    pack_toolbar=False)
         build_graph.toolbar.update()
         build_graph.toolbar.grid(row=1, column=0, columnspan=2, padx=10, pady=5)
-        update_text_area(G)
+        update_text_area(graph=G)
     except ValueError as e:
         messagebox.showerror("Error", f"Invalid input: {e}")
+
+
+def save_graph_to_file():
+    global G
+    try:
+        file_path = 'example.gml'
+        nx.write_gml(G, file_path)
+        dot_graph = to_pydot(G)
+        dot_graph.write_dot("graph.dot")
+        dot_string = dot_graph.to_string()
+        try:
+            with open('simple.dot', 'w') as file:
+                # Step 2: Write the string to the file
+                file.write(dot_string)
+            update_text_area(message="Graph successfully written to files.")
+        except IOError as e:
+            messagebox.showerror("Error", f"An error occurred while writing to the file. {e}")
+    except NameError as e:
+        messagebox.showerror("Error", f"Graph is not exists {e}")
+
+
+def save_info():
+    global text_area
+    data = text_area.get("1.0", tk.END)
+    try:
+        with open('info.txt', 'w') as file:
+            # Step 2: Write the string to the file
+            file.write(data)
+        update_text_area(message="data successfully written to file.")
+    except IOError as e:
+        messagebox.showerror("Error", f"An error occurred while writing to the file. {e}")
 
 
 def clear_output():
@@ -104,7 +133,7 @@ def center_window(root, width, height):
 
 
 def create_widgets(root):
-    global text_area, graph_frame, c_text, l_text, r_text
+    global text_area, graph_frame, c_text, l_text, r_text, G
     text_field_width = 70
     button_distance = 10
     label_frame = tk.Frame(root)
@@ -126,9 +155,9 @@ def create_widgets(root):
     button_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
     build_button = tk.Button(button_frame, text="Build Graph", command=build_graph)
     build_button.grid(row=0, column=0, padx=button_distance)
-    save_button = tk.Button(button_frame, text="Save graph to file", command=get_info)
+    save_button = tk.Button(button_frame, text="Save graph to file", command=save_graph_to_file)
     save_button.grid(row=0, column=1, padx=button_distance)
-    save_button = tk.Button(button_frame, text="Save info to file", command=update_text_area)
+    save_button = tk.Button(button_frame, text="Save info to file", command=save_info)
     save_button.grid(row=0, column=2, padx=button_distance)
     clear_button = tk.Button(button_frame, text="Clear output", command=clear_output)
     clear_button.grid(row=0, column=3, padx=button_distance)
