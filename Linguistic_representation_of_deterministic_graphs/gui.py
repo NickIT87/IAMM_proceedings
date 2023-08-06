@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from data import random_color
@@ -18,56 +19,69 @@ def get_info():
     return (tuple(c_string.split()), tuple(l_string.split()), r_text.get())
 
 
+def update_text_area(graph=None):
+    if graph:
+        data = get_canonical_pair_metrics_from_graph(graph)
+        text_area.config(state=tk.NORMAL)
+        text_area.delete("1.0", tk.END)  # Clear existing text
+        text_area.insert(tk.END, data)  # Insert new text
+        text_area.config(state=tk.DISABLED)  # Disable editing
+    else:
+        text = "This is a big text area.\n"
+        text += "You can display large amounts of text here.\n"
+        text += "It supports multiple lines and scrollbars.\n"
+        text += "You can add more text programmatically as well."
+        text_area.config(state=tk.NORMAL)
+        text_area.delete("1.0", tk.END)  # Clear existing text
+        text_area.insert(tk.END, text)  # Insert new text
+        text_area.config(state=tk.DISABLED)  # Disable editing
+
+
 def build_graph():
     data = get_info()
-    G = ap_graph(data[0], data[1], data[2])
-    # Set the node labels
-    labels = nx.get_node_attributes(G, 'label')
-    # Get the node colors
     try:
-        node_colors = [G.nodes[node]['color'] for node in G.nodes]
-    except KeyError:
-        node_colors = [random_color() for _ in range(len(G.nodes) - 1)]
-        node_colors.insert(0, "red")
-    T = nx.minimum_spanning_tree(G)
-    # Create subplots
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7, 4))
-    # Draw the original graph on the first subplot (ax1)
-    pos = nx.spring_layout(G)  # positions for the nodes
-    nx.draw_networkx_nodes(G, pos, node_color=node_colors, ax=ax1)  # type: ignore
-    nx.draw_networkx_edges(G, pos, edge_color='b', ax=ax1)
-    nx.draw_networkx_labels(G, pos, labels, ax=ax1)
-    ax1.set_title('Original Graph')
-    # Draw the minimum spanning tree on the second subplot (ax2)
-    pos = nx.spring_layout(T)  # positions for the nodes
-    nx.draw_networkx_nodes(T, pos, node_color=node_colors, ax=ax2)  # type: ignore
-    nx.draw_networkx_edges(T, pos, edge_color='b', ax=ax2)
-    nx.draw_networkx_labels(T, pos, ax=ax2)
-    ax2.set_title('Minimum Spanning Tree')
-    # Remove the axis ticks and labels
-    ax1.axis('off')
-    ax2.axis('off')
-    if hasattr(build_graph, 'canvas'):  # Check if canvas already exists and delete it
-        build_graph.canvas.get_tk_widget().destroy()
-    build_graph.canvas = FigureCanvasTkAgg(fig, master=graph_frame)
-    build_graph.canvas.get_tk_widget().grid(row=0, column=0, columnspan=2, padx=10, pady=10)
-    build_graph.canvas.draw()
-    if hasattr(build_graph, 'toolbar'):  # Check if toolbar already exists and delete it
-        build_graph.toolbar.destroy()
-    build_graph.toolbar = NavigationToolbar2Tk(build_graph.canvas, graph_frame, pack_toolbar=False)
-    build_graph.toolbar.update()
-    build_graph.toolbar.grid(row=1, column=0, columnspan=2, padx=10, pady=5)
-
-
-def update_text_area():
-    text = "This is a big text area.\n"
-    text += "You can display large amounts of text here.\n"
-    text += "It supports multiple lines and scrollbars.\n"
-    text += "You can add more text programmatically as well."
-    text_area.config(state=tk.NORMAL)
-    text_area.delete("1.0", tk.END)  # Clear existing text
-    text_area.insert(tk.END, text)  # Insert new text
-    text_area.config(state=tk.DISABLED)  # Disable editing
+        G = ap_graph(data[0], data[1], data[2])
+        # Set the node labels
+        labels = nx.get_node_attributes(G, 'label')
+        # Get the node colors
+        try:
+            node_colors = [G.nodes[node]['color'] for node in G.nodes]
+        except KeyError:
+            node_colors = [random_color() for _ in range(len(G.nodes) - 1)]
+            node_colors.insert(0, "red")
+        T = nx.minimum_spanning_tree(G)
+        # Create subplots
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7, 4))
+        # Draw the original graph on the first subplot (ax1)
+        pos = nx.spring_layout(G)  # positions for the nodes
+        nx.draw_networkx_nodes(G, pos, node_color=node_colors, ax=ax1)  # type: ignore
+        nx.draw_networkx_edges(G, pos, edge_color='b', ax=ax1)
+        nx.draw_networkx_labels(G, pos, labels, ax=ax1)
+        ax1.set_title('Original Graph')
+        # Draw the minimum spanning tree on the second subplot (ax2)
+        pos = nx.spring_layout(T)  # positions for the nodes
+        nx.draw_networkx_nodes(T, pos, node_color=node_colors, ax=ax2)  # type: ignore
+        nx.draw_networkx_edges(T, pos, edge_color='b', ax=ax2)
+        nx.draw_networkx_labels(T, pos, ax=ax2)
+        ax2.set_title('Minimum Spanning Tree')
+        # Remove the axis ticks and labels
+        ax1.axis('off')
+        ax2.axis('off')
+        if hasattr(build_graph, 'canvas'):  # Check if canvas already exists and delete it
+            build_graph.canvas.get_tk_widget().destroy()
+        build_graph.canvas = FigureCanvasTkAgg(fig, master=graph_frame)
+        build_graph.canvas.get_tk_widget().grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+        build_graph.canvas.draw()
+        if hasattr(build_graph, 'toolbar'):  # Check if toolbar already exists and delete it
+            build_graph.toolbar.destroy()
+        build_graph.toolbar = NavigationToolbar2Tk(build_graph.canvas,
+                                                   graph_frame,
+                                                   pack_toolbar=False)
+        build_graph.toolbar.update()
+        build_graph.toolbar.grid(row=1, column=0, columnspan=2, padx=10, pady=5)
+        update_text_area(G)
+    except ValueError as e:
+        messagebox.showerror("Error", f"Invalid input: {e}")
 
 
 def clear_output():
@@ -122,7 +136,7 @@ def create_widgets(root):
     text_frame.grid(row=2, column=0, sticky='W', columnspan=2, padx=10, pady=10)
     info_label = tk.Label(text_frame, text="Info output:")
     info_label.grid(row=0, column=0, padx=10, pady=10)
-    text_area = tk.Text(text_frame, wrap=tk.WORD, font=("Arial", 12), state=tk.DISABLED, height=6, width=91)
+    text_area = tk.Text(text_frame, wrap=tk.WORD, font=("Arial", 15), state=tk.DISABLED, height=5, width=71)
     text_area.grid(row=0, column=1)
     graph_frame = tk.Frame(root)
     graph_frame.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
