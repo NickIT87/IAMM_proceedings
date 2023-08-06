@@ -5,11 +5,14 @@ import re
 import networkx as nx # type: ignore
 
 # =========================== HELPERS FUNCTIONS ===============================
-def counter():
+def counter(reset=False):
     """helper for AP alg. generate IDs for nodes"""
-    if not hasattr(counter, 'count'):
+    if reset:
         counter.count = 0
-    counter.count += 1
+    elif not hasattr(counter, 'count'):
+        counter.count = 1
+    else:
+        counter.count += 1
     return counter.count
 
 

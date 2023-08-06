@@ -74,6 +74,11 @@ def clear_output():
     text_area.config(state=tk.NORMAL)
     text_area.delete("1.0", tk.END)
     text_area.config(state=tk.DISABLED)  # Disable editing
+    counter(True)
+    if hasattr(build_graph, 'canvas'):  # Check if canvas already exists and delete it
+        build_graph.canvas.get_tk_widget().destroy()
+    if hasattr(build_graph, 'toolbar'):  # Check if toolbar already exists and delete it
+        build_graph.toolbar.destroy()
 
 
 def center_window(root, width, height):
@@ -114,10 +119,10 @@ def create_widgets(root):
     clear_button = tk.Button(button_frame, text="Clear output", command=clear_output)
     clear_button.grid(row=0, column=3, padx=button_distance)
     text_frame = tk.Frame(root)
-    text_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+    text_frame.grid(row=2, column=0, sticky='W', columnspan=2, padx=10, pady=10)
     info_label = tk.Label(text_frame, text="Info output:")
     info_label.grid(row=0, column=0, padx=10, pady=10)
-    text_area = tk.Text(text_frame, wrap=tk.WORD, font=("Arial", 12), state=tk.DISABLED, height=5)
+    text_area = tk.Text(text_frame, wrap=tk.WORD, font=("Arial", 12), state=tk.DISABLED, height=6, width=91)
     text_area.grid(row=0, column=1)
     graph_frame = tk.Frame(root)
     graph_frame.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
