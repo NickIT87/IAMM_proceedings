@@ -2,26 +2,38 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 from data import *
 from alglib import *
 import random
 
 
-app = dash.Dash(__name__)
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 G = ap_graph(testC1, testL1)
 
 app.layout = html.Div([
+    html.I('Write your C_PAIR'),
+    html.Br(),
+    dcc.Input(id='relayoutData', type='text', placeholder="input here"),
+    html.Br(),  # Add a line break
+    dbc.Button("Submit", id='submit-button', n_clicks=0, color="primary"),
     dcc.Graph(id='network-graph')
 ])
 
 
 @app.callback(
     Output('network-graph', 'figure'),
-    Input('network-graph', 'relayoutData')  # This can be replaced with other inputs
+    Input('submit-button', 'n_clicks'),
+    Input('relayoutData', 'value')  # This can be replaced with other inputs
 )
-def update_graph(relayoutData):
+def update_graph(n_clicks, relayoutData):
+    if n_clicks == 0:  # Initial or no button click
+        return dash.no_update
+    else:
+        print(relayoutData)
     # Create Plotly figure from NetworkX graph
     pos = nx.spring_layout(G)  # Layout algorithm (e.g., spring_layout, circular_layout)
     edge_trace = go.Scatter(
