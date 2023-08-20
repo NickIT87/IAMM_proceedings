@@ -12,28 +12,45 @@ import random
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-G = ap_graph(testC1, testL1)
-
 app.layout = html.Div([
-    html.I('Write your C_PAIR'),
     html.Br(),
-    dcc.Input(id='relayoutData', type='text', placeholder="input here"),
-    html.Br(),  # Add a line break
-    dbc.Button("Submit", id='submit-button', n_clicks=0, color="primary"),
-    dcc.Graph(id='network-graph')
+    html.H4('Linguistic representation of D-graph', style={'text-align': 'center'}),
+    html.Br(),
+    html.I('Root label: ', style={'padding': '10px'}),
+    dcc.Input(id='root_data', type='text', value=1, maxLength=1, style={
+        'border': '2px solid #ddd',
+        'padding': '10px',
+        'width': '35px'
+    }),
+    html.I('C component: ', style={'padding': '10px'}),
+    dcc.Input(id='c_data', type='text', placeholder="type C word", style={
+        'border': '2px solid #ddd',
+        'padding': '10px',
+        'width': '300px'
+    }),
+    html.I('L component: ', style={'padding': '10px'}),
+    dcc.Input(id='l_data', type='text', placeholder="type L word", style={
+        'border': '2px solid #ddd',
+        'padding': '10px',
+        'width': '300px'
+    }),
+    dbc.Button("Submit", id='submit-button', n_clicks=0, color="primary", style={'margin-left': '10px'}),
+    html.Br(),
+    dcc.Graph(id='network-graph', style={'margin-top': '10px'})
 ])
 
 
 @app.callback(
     Output('network-graph', 'figure'),
     Input('submit-button', 'n_clicks'),
-    Input('relayoutData', 'value')  # This can be replaced with other inputs
+    Input('c_data', 'value'),
+    Input('l_data', 'value'),
 )
-def update_graph(n_clicks, relayoutData):
+def update_graph(n_clicks, c_val, l_val):
     if n_clicks == 0:  # Initial or no button click
         return dash.no_update
-    else:
-        print(relayoutData)
+
+    G = ap_graph(tuple(c_val.split()), tuple(l_val.split()))
     # Create Plotly figure from NetworkX graph
     pos = nx.spring_layout(G)  # Layout algorithm (e.g., spring_layout, circular_layout)
     edge_trace = go.Scatter(
@@ -73,13 +90,13 @@ def update_graph(n_clicks, relayoutData):
         x, y = pos[node]
         node_trace['x'] += (x,)
         node_trace['y'] += (y,)
-        node_trace['text'] += (f'Node {G.nodes[node]["label"]}',)
+        node_trace['text'] += (f'Node {node}',)
 
     layout = go.Layout(
         showlegend=False,
         hovermode='closest',
         margin=dict(b=0, l=0, r=0, t=0),
-        height=700,
+        height=600,
         annotations=[
             dict(
                 text=G.nodes[node]['label'],  # Use custom label or default if not found
