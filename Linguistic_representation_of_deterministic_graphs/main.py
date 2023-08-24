@@ -41,7 +41,7 @@ def print_data(G):
 # =============================================================================
 if __name__ == "__main__":
     # ============================== AK PAIR ==================================
-    # print(ak_pair(G))
+    # print(aс_pair(G))
     # print_data(G)
     # ============================ AR REDUCTION =======================++======
     # print_data(ar_nodes(G))
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     # print_data(ap_graph(testC2, testL2))
     # MyGraph = ap_graph(testC1, testL1)
     # MyGraph = ap_graph(testC1a, testL1a, 'a')
-    # print(ak_pair(MyGraph))
+    # print(aс_pair(MyGraph))
     # print_data(MyGraph)
     # mg = ap_graph(tgc1, tgl)
     # print_data(mg)
