@@ -1,0 +1,1 @@
+{'n': 17, 'm': 19, 'delta': 4, 'formula_result': 90, 'total_p_count': 33, 'mu': 0, 'power_sigma_G': 90, 'canonical_pair': (['ABCPA', 'ABCDEFGHIJKLA', 'ALMPA'], ['ABCDENO', 'APG'])}
