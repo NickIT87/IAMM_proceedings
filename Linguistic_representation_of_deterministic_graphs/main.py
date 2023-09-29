@@ -56,6 +56,7 @@ if __name__ == "__main__":
     # print_data(mg)
     cardGraph = ap_graph(cardC, cardL, 'a')
     print_data(cardGraph)
+    print(ac_pair(cardGraph))
     # ============================= PAIR METRICS ================+=============
     # print(get_canonical_pair_metrics_from_graph(G))
     # # print_data(G)
