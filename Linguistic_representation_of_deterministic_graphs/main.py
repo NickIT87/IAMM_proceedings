@@ -1,3 +1,5 @@
+import cProfile
+import pstats
 import matplotlib.pyplot as plt     # type: ignore
 from flowerGraph import create_flower_graph, create_custom_graph
 from data import *
@@ -57,7 +59,7 @@ if __name__ == "__main__":
     cardGraph = ap_graph(cardC, cardL, 'a')
     print_data(cardGraph)
     print(ac_pair(cardGraph))
-    # ============================= PAIR METRICS ================+=============
+    # ============================= PAIR METRICS ==============================
     # print(get_canonical_pair_metrics_from_graph(G))
     # # print_data(G)
     #
@@ -88,3 +90,10 @@ if __name__ == "__main__":
     # BigG3.remove_edges_from(e_to_r3)
     # print(get_canonical_pair_metrics_from_graph(BigG3))
     # print_data(BigG3)
+    # ============================== C PROFILER ===============================
+    # G = ap_graph(testC1, testL1)
+    # ac_pair(G)
+    # cProfile.run('ap_graph(testC1, testL1)', filename='profile_results')
+    #
+    # stats = pstats.Stats('profile_results')
+    # stats.strip_dirs().sort_stats('time').print_stats()
