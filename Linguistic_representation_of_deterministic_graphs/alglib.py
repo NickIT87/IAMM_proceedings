@@ -133,7 +133,7 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
                 break
     return G_
 
-
+#@profile    # python -m memory_profiler main.py
 def ap_graph(C:Tuple[str], L:Tuple[str], x_='1') -> Union[nx.Graph, str]:
     """ build graph on pair of words, algorithm AP """
     # =============================== STEP 0 ======================================
