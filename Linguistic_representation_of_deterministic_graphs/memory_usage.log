@@ -1,0 +1,67 @@
+Filename: /Users/nick/programming/IAMM_proceedings/Linguistic_representation_of_deterministic_graphs/alglib.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+   136   95.438 MiB   95.438 MiB           1   @profile    # python -m memory_profiler main.py
+   137                                         def ap_graph(C:Tuple[str], L:Tuple[str], x_='1') -> Union[nx.Graph, str]:
+   138                                             """ build graph on pair of words, algorithm AP """
+   139                                             # =============================== STEP 0 ======================================
+   140   95.484 MiB    0.047 MiB           1       if not word_pair_data_validation(C, L, x_):
+   141                                                 raise ValueError("Incorrect data. Graph is not exists!")
+   142   95.484 MiB    0.000 MiB           1       q: Dict = {}
+   143   95.484 MiB    0.000 MiB           1       trash: Dict = {}
+   144   95.484 MiB    0.000 MiB           1       root = 0
+   145   95.484 MiB    0.000 MiB           1       check_leaf_node = None
+   146   95.484 MiB    0.000 MiB           1       G = nx.Graph()
+   147   95.484 MiB    0.000 MiB           1       G.add_node(root, label=x_)
+   148                                             # ================= STEP 1 Construct the graph for C ==========================
+   149   95.500 MiB    0.000 MiB           3       for c_word in C:
+   150   95.484 MiB    0.000 MiB          10           for index, label in enumerate(c_word[1:-1], start=1):
+   151   95.484 MiB    0.000 MiB           8               custom_id = counter()
+   152   95.484 MiB    0.000 MiB           8               G.add_node(custom_id, label=label)
+   153   95.484 MiB    0.000 MiB           8               if index == 1:
+   154   95.484 MiB    0.000 MiB           2                   G.add_edge(root, custom_id)
+   155                                                     else:
+   156   95.484 MiB    0.000 MiB           6                   G.add_edge(custom_id - 1, custom_id)
+   157   95.484 MiB    0.000 MiB           8               if index == len(c_word) - 2:
+   158   95.484 MiB    0.000 MiB           2                   G.add_edge(custom_id, root)
+   159   95.500 MiB    0.016 MiB           2           G = ar_nodes(G)
+   160                                             # =============== STEP 2 Get all leaf nodes from the graph ====================
+   161   95.500 MiB    0.000 MiB           1       q = get_all_leaf_nodes_from_graph(G)
+   162                                             # ============= STEP 3 Add nodes for L and check if the graph is valid ========
+   163   95.531 MiB    0.000 MiB           5       for l_word in L:
+   164   95.531 MiB    0.000 MiB          22           for index, label in enumerate(l_word[1:], start=1):
+   165   95.531 MiB    0.000 MiB          18               node_id = counter()
+   166   95.531 MiB    0.000 MiB          18               G.add_node(node_id, label=label)
+   167   95.531 MiB    0.000 MiB          18               if index == 1:
+   168   95.531 MiB    0.000 MiB           4                   G.add_edge(root, node_id)
+   169                                                     else:
+   170   95.531 MiB    0.000 MiB          14                   G.add_edge(node_id - 1, node_id)
+   171   95.531 MiB    0.000 MiB          18               if index == len(l_word) - 1:
+   172   95.531 MiB    0.000 MiB           4                   check_leaf_node = node_id
+   173   95.531 MiB    0.031 MiB           4           G = ar_nodes(G)
+   174   95.531 MiB    0.000 MiB           4           if G.has_node(check_leaf_node):
+   175   95.531 MiB    0.000 MiB           3               if G.degree(check_leaf_node) != 1:
+   176                                                         raise ValueError("Incorrect data. Graph is not exists!")
+   177   95.531 MiB    0.000 MiB           4           all_leafs = get_all_leaf_nodes_from_graph(G)
+   178   95.531 MiB    0.000 MiB          14           for key_id, val_label in all_leafs.items():
+   179   95.531 MiB    0.000 MiB          10               if val_label != l_word[-1] \
+   180   95.531 MiB    0.000 MiB           5                       and key_id not in q and key_id not in trash:
+   181   95.516 MiB    0.000 MiB           1                   q[key_id] = val_label
+   182                                                     else:
+   183   95.531 MiB    0.000 MiB           9                   trash[key_id] = val_label
+   184                                             # =================== STEP 4 Check if the graph is valid ======================
+   185   95.531 MiB    0.000 MiB           3       for vq_id, vq_label in q.items():
+   186   95.531 MiB    0.000 MiB           2           if not check_q_node(G, L, vq_id, vq_label, root):
+   187                                                     print(f"Incorrect data ID: {vq_id}, LBL: {vq_label}. Graph is not exists!")
+   188                                             # ========== STEP 5 Check if each word in L ends with a hanging vertex ========
+   189   95.547 MiB    0.000 MiB           5       for p_word_index, p_word in enumerate(L):
+   190   95.547 MiB    0.000 MiB           4           checked_node = walk_by_word(G, p_word, root)
+   191   95.547 MiB    0.000 MiB           4           if G.degree(checked_node) != 1:
+   192   95.547 MiB    0.016 MiB           2               print(f"""Incorrect data, invalid pair.
+   193   95.531 MiB    0.000 MiB           1               \nWord {p_word_index + 1} in the set L does not end with a hanging vertex.
+   194                                                     \nGraph is not exists!""")
+   195                                         
+   196   95.547 MiB    0.000 MiB           1       return G
+
+
