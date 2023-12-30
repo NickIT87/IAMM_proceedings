@@ -3,7 +3,7 @@ import pstats
 import matplotlib.pyplot as plt     # type: ignore
 from flowerGraph import create_flower_graph, create_custom_graph
 from data import *
-from alglib import *
+from alglib_02 import *
 
 
 def print_data(G):
@@ -48,12 +48,12 @@ if __name__ == "__main__":
     # ============================ AR REDUCTION =======================++======
     # print_data(ar_nodes(G))
     # ============================== AP GRAPH =================================
-    # print_data(ap_graph(testC1, testL1))
+    print_data(ap_graph(testC1, testL1))
     # print_data(ap_graph(testC2, testL2))
     # MyGraph = ap_graph(testC1, testL1)
     # MyGraph = ap_graph(testC1a, testL1a, 'a')
     # print(aс_pair(MyGraph))
-    # print_data(MyGraph)
+    #print_data(MyGraph)
     # mg = ap_graph(tgc1, tgl)
     # print_data(mg)
     # cardGraph = ap_graph(cardC, cardL, 'a')
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     # print(get_canonical_pair_metrics_from_graph(BigG3))
     # print_data(BigG3)
     # ============================== C PROFILER ===============================
-    G = ap_graph(testC1, testL1)
+    # G = ap_graph(testC1, testL1)
     # cProfile.run('ap_graph(testC1, testL1)', filename='cprofile_results/ap_profile_results')
     # cProfile.run('ac_pair(G)', filename='ac_profile_results')
     # stats1 = pstats.Stats('cprofile_results/ac_profile_results')
