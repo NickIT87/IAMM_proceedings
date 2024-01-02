@@ -5,6 +5,11 @@ import re
 import networkx as nx # type: ignore
 
 # =========================== HELPERS FUNCTIONS ===============================
+def service_error(error_message: str = "") -> ValueError:
+    """helper for AP alg. Generate ValueError if Graph is not exists"""
+    return ValueError("Incorrect data. Graph is not exists!\n" + error_message)
+
+
 def counter(reset=False):
     """helper for AP alg. generate IDs for nodes"""
     if reset:
@@ -108,7 +113,7 @@ def ap_graph(C:Tuple[str], L:Tuple[str], x_='1') -> Union[nx.Graph, str]:
     """ build graph on pair of words, algorithm AP """
     # ===================== STEP 0 initial definitions ============================
     if not word_pair_data_validation(C, L, x_):
-        raise ValueError("Incorrect data. Graph is not exists!")
+        raise service_error()
     root = 0
     G = nx.Graph()
     G.add_node(root, label=x_)
@@ -138,16 +143,14 @@ def ap_graph(C:Tuple[str], L:Tuple[str], x_='1') -> Union[nx.Graph, str]:
     for p_word_index, p_word in enumerate(L):
         checked_node = walk_by_word(G, p_word, root)
         if G.degree(checked_node) != 1:
-            print(f"""Incorrect data, invalid pair.
-            \nWord {p_word_index + 1} in the set L does not end with a leaf vertex.
-            \nGraph is not exists!""")
+            print(service_error(f"Invalid pair. Word: {L[p_word_index]} " +
+                                "in the L set does not end with a leaf vertex."))
     # ===================== STEP 4 check each leaf vertex =========================
     all_leafs = get_all_leaf_nodes_from_graph(G)
+    end_labels = set(word_p[-1] for word_p in L)
     for vertex_label in all_leafs.values():
-        if not vertex_label in set(word_p[-1] for word_p in L):
-            print(f""" Graph is not exists by 4th paragraph,
-            \n Vertex label: {vertex_label} not in scope. """)
-
+        if not vertex_label in end_labels:
+            print(service_error(f"Vertex label: {vertex_label} not in scope."))
     return G
 
 
