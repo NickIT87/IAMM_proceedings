@@ -3,8 +3,9 @@ from tkinter import messagebox
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from networkx.drawing.nx_pydot import to_pydot
-from data import random_color
-from alglib import *
+
+from DataBenchmarks.data import random_color
+from AlgorithmsLibraries.alglib_version_02_current import *
 
 
 def on_closing():
@@ -85,13 +86,13 @@ def build_graph():
 def save_graph_to_file():
     global G
     try:
-        file_path = 'example.gml'
+        file_path = 'outputData/example.gml'
         nx.write_gml(G, file_path)
         dot_graph = to_pydot(G)
         dot_graph.write_dot("graph.dot")
         dot_string = dot_graph.to_string()
         try:
-            with open('simple.dot', 'w') as file:
+            with open('outputData/simple.dot', 'w') as file:
                 # Step 2: Write the string to the file
                 file.write(dot_string)
             update_text_area(message="Graph successfully written to files.")
@@ -105,7 +106,7 @@ def save_info():
     global text_area
     data = text_area.get("1.0", tk.END)
     try:
-        with open('info.txt', 'w') as file:
+        with open('outputData/info.txt', 'w') as file:
             # Step 2: Write the string to the file
             file.write(data)
         update_text_area(message="data successfully written to file.")

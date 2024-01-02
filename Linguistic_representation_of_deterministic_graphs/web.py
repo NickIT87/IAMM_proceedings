@@ -4,9 +4,10 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
-from data import *
-from alglib import *
 import random
+
+from DataBenchmarks.data import *
+
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
