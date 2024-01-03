@@ -49,7 +49,7 @@ def find_neighbours_with_the_same_labels(nghb: List, lbls: List) -> Dict:
     return equal_elements
 
 
-def get_node_by_word(graph: nx.Graph,
+def get_node_id_by_word(graph: nx.Graph,
                  word: str,
                  root_node: int) -> int:
     """ get last node id by label (word) path in graph """
@@ -147,17 +147,37 @@ def ap_graph(C: Tuple[str], L: Tuple[str], x_='1') -> Union[nx.Graph, str]:
             else:
                 G.add_edge(custom_id - 1, custom_id)
         G = ar_nodes(G)
-    # =========== STEP 3 Check if each word in L ends with a leaf vertex ==========
+    # ======== STEPS 3 - 4 Check each word in L end each leaf vertex =========
+    all_leafs: Dict = get_leaf_nodes_from_dgraph(G)
+    if root in all_leafs:
+        all_leafs.pop(root)
     for p_word_index, p_word in enumerate(L):
-        if G.degree(get_node_by_word(G, p_word, root)) != 1:
-            print(service_error(f"Invalid pair. Word: {L[p_word_index]} " +
-                                "in the L set does not end with a leaf vertex."))
+        checked_node: int = get_node_id_by_word(G, p_word, root)
+        if G.degree(checked_node) != 1:
+            print(service_error(
+                f"Invalid pair. Word: {L[p_word_index]} " +
+                "in the L set does not end with a leaf vertex."))
+        if checked_node in all_leafs:
+            all_leafs.pop(checked_node)
+    if len(all_leafs) > 0:
+        print(service_error(f"Vertex id/label: {all_leafs} not in scope."))
+    # =========== STEP 3 Check if each word in L ends with a leaf vertex ==========
+    # for p_word_index, p_word in enumerate(L):
+    #     if G.degree(get_node_id_by_word(G, p_word, root)) != 1:
+    #         print(service_error(f"Invalid pair. Word: {L[p_word_index]} " +
+    #                             "in the L set does not end with a leaf vertex."))
     # ===================== STEP 4 check each leaf vertex =========================
-    all_leafs = get_leaf_nodes_from_dgraph(G)
-    end_labels = set(word_p[-1] for word_p in L)
-    for vertex_label in all_leafs.values():
-        if not vertex_label in end_labels:
-            print(service_error(f"Vertex label: {vertex_label} not in scope."))
+    # all_leafs = get_leaf_nodes_from_dgraph(G)
+    # if root in all_leafs:
+    #     all_leafs.pop(root)
+    # for vertex_id, vertex_label in all_leafs.items():
+    #     trigger = False
+    #     for checked_word in tuple(word for word in L if word.endswith(vertex_label)):
+    #     #for checked_word in tuple(filter(lambda word: word.endswith(vertex_label), L)):
+    #         if vertex_id == get_node_id_by_word(G, checked_word, root):
+    #             trigger = True
+    #     if not trigger:
+    #         print(service_error(f"Vertex label: {vertex_label} not in scope.TRIGGER"))
     return G
 
 

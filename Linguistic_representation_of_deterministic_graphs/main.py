@@ -13,7 +13,8 @@ if __name__ == "__main__":
     # ============================ AR REDUCTION =======================++======
     # print_data(ar_nodes(G))
     # ============================== AP GRAPH =================================
-    print_data(ap_graph(testC1, testL1))
+    # print_data(ap_graph(testC1, testL1))
+    print_data(ap_graph(testC1_4, testL1_4))
     # print_data(ap_graph(testC2, testL2))
     # MyGraph = ap_graph(testC1, testL1)
     # MyGraph = ap_graph(testC1a, testL1a, 'a')
