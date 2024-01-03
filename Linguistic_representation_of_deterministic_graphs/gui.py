@@ -23,7 +23,7 @@ def get_info():
 
 def update_text_area(graph=None, message=None):
     if graph:
-        data = get_canonical_pair_metrics_from_graph(graph)
+        data = get_canonical_pair_metrics_from_dgraph(graph)
         text_area.config(state=tk.NORMAL)
         text_area.delete("1.0", tk.END)  # Clear existing text
         text_area.insert(tk.END, data)  # Insert new text

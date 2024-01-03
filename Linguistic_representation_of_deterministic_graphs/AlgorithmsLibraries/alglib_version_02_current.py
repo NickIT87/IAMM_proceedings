@@ -1,27 +1,33 @@
 """ IAMM - Graphs - ASP Work """
 from typing import Tuple, List, Union, Dict
+from dataclasses import dataclass
 from math import ceil, sqrt
 import re
-import networkx as nx # type: ignore
+import networkx as nx  # type: ignore
+
 
 # =========================== HELPERS FUNCTIONS ===============================
+@dataclass
+class Counter:
+    """ data Class for counter function """
+    count: int = 0
+
+
+def counter(reset: bool = False) -> int:
+    """Helper for AP alg. Generates IDs for nodes."""
+    if reset:
+        Counter.count = 0
+    else:
+        Counter.count += 1
+    return Counter.count
+
+
 def service_error(error_message: str = "") -> ValueError:
     """helper for AP alg. Generate ValueError if Graph is not exists"""
     return ValueError("Incorrect data. Graph is not exists!\n" + error_message)
 
 
-def counter(reset=False):
-    """helper for AP alg. generate IDs for nodes"""
-    if reset:
-        counter.count = 0
-    elif not hasattr(counter, 'count'):
-        counter.count = 1
-    else:
-        counter.count += 1
-    return counter.count
-
-
-def get_all_leaf_nodes_from_graph(G: nx.Graph) -> dict:
+def get_leaf_nodes_from_dgraph(G: nx.Graph) -> dict:
     """helper for AP alg. for checking leafs nodes"""
     leaf_nodes = [node for node, degree in G.degree() if degree == 1]
     node_labels = [G.nodes[id]['label'] for id in leaf_nodes]
@@ -43,7 +49,7 @@ def find_neighbours_with_the_same_labels(nghb: List, lbls: List) -> Dict:
     return equal_elements
 
 
-def walk_by_word(graph: nx.Graph,
+def get_node_by_word(graph: nx.Graph,
                  word: str,
                  root_node: int) -> int:
     """ get last node id by label (word) path in graph """
@@ -108,13 +114,15 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
                 break
     return G_
 
-#@profile    # python -m memory_profiler main.py
-def ap_graph(C:Tuple[str], L:Tuple[str], x_='1') -> Union[nx.Graph, str]:
+
+# @profile    # python -m memory_profiler main.py
+def ap_graph(C: Tuple[str], L: Tuple[str], x_='1') -> Union[nx.Graph, str]:
     """ build graph on pair of words, algorithm AP """
     # ===================== STEP 0 initial definitions ============================
     if not word_pair_data_validation(C, L, x_):
         raise service_error()
     root = 0
+    custom_id: int
     G = nx.Graph()
     G.add_node(root, label=x_)
     # ================= STEP 1 Construct the graph for C ==========================
@@ -132,21 +140,20 @@ def ap_graph(C:Tuple[str], L:Tuple[str], x_='1') -> Union[nx.Graph, str]:
     # ======================= STEP 2 Add nodes for L ==============================
     for l_word in L:
         for index, label in enumerate(l_word[1:], start=1):
-            node_id = counter()
-            G.add_node(node_id, label=label)
+            custom_id = counter()
+            G.add_node(custom_id, label=label)
             if index == 1:
-                G.add_edge(root, node_id)
+                G.add_edge(root, custom_id)
             else:
-                G.add_edge(node_id - 1, node_id)
+                G.add_edge(custom_id - 1, custom_id)
         G = ar_nodes(G)
     # =========== STEP 3 Check if each word in L ends with a leaf vertex ==========
     for p_word_index, p_word in enumerate(L):
-        checked_node = walk_by_word(G, p_word, root)
-        if G.degree(checked_node) != 1:
+        if G.degree(get_node_by_word(G, p_word, root)) != 1:
             print(service_error(f"Invalid pair. Word: {L[p_word_index]} " +
                                 "in the L set does not end with a leaf vertex."))
     # ===================== STEP 4 check each leaf vertex =========================
-    all_leafs = get_all_leaf_nodes_from_graph(G)
+    all_leafs = get_leaf_nodes_from_dgraph(G)
     end_labels = set(word_p[-1] for word_p in L)
     for vertex_label in all_leafs.values():
         if not vertex_label in end_labels:
@@ -182,7 +189,7 @@ def ac_pair(graph: nx.Graph) -> Union[Tuple[List[str], List[str]], int, str]:
     ni.pop(root)
     # =================== Find cycles by ni and fill sigma_g ======================
     for index, p_path in enumerate(ni):
-        for q_path in ni[index+1:]:
+        for q_path in ni[index + 1:]:
             if p_path not in q_path[:len(p_path)]:
                 if not graph.has_edge(reachability_basis[p_path][-1],
                                       reachability_basis[q_path][-1]):
@@ -196,8 +203,9 @@ def ac_pair(graph: nx.Graph) -> Union[Tuple[List[str], List[str]], int, str]:
 
     return (sigma_g, lambda_g)
 
+
 # ======================== CANONICAL PAIR METRICS =============================
-def get_canonical_pair_metrics_from_graph(graph: nx.Graph) -> dict:
+def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> dict:
     """ find canonical pair metrics by graph values"""
     canonical_pair: Union[Tuple[List[str], List[str]], int, str] = ac_pair(graph)
     total_pair_count = 0
@@ -210,12 +218,12 @@ def get_canonical_pair_metrics_from_graph(graph: nx.Graph) -> dict:
         raise ValueError("Incorrect data. Graph is not exists!")
     n_nodes = graph.number_of_nodes()
     m_edges = graph.number_of_edges()
-    delta = ceil(3/2 + sqrt(9/4 - 2 * n_nodes + 2 * m_edges))
+    delta = ceil(3 / 2 + sqrt(9 / 4 - 2 * n_nodes + 2 * m_edges))
     result = 2 * (m_edges - n_nodes + 1) * (n_nodes - delta + 2)
-    mu_mn = ceil(delta*(delta-1)/2-(m_edges-n_nodes+delta))
-    power_of_sigma_g = ceil((delta-mu_mn -1)*(delta-mu_mn-2)*(n_nodes-delta+2)+\
-                       mu_mn*(mu_mn-1)*(n_nodes-delta+3)+\
-                       mu_mn*(delta-mu_mn-2)*(2*n_nodes-2*delta+5))
+    mu_mn = ceil(delta * (delta - 1) / 2 - (m_edges - n_nodes + delta))
+    power_of_sigma_g = ceil((delta - mu_mn - 1) * (delta - mu_mn - 2) * (n_nodes - delta + 2) + \
+                            mu_mn * (mu_mn - 1) * (n_nodes - delta + 3) + \
+                            mu_mn * (delta - mu_mn - 2) * (2 * n_nodes - 2 * delta + 5))
     return {
         "n": n_nodes,
         "m": m_edges,
