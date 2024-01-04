@@ -1,7 +1,7 @@
 import cProfile
 import pstats
 
-from DataBenchmarks.data import *
+from DataBenchmarks.data import print_data, TestCases as T
 from DataBenchmarks.flowerGraph import *
 from AlgorithmsLibraries.alglib_version_02_current import *
 
@@ -14,6 +14,10 @@ if __name__ == "__main__":
     # ============================ AR REDUCTION =======================++======
     # print_data(ar_nodes(G))
     # ============================== AP GRAPH =================================
+    # G = ap_graph(T.spec.pair_components.C, T.spec.pair_components.L, T.spec.root_label)
+    # print(ac_pair(G))
+    # print_data(G)
+    print_data(ap_graph(T.spec.canonical_pair.C, T.spec.canonical_pair.L, T.spec.root_label))
     # print_data(ap_graph(testC1, testL1))
     # print_data(ap_graph(testC1_4, testL1_4))
     # print_data(ap_graph(testC2, testL2))
@@ -30,8 +34,8 @@ if __name__ == "__main__":
     # print(get_canonical_pair_metrics_from_dgraph(G))
     # # print_data(G)
     #
-    MyGraph = create_custom_graph(6)
-    print(get_canonical_pair_metrics_from_dgraph(MyGraph))
+    # MyGraph = create_custom_graph(6)
+    # print(get_canonical_pair_metrics_from_dgraph(MyGraph))
     # # print_data(MyGraph)
     #
     # edges_to_remove = [(1, 5), (1, 6)]

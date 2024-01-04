@@ -1,9 +1,48 @@
 import matplotlib.pyplot as plt     # type: ignore
 import networkx as nx               # type: ignore
+
 import random
+from dataclasses import dataclass
+from typing import Tuple
 
 
-colors = [
+@dataclass
+class DefiningPair:
+    C: Tuple[str, ...]
+    L: Tuple[str, ...]
+
+
+class SpecCase:
+    # invalid second word of L component
+    pair_components: DefiningPair = DefiningPair(
+        C=("153521", "152431"),
+        L=("1342531", "123241", "13412", "1523")
+    )
+
+    canonical_pair: DefiningPair = DefiningPair(
+        C=('1251', '12431'),
+        L=('1531', '123', '12412')
+    )
+
+    root_label = "1"
+
+
+class TestCases:
+    spec = SpecCase
+
+    # # correct pair of base case with letters
+    # base_letters: DefiningPair = DefiningPair(
+    #     C=("aeceba", "aebdca"),
+    #     L=("acdbeca", "abcbdab", "acdab", "aebc")
+    # )
+    # # test step 3 4 checks
+    # test_AP_checks: DefiningPair = DefiningPair(
+    #     C=("153521", "152431"),
+    #     L=("1342531", "12324123", "123241")
+    # )
+
+
+COLORS: tuple = (
     'lightcoral',
     'lightblue',
     'lightgreen',
@@ -12,7 +51,7 @@ colors = [
     'magenta',
     'pink',
     'cyan'
-]
+)
 
 
 def random_color():
