@@ -2,6 +2,7 @@ import cProfile
 import pstats
 
 from DataBenchmarks.data import *
+from DataBenchmarks.flowerGraph import *
 from AlgorithmsLibraries.alglib_version_02_current import *
 
 # Run function
@@ -14,23 +15,23 @@ if __name__ == "__main__":
     # print_data(ar_nodes(G))
     # ============================== AP GRAPH =================================
     # print_data(ap_graph(testC1, testL1))
-    print_data(ap_graph(testC1_4, testL1_4))
+    # print_data(ap_graph(testC1_4, testL1_4))
     # print_data(ap_graph(testC2, testL2))
     # MyGraph = ap_graph(testC1, testL1)
     # MyGraph = ap_graph(testC1a, testL1a, 'a')
     # print(aс_pair(MyGraph))
-    #print_data(MyGraph)
+    # print_data(MyGraph)
     # mg = ap_graph(tgc1, tgl)
     # print_data(mg)
     # cardGraph = ap_graph(cardC, cardL, 'a')
     # print_data(cardGraph)
     # print(ac_pair(cardGraph))
     # ============================= PAIR METRICS ==============================
-    # print(get_canonical_pair_metrics_from_graph(G))
+    # print(get_canonical_pair_metrics_from_dgraph(G))
     # # print_data(G)
     #
-    # MyGraph = create_custom_graph(6)
-    # print(get_canonical_pair_metrics_from_graph(MyGraph))
+    MyGraph = create_custom_graph(6)
+    print(get_canonical_pair_metrics_from_dgraph(MyGraph))
     # # print_data(MyGraph)
     #
     # edges_to_remove = [(1, 5), (1, 6)]
