@@ -1,4 +1,8 @@
-""" IAMM - Graphs - ASP Work """
+"""
+IAMM - Graphs - ASP Work
+this code is outdated, it is recommended to use version 2.
+This version was used in the publication of NTU DP Master's thesis.
+"""
 from typing import Tuple, List, Union, Dict
 from math import ceil, sqrt
 import re
