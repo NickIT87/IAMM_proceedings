@@ -176,7 +176,8 @@ def ap_graph(cycles: Tuple[str, ...], leaves: Tuple[str, ...],
     return dgraph_g
 
 
-def ac_pair(graph: nx.Graph) -> Union[Tuple[Tuple[str, ...], Tuple[str, ...]], int, str]:
+def ac_pair(graph: nx.Graph) -> \
+        Union[Tuple[Tuple[str, ...], Tuple[str, ...]], int, str]:
     """ get canonical pair of words, algorithm AK """
     # ============================ base checks ===============================
     if len(graph.nodes) == 0:
@@ -220,9 +221,8 @@ def ac_pair(graph: nx.Graph) -> Union[Tuple[Tuple[str, ...], Tuple[str, ...]], i
 
 
 # ======================= CANONICAL PAIR METRICS =============================
-def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> Dict[
-    str, Union[int, Tuple[Tuple[str, ...], Tuple[str, ...]]]
-]:
+def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> \
+        Dict[str, Union[int, Tuple[Tuple[str, ...], Tuple[str, ...]]]]:
     """ find canonical pair metrics by graph values"""
     canonical_pair: Union[
         Tuple[Tuple[str, ...], Tuple[str, ...]], int, str
