@@ -36,6 +36,7 @@ def update_text_area(graph=None, message=None):
 
 
 def build_graph():
+    clear_output()
     global G
     data = get_info()
     try:
