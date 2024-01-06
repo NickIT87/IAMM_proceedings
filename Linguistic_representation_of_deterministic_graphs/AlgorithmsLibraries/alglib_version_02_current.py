@@ -111,8 +111,7 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
                     neighbours_ids.remove(not_changeable_node)
                     for vertex in neighbours_ids:
                         neighbors_of_deleted_node: List[int] = list(
-                            dgraph.neighbors(vertex)
-                        )
+                            dgraph.neighbors(vertex))
                         neighbors_of_deleted_node.remove(node)
                         dgraph.add_edges_from(
                             (v_node, not_changeable_node)
