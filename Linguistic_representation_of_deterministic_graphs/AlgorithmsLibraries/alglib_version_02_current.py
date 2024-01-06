@@ -128,9 +128,9 @@ def ap_graph(cycles: Tuple[str, ...], leaves: Tuple[str, ...],
     # ===================== STEP 0 initial definitions =======================
     if not word_pair_data_validation(cycles, leaves, root_label):
         raise service_error()
-    id_generator: IDsGenerator = IDsGenerator()
     root: int = 0
     custom_id: int
+    id_generator: IDsGenerator = IDsGenerator()
     dgraph_g = nx.Graph()
     dgraph_g.add_node(root, label=root_label)
     # ================= STEP 1 Construct the graph for C =====================
