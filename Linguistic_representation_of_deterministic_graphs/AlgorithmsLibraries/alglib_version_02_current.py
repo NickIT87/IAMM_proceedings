@@ -1,35 +1,34 @@
 """ IAMM - Graphs - ASP Work """
 from typing import Tuple, List, Union, Dict
-from dataclasses import dataclass
 from math import ceil, sqrt
 import re
 import networkx as nx  # type: ignore
 
 
 # =========================== HELPERS FUNCTIONS ==============================
-@dataclass
-class Counter:
-    """ data Class for counter function """
-    count: int = 0
+class IDsGenerator:
+    """helper for the AP alg. Generate custom id for each node"""
+    def __init__(self) -> None:
+        self._counter: int = 0
 
+    def get_id(self) -> int:
+        """get the id number as counter function"""
+        self._counter += 1
+        return self._counter
 
-def counter(reset: bool = False) -> int:
-    """Helper for AP alg. Generates IDs for nodes."""
-    if reset:
-        Counter.count = 0
-    else:
-        Counter.count += 1
-    return Counter.count
+    def reset(self) -> None:
+        """reset counter to 0"""
+        self._counter = 0
 
 
 def service_error(error_message: str = "") -> ValueError:
-    """helper for AP alg. Generate ValueError if Graph is not exists"""
+    """helper for the AP alg. Generate ValueError if Graph is not exists"""
     return ValueError(
         "Incorrect data. Graph is not exists!\n" + error_message)
 
 
 def get_leaf_nodes_from_dgraph(dgraph: nx.Graph) -> Dict[int, str]:
-    """helper for AP alg. for checking leafs nodes"""
+    """helper for the AP alg. for checking leafs nodes"""
     leaf_nodes = [node for node, degree in dgraph.degree() if degree == 1]
     node_labels = [dgraph.nodes[node_id]['label'] for node_id in leaf_nodes]
     return dict(zip(leaf_nodes, node_labels))
@@ -38,14 +37,14 @@ def get_leaf_nodes_from_dgraph(dgraph: nx.Graph) -> Dict[int, str]:
 def find_neighbors_with_the_same_labels(neighbors: List[int],
                                         labels: List[str]
                                         ) -> Dict[str, List[int]]:
-    """ helper for AR reduction algorithm """
-    element_positions: Dict = {}
+    """ helper for the AR reduction algorithm """
+    element_positions: Dict[str, List[int]] = {}
     for index, element in enumerate(labels):
         if element in element_positions:
             element_positions[element].append(neighbors[index])
         else:
             element_positions[element] = [neighbors[index]]
-    equal_elements: Dict = {
+    equal_elements: Dict[str, List[int]] = {
         element: positions for element,
         positions in element_positions.items() if len(positions) > 1
     }
@@ -103,8 +102,8 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
             neighbors: List[int] = list(dgraph.neighbors(node))
             labels: List[str] = [dgraph.nodes[node_id]['label']
                                  for node_id in neighbors]
-            equals_labels: Dict = find_neighbors_with_the_same_labels(
-                neighbors, labels)
+            equals_labels: Dict[str, List[int]] = \
+                find_neighbors_with_the_same_labels(neighbors, labels)
             if equals_labels:
                 for neighbours_ids in equals_labels.values():
                     not_changeable_node: int = min(neighbours_ids)
@@ -129,6 +128,7 @@ def ap_graph(cycles: Tuple[str, ...], leaves: Tuple[str, ...],
     # ===================== STEP 0 initial definitions =======================
     if not word_pair_data_validation(cycles, leaves, root_label):
         raise service_error()
+    id_generator: IDsGenerator = IDsGenerator()
     root: int = 0
     custom_id: int
     dgraph_g = nx.Graph()
@@ -136,7 +136,7 @@ def ap_graph(cycles: Tuple[str, ...], leaves: Tuple[str, ...],
     # ================= STEP 1 Construct the graph for C =====================
     for c_word in cycles:
         for index, label in enumerate(c_word[1:-1], start=1):
-            custom_id = counter()
+            custom_id = id_generator.get_id()
             dgraph_g.add_node(custom_id, label=label)
             match index:
                 case 1:
@@ -149,7 +149,7 @@ def ap_graph(cycles: Tuple[str, ...], leaves: Tuple[str, ...],
     # ======================= STEP 2 Add nodes for L =========================
     for l_word in leaves:
         for index, label in enumerate(l_word[1:], start=1):
-            custom_id = counter()
+            custom_id = id_generator.get_id()
             dgraph_g.add_node(custom_id, label=label)
             match index:
                 case 1:
@@ -161,11 +161,11 @@ def ap_graph(cycles: Tuple[str, ...], leaves: Tuple[str, ...],
     all_leafs: Dict = get_leaf_nodes_from_dgraph(dgraph_g)
     if root in all_leafs:
         all_leafs.pop(root)
-    for p_word_index, p_word in enumerate(leaves):
-        checked_node: int = get_node_id_by_word(dgraph_g, p_word, root)
+    for l_word_index, l_word in enumerate(leaves):
+        checked_node: int = get_node_id_by_word(dgraph_g, l_word, root)
         if dgraph_g.degree(checked_node) != 1:
             print(service_error(
-                f"Invalid pair. Word: {leaves[p_word_index]} " +
+                f"Invalid pair. Word: {leaves[l_word_index]} " +
                 "in the L set does not end with a leaf vertex."))
         if checked_node in all_leafs:
             all_leafs.pop(checked_node)
@@ -194,9 +194,10 @@ def ac_pair(graph: nx.Graph) -> \
     # ======== Find reachability basis in the graph and fill lambda_g ========
     ms_tree = nx.minimum_spanning_tree(graph)
     for node in ms_tree.nodes:
-        node_path_id = nx.shortest_path(ms_tree, source=root, target=node)
-        node_path_labels = [ms_tree.nodes[node_id]['label']
-                            for node_id in node_path_id]
+        node_path_id: List[int] = nx.shortest_path(ms_tree,
+                                                   source=root, target=node)
+        node_path_labels: List[str] = [ms_tree.nodes[node_id]['label']
+                                       for node_id in node_path_id]
         reachability_basis[''.join(node_path_labels)] = node_path_id
         if graph.degree(node) == 1 and node != root:
             lambda_g.append(''.join(node_path_labels))

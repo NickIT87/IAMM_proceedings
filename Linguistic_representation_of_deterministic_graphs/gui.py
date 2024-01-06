@@ -116,10 +116,10 @@ def save_info():
 
 
 def clear_output():
+    plt.close()
     text_area.config(state=tk.NORMAL)
     text_area.delete("1.0", tk.END)
     text_area.config(state=tk.DISABLED)  # Disable editing
-    counter(True)
     if hasattr(build_graph, 'canvas'):  # Check if canvas already exists and delete it
         build_graph.canvas.get_tk_widget().destroy()
     if hasattr(build_graph, 'toolbar'):  # Check if toolbar already exists and delete it
