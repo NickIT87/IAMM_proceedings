@@ -1,7 +1,6 @@
 """ IAMM - Graphs - ASP Work """
 from typing import Tuple, List, Union, Dict
 from math import ceil, sqrt
-import re
 import networkx as nx  # type: ignore
 
 
@@ -73,20 +72,19 @@ def word_pair_data_validation(c_tuple: Tuple[str, ...],
                               l_tuple: Tuple[str, ...],
                               root: str) -> bool:
     """ rules for using a pair of words in an algorithm """
-    search_pattern: str = r"(.)\1"
     if not c_tuple and not l_tuple:
         return False
     if c_tuple:
         for c_word in c_tuple:
             if c_word[0] != c_word[-1] and c_word[0] != root:
                 return False
-            if bool(re.search(search_pattern, c_word)):
+            if len(c_word) < 3:
                 return False
     if l_tuple:
         for l_word in l_tuple:
             if l_word[0] != root:
                 return False
-            if bool(re.search(search_pattern, l_word)):
+            if len(l_word) < 2:
                 return False
     return True
 
