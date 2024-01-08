@@ -1,7 +1,7 @@
 import cProfile
 import pstats
 
-from DataBenchmarks.data import print_data, TestCases as T
+from DataBenchmarks.data import print_data, K, TestCases as T
 from DataBenchmarks.flowerGraph import *
 from AlgorithmsLibraries.alglib_version_02_current import *
 
@@ -13,10 +13,13 @@ if __name__ == "__main__":
     # print_data(G)
     # ============================ AR REDUCTION =======================++======
     # print_data(ar_nodes(G))
+    # print_data(K)
+    #ar_nodes(K)
+    print_data(ar_nodes(K))
     # ============================== AP GRAPH =================================
-    G = ap_graph(T.spec.pair_components.C, T.spec.pair_components.L, T.spec.root_label)
-    print(ac_pair(G))
-    print_data(G)
+    # G = ap_graph(T.spec.pair_components.C, T.spec.pair_components.L, T.spec.root_label)
+    # print(ac_pair(G))
+    # print_data(G)
     #print_data(ap_graph(T.spec.canonical_pair.C, T.spec.canonical_pair.L, T.spec.root_label))
     # print_data(ap_graph(testC1, testL1))
     # print_data(ap_graph(testC1_4, testL1_4))

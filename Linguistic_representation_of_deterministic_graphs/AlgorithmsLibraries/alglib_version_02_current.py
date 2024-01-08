@@ -89,7 +89,7 @@ def word_pair_data_validation(c_tuple: Tuple[str, ...],
     return True
 
 
-def checks_3_4_AP_alg(dgraph: nx.Graph, leaves, root) -> None:
+def checks_3_4_ap_alg(dgraph: nx.Graph, leaves, root) -> None:
     """checkers for the steps 3,4 in the AP algorithm"""
     all_leafs: Dict = get_leaf_nodes_from_dgraph(dgraph)
     if root in all_leafs:
@@ -107,7 +107,7 @@ def checks_3_4_AP_alg(dgraph: nx.Graph, leaves, root) -> None:
             f"Vertex id/label: {all_leafs} is not in the scope of L."))
 
 
-def check_5_AP_alg():
+def check_5_ap_alg():
     pass
 
 
@@ -127,14 +127,17 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
             if equals_labels:
                 for neighbours_ids in equals_labels.values():
                     not_changeable_node: int = min(neighbours_ids)
+                    # need to delete all edges between selected vertex
                     neighbours_ids.remove(not_changeable_node)
                     for vertex in neighbours_ids:
                         neighbors_of_deleted_node: List[int] = list(
                             dgraph.neighbors(vertex))
                         neighbors_of_deleted_node.remove(node)
+                        # for vn in neighbors_of_deleted_node:
+                        #     print(vn, not_changeable_node)
                         dgraph.add_edges_from(
                             (v_node, not_changeable_node)
-                            for v_node in neighbors_of_deleted_node)
+                            for v_node in neighbors_of_deleted_node if v_node != not_changeable_node)
                         dgraph.remove_node(vertex)
                 trigger = True
                 break
@@ -178,8 +181,8 @@ def ap_graph(cycles: Tuple[str, ...], leaves: Tuple[str, ...],
                     dgraph_g.add_edge(custom_id - 1, custom_id)
         dgraph_g = ar_nodes(dgraph_g)
     # ======== STEPS 3 - 4 Check each word in L end each leaf vertex =========
-    checks_3_4_AP_alg(dgraph_g, leaves, root)
-    check_5_AP_alg()
+    checks_3_4_ap_alg(dgraph_g, leaves, root)
+    check_5_ap_alg()
     return dgraph_g
 
 

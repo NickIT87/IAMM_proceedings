@@ -184,6 +184,36 @@ G.add_edge(4, 6)
 G.add_edge(5, 6)
 
 
+K = nx.Graph()
+# K.add_node(0, label=1)
+# K.add_node(1, label=2)
+# K.add_node(2, label=3)
+# K.add_node(3, label=3)
+# K.add_node(4, label=4)
+# K.add_node(5, label=2)
+# K.add_node(6, label=3)
+# K.add_node(7, label=4)
+#
+#
+# K.add_edge(0, 1)
+# K.add_edge(1, 2)
+# K.add_edge(2, 3)
+# K.add_edge(3, 4)
+# K.add_edge(4, 0)
+# K.add_edge(0, 5)
+# K.add_edge(5, 6)
+# K.add_edge(6, 7)
+# K.add_edge(7, 0)
+
+# =================
+K.add_node(0, label=1)
+K.add_node(1, label=2)
+K.add_node(2, label=1)
+K.add_edge(0, 1)
+K.add_edge(1, 2)
+K.add_edge(2, 0)
+
+
 # TEST DATA
 # =============================================================================
 testC1 = ("153521", "152431")
