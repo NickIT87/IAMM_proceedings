@@ -89,6 +89,28 @@ def word_pair_data_validation(c_tuple: Tuple[str, ...],
     return True
 
 
+def checks_3_4_AP_alg(dgraph: nx.Graph, leaves, root) -> None:
+    """checkers for the steps 3,4 in the AP algorithm"""
+    all_leafs: Dict = get_leaf_nodes_from_dgraph(dgraph)
+    if root in all_leafs:
+        all_leafs.pop(root)
+    for l_word_index, l_word in enumerate(leaves):
+        checked_node: int = get_node_id_by_word(dgraph, l_word, root)
+        if dgraph.degree(checked_node) != 1:
+            print(service_error(
+                f"Invalid pair. Word: {leaves[l_word_index]} " +
+                "in the L set does not end with a leaf vertex."))
+        if checked_node in all_leafs:
+            all_leafs.pop(checked_node)
+    if len(all_leafs) > 0:
+        print(service_error(
+            f"Vertex id/label: {all_leafs} is not in the scope of L."))
+
+
+def check_5_AP_alg():
+    pass
+
+
 # ======================== ALGORITHMS REALIZATION ============================
 def ar_nodes(graph: nx.Graph) -> nx.Graph:
     """ reduction algorithm AR """
@@ -156,20 +178,8 @@ def ap_graph(cycles: Tuple[str, ...], leaves: Tuple[str, ...],
                     dgraph_g.add_edge(custom_id - 1, custom_id)
         dgraph_g = ar_nodes(dgraph_g)
     # ======== STEPS 3 - 4 Check each word in L end each leaf vertex =========
-    all_leafs: Dict = get_leaf_nodes_from_dgraph(dgraph_g)
-    if root in all_leafs:
-        all_leafs.pop(root)
-    for l_word_index, l_word in enumerate(leaves):
-        checked_node: int = get_node_id_by_word(dgraph_g, l_word, root)
-        if dgraph_g.degree(checked_node) != 1:
-            print(service_error(
-                f"Invalid pair. Word: {leaves[l_word_index]} " +
-                "in the L set does not end with a leaf vertex."))
-        if checked_node in all_leafs:
-            all_leafs.pop(checked_node)
-    if len(all_leafs) > 0:
-        print(service_error(
-            f"Vertex id/label: {all_leafs} is not in the scope of L."))
+    checks_3_4_AP_alg(dgraph_g, leaves, root)
+    check_5_AP_alg()
     return dgraph_g
 
 
