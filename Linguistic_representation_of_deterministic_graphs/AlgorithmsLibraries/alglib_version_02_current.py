@@ -68,15 +68,15 @@ def get_node_id_by_word(graph: nx.Graph, word: str, root_node: int) -> int:
     return current_node
 
 
-def word_pair_data_validation(c_tuple: Tuple[str, ...],
-                              l_tuple: Tuple[str, ...],
-                              root: str) -> bool:
+def validate_defining_pair(c_tuple: Tuple[str, ...],
+                           l_tuple: Tuple[str, ...],
+                           root: str) -> bool:
     """ rules for using a pair of words in an algorithm """
     if not c_tuple and not l_tuple:
         return False
     if c_tuple:
         for c_word in c_tuple:
-            if c_word[0] != c_word[-1] and c_word[0] != root:
+            if c_word[0] != c_word[-1] or c_word[0] != root:
                 return False
             if len(c_word) < 3:
                 return False
@@ -89,24 +89,28 @@ def word_pair_data_validation(c_tuple: Tuple[str, ...],
     return True
 
 
-def validate_dgraph(dgraph: nx.Graph, cycles, leaves, root) -> None:
+def verify_deterministic_graph(dgraph: nx.Graph, cycles, leaves, root) -> None:
     """checkers for the steps 3,4,5 in the AP algorithm"""
     all_leafs: Dict = get_leaf_nodes_from_dgraph(dgraph)
     if root in all_leafs:
         all_leafs.pop(root)
     for l_word_index, l_word in enumerate(leaves):
         checked_node: int = get_node_id_by_word(dgraph, l_word, root)
-        if dgraph.degree(checked_node) != 1:
-            print(service_error(
+        if dgraph.degree(checked_node) != 1 or checked_node == root:
+            raise service_error(
                 f"Invalid pair. Word: {leaves[l_word_index]} " +
-                "in the L set does not end with a leaf vertex."))
+                "in the L set does not end with a leaf vertex. " +
+                f"Or the last vertex: {dgraph.nodes[checked_node]['label']}" +
+                f" is a root: {dgraph.nodes[root]['label']}.")
         if checked_node in all_leafs:
             all_leafs.pop(checked_node)
     if len(all_leafs) > 0:
-        print(service_error(
-            f"Vertex id/label: {all_leafs} is not in the scope of L."))
+        raise service_error(
+            f"Vertex id/label: {all_leafs} is not in the scope of L.")
     for c_word in cycles:
-        get_node_id_by_word(dgraph, c_word, root)
+        if get_node_id_by_word(dgraph, c_word, root) != root:
+            raise service_error(
+                f"Word: {c_word} does not end with a root label")
 
 
 # ======================== ALGORITHMS REALIZATION ============================
@@ -145,8 +149,8 @@ def ap_graph(cycles: Tuple[str, ...], leaves: Tuple[str, ...],
              root_label: str = '1') -> nx.Graph:
     """ build graph on pair of words, algorithm AP """
     # ===================== STEP 0 initial definitions =======================
-    if not word_pair_data_validation(cycles, leaves, root_label):
-        raise service_error()
+    if not validate_defining_pair(cycles, leaves, root_label):
+        raise service_error("Invalid defining pair.")
     root: int = 0
     custom_id: int
     id_generator: IDsGenerator = IDsGenerator()
@@ -177,7 +181,7 @@ def ap_graph(cycles: Tuple[str, ...], leaves: Tuple[str, ...],
                     dgraph_g.add_edge(custom_id - 1, custom_id)
         dgraph_g = ar_nodes(dgraph_g)
     # ================ STEPS 3,4,5 Check each word in (C, L) =================
-    validate_dgraph(dgraph_g, cycles, leaves, root)
+    verify_deterministic_graph(dgraph_g, cycles, leaves, root)
     return dgraph_g
 
 
