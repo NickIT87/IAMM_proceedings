@@ -36,13 +36,10 @@ def get_leaf_nodes_from_dgraph(dgraph: nx.Graph) -> Dict[int, str]:
 def find_neighbors_with_the_same_labels(neighbors: List[int],
                                         labels: List[str]
                                         ) -> Dict[str, List[int]]:
-    """ helper for the AR reduction algorithm """
+    """Helper for the AR reduction algorithm."""
     element_positions: Dict[str, List[int]] = {}
     for index, element in enumerate(labels):
-        if element in element_positions:
-            element_positions[element].append(neighbors[index])
-        else:
-            element_positions[element] = [neighbors[index]]
+        element_positions.setdefault(element, []).append(neighbors[index])
     equal_elements: Dict[str, List[int]] = {
         element: positions for element,
         positions in element_positions.items() if len(positions) > 1
@@ -51,66 +48,60 @@ def find_neighbors_with_the_same_labels(neighbors: List[int],
 
 
 def get_node_id_by_word(graph: nx.Graph, word: str, root_node: int) -> int:
-    """ get last node id by label (word) path in graph """
-    current_node: int = root_node
+    """Get the last node ID by label (word) path in the graph."""
+    current_node = root_node
     for symbol_index, symbol in enumerate(word[1:], start=1):
-        neighbors: List[int] = list(graph.neighbors(current_node))
-        labels: List[str] = [graph.nodes[node_id]['label']
-                             for node_id in neighbors]
+        neighbors = list(graph.neighbors(current_node))
+        labels = {graph.nodes[node_id]['label']: node_id
+                  for node_id in neighbors}
         try:
-            next_node: int = neighbors[labels.index(symbol)]
-        except Exception as exc:
+            current_node = labels[symbol]
+        except KeyError as exc:
             raise service_error(
                 f"No vertex with symbol {symbol} in word {word} " +
                 f"at position {symbol_index + 1}. {exc}\n"
             ) from exc
-        current_node = next_node
     return current_node
 
 
 def validate_defining_pair(c_tuple: Tuple[str, ...],
                            l_tuple: Tuple[str, ...],
                            root: str) -> bool:
-    """ rules for using a pair of words in an algorithm """
-    if not c_tuple and not l_tuple:
+    """Validate rules for using a pair of words in an algorithm."""
+    if not (c_tuple or l_tuple):
         return False
-    if c_tuple:
-        for c_word in c_tuple:
-            if c_word[0] != c_word[-1] or c_word[0] != root:
-                return False
-            if len(c_word) < 3:
-                return False
-    if l_tuple:
-        for l_word in l_tuple:
-            if l_word[0] != root:
-                return False
-            if len(l_word) < 2:
-                return False
+    if c_tuple and not all(c_word[0] == c_word[-1] == root and
+                           len(c_word) >= 3 for c_word in c_tuple):
+        return False
+    if l_tuple and not all(l_word[0] == root and
+                           len(l_word) >= 2 for l_word in l_tuple):
+        return False
     return True
 
 
-def verify_deterministic_graph(dgraph: nx.Graph, cycles, leaves, root) -> None:
-    """checkers for the steps 3,4,5 in the AP algorithm"""
-    all_leafs: Dict = get_leaf_nodes_from_dgraph(dgraph)
-    if root in all_leafs:
-        all_leafs.pop(root)
-    for l_word_index, l_word in enumerate(leaves):
+def verify_deterministic_graph(dgraph: nx.Graph, cycles: Tuple[str, ...],
+                               leaves: Tuple[str, ...], root: int) -> None:
+    """Checkers for steps 3, 4, 5 in the AP algorithm."""
+    all_leafs: Dict[int, str] = get_leaf_nodes_from_dgraph(dgraph)
+    all_leafs.pop(root, None)
+    for l_word in leaves:
         checked_node: int = get_node_id_by_word(dgraph, l_word, root)
-        if dgraph.degree(checked_node) != 1 or checked_node == root:
+        if dgraph.degree(checked_node) != 1:
+            raise service_error(f"Word: {l_word} in the L set does not" +
+                                " end with a leaf vertex.\n")
+        if checked_node == root:
             raise service_error(
-                f"Invalid pair. Word: {leaves[l_word_index]} " +
-                "in the L set does not end with a leaf vertex. " +
-                f"Or the last vertex: {dgraph.nodes[checked_node]['label']}" +
-                f" is a root: {dgraph.nodes[root]['label']}.")
-        if checked_node in all_leafs:
-            all_leafs.pop(checked_node)
-    if len(all_leafs) > 0:
+                f"The last vertex: {dgraph.nodes[checked_node]['label']}" +
+                f" in the word: {l_word} " +
+                f"is a root: {dgraph.nodes[root]['label']}.\n")
+        all_leafs.pop(checked_node, None)
+    if all_leafs:
         raise service_error(
             f"Vertex id/label: {all_leafs} is not in the scope of L.")
     for c_word in cycles:
         if get_node_id_by_word(dgraph, c_word, root) != root:
             raise service_error(
-                f"Word: {c_word} does not end with a root label")
+                f"Word: {c_word} does not end with a root label.")
 
 
 # ======================== ALGORITHMS REALIZATION ============================
