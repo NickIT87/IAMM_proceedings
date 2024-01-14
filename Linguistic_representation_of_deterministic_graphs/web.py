@@ -1,16 +1,15 @@
 """
-Module not working. Development in progress ...
+Preliminary module design, mvp prototype.
 """
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash import dcc, html
+from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 import random
+import networkx as nx
 
-from DataBenchmarks.data import *
-
+from AlgorithmsLibraries.alglib_version_02_current import ap_graph
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -21,7 +20,7 @@ app.layout = html.Div([
     html.H4('Linguistic representation of D-graph', style={'text-align': 'center'}),
     html.Br(),
     html.I('Root label: ', style={'padding': '10px'}),
-    dcc.Input(id='root_data', type='text', value=1, maxLength=1, style={
+    dcc.Input(id='root_data', type='text', value='1', maxLength=1, style={
         'border': '2px solid #ddd',
         'padding': '10px',
         'width': '35px'
@@ -47,14 +46,25 @@ app.layout = html.Div([
 @app.callback(
     Output('network-graph', 'figure'),
     Input('submit-button', 'n_clicks'),
-    Input('c_data', 'value'),
-    Input('l_data', 'value'),
+    State('c_data', 'value'),
+    State('l_data', 'value'),
+    State('root_data', 'value'),
 )
-def update_graph(n_clicks, c_val, l_val):
+def update_graph(n_clicks, c_val, l_val, root_val):
     if n_clicks == 0:  # Initial or no button click
         return dash.no_update
 
-    G = ap_graph(tuple(c_val.split()), tuple(l_val.split()))
+    try:
+        c_component = tuple(c_val.split())
+    except:
+        c_component = tuple()
+
+    try:
+        l_component = tuple(l_val.split())
+    except:
+        l_component = tuple()
+
+    G = ap_graph(c_component, l_component, root_val)
     # Create Plotly figure from NetworkX graph
     pos = nx.spring_layout(G)  # Layout algorithm (e.g., spring_layout, circular_layout)
     edge_trace = go.Scatter(
@@ -79,7 +89,8 @@ def update_graph(n_clicks, c_val, l_val):
         marker=dict(
             showscale=True,
             colorscale='YlGnBu',
-            color=[f'rgb({random.randint(100, 255)}, {random.randint(100, 255)}, {random.randint(100, 255)})' for _ in G.nodes()],
+            color=[f'rgb({random.randint(100, 255)}, {random.randint(100, 255)}, {random.randint(100, 255)})'
+                   for _ in G.nodes()],
             size=25,
             colorbar=dict(
                 thickness=15,
