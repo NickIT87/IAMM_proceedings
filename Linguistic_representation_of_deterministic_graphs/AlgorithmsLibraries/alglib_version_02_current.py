@@ -256,3 +256,8 @@ def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> \
         "power_sigma_G": power_of_sigma_g,
         "canonical_pair": canonical_pair
     }
+
+
+# ============================ COMPRESSION ===================================
+def compression():
+    pass

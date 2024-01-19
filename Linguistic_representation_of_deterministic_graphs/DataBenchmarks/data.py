@@ -14,7 +14,7 @@ class DefiningPair:
 
 class SpecCase:
     # invalid second word of L component
-    pair_components: DefiningPair = DefiningPair(
+    defining_pair: DefiningPair = DefiningPair(
         C=("153521", "152431"),
         L=("1342531", "123241", "13412", "1523")
     )
@@ -27,8 +27,36 @@ class SpecCase:
     root_label = "1"
 
 
+class EtalonSample:
+    defining_pair: DefiningPair = DefiningPair(
+        C=(
+            "01242154312310",
+            "02352510",
+            "02130214210",
+            "01320213025310",
+            "01323510",
+            "02141345320",
+            "015452034531210",
+            "0214130251320",
+            "01352101421320",
+        ),
+        L=(
+            "0235431302105",
+            "012410120314",
+        )
+    )
+
+    canonical_pair: DefiningPair = DefiningPair(
+        C=('013510', '01543120', '01320', '0152034510', '012412510'),
+        L=('0154314', '0124105')
+    )
+
+    root_label = "0"
+
+
 class TestCases:
     spec = SpecCase
+    sample = EtalonSample
 
     # # correct pair of base case with letters
     # base_letters: DefiningPair = DefiningPair(
