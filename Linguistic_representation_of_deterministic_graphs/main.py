@@ -1,7 +1,9 @@
 import cProfile
 import pstats
 
-from DataBenchmarks.data import print_data, K, TestCases as T
+import networkx as nx
+
+from DataBenchmarks.data import print_data, TestCases as T
 from DataBenchmarks.flowerGraph import *
 from AlgorithmsLibraries.alglib_version_02_current import *
 
@@ -20,13 +22,30 @@ if __name__ == "__main__":
     G = ap_graph(T.sample.defining_pair.C, T.sample.defining_pair.L, T.sample.root_label)
     F = ap_graph(T.sample.canonical_pair.C, T.sample.canonical_pair.L, T.sample.root_label)
     print(ac_pair(G))
-    #print_data(G)
-    print_data(F)
+    print(ac_pair(F))
     isomorphic = nx.is_isomorphic(G, F)
+
+    mst_edges_g = list(nx.dfs_edges(G, source=list(G.nodes)[0]))
+    mst_edges_f = list(nx.dfs_edges(F, source=list(F.nodes)[0]))
+    Gt = G.edge_subgraph(mst_edges_g)
+    Ft = F.edge_subgraph(mst_edges_f)
+
+    isomorphic_trees = nx.is_isomorphic(Gt, Ft)
+
+    print("isomorfic, isomorphic_trees: ", isomorphic, isomorphic_trees)
     if isomorphic:
-        print("Графы изоморфны.")
+        print("G is F: ", G is F)
+        print(f"Графы {G, F} изоморфны.")
     else:
-        print("Графы не изоморфны.")
+        print("G is F: ", G is F)
+        print(f"Графы {G, F} не изоморфны.")
+
+    G.name = "G (dpair)"
+    F.name = "F (canonical)"
+
+    print_data(G)
+    print_data(F)
+
 
     # print_data(ap_graph(T.spec.canonical_pair.C, T.spec.canonical_pair.L, T.spec.root_label))
     # print_data(ap_graph(testC1, testL1))

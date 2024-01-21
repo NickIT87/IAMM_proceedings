@@ -119,6 +119,10 @@ def ar_nodes(graph: nx.Graph) -> nx.Graph:
                 find_neighbors_with_the_same_labels(neighbors, labels)
             if equals_labels:
                 for neighbours_ids in equals_labels.values():
+                    # new_node = 5
+                    # G.add_node(new_node, label=G.nodes[2]['label'])
+                    # G.add_edges_from((new_node, neighbor) for neighbor in G.neighbors(2))
+                    # G.remove_node(2)
                     not_changeable_node: int = min(neighbours_ids)
                     neighbours_ids.remove(not_changeable_node)
                     for vertex in neighbours_ids:
@@ -193,7 +197,10 @@ def ac_pair(graph: nx.Graph) -> \
     lambda_g: List[str] = []
     reachability_basis: Dict[str, List[int]] = {}
     # ======== Find reachability basis in the graph and fill lambda_g ========
-    ms_tree = nx.minimum_spanning_tree(graph)
+
+    mst_edges = list(nx.bfs_edges(graph, source=root))
+    ms_tree = graph.edge_subgraph(mst_edges)
+
     for node in ms_tree.nodes:
         node_path_id: List[int] = nx.shortest_path(ms_tree,
                                                    source=root, target=node)
@@ -216,8 +223,9 @@ def ac_pair(graph: nx.Graph) -> \
                 qpr: str = q_path + p_path[::-1]
                 if pqr < qpr:
                     sigma_g.append(pqr)
-                else:
+                elif pqr > qpr:
                     sigma_g.append(qpr)
+
     return tuple(sigma_g), tuple(lambda_g)
 
 
