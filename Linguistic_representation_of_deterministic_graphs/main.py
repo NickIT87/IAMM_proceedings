@@ -6,6 +6,9 @@ import networkx as nx
 from DataBenchmarks.data import print_data, TestCases as T
 from DataBenchmarks.flowerGraph import *
 from AlgorithmsLibraries.alglib_version_02_current import *
+from AlgorithmsLibraries.debug_helpers import *
+import scipy
+
 
 # Run function
 # =============================================================================
@@ -23,15 +26,28 @@ if __name__ == "__main__":
     F = ap_graph(T.sample.canonical_pair.C, T.sample.canonical_pair.L, T.sample.root_label)
     print(ac_pair(G))
     print(ac_pair(F))
-    isomorphic = nx.is_isomorphic(G, F)
+    Fc = ap_graph(
+        ('013510', '01320', '01543120', '015203120', '012412510'),
+        ('0214', '0152105'),
+        '0'
+    )
 
+    isomorphic = nx.is_isomorphic(G, F)
     mst_edges_g = list(nx.dfs_edges(G, source=list(G.nodes)[0]))
     mst_edges_f = list(nx.dfs_edges(F, source=list(F.nodes)[0]))
+    mst_edges_fc = list(nx.dfs_edges(Fc, source=list(Fc.nodes)[0]))
     Gt = G.edge_subgraph(mst_edges_g)
     Ft = F.edge_subgraph(mst_edges_f)
+    Fct = Fc.edge_subgraph(mst_edges_fc)
+
+    print("F FC: ", nx.is_isomorphic(F, Fc))
+    print("G FC: ", nx.is_isomorphic(F, Fc))
+    print("G F: ", nx.is_isomorphic(G, F))
+    print("Ft Fct: ", nx.is_isomorphic(Ft, Fct))
+
+    print_data(Fc)
 
     isomorphic_trees = nx.is_isomorphic(Gt, Ft)
-
     print("isomorfic, isomorphic_trees: ", isomorphic, isomorphic_trees)
     if isomorphic:
         print("G is F: ", G is F)
@@ -43,9 +59,29 @@ if __name__ == "__main__":
     G.name = "G (dpair)"
     F.name = "F (canonical)"
 
-    print_data(G)
-    print_data(F)
+    print_dgraph(G, "G")
+    print_dgraph(Gt, "Gt")
+    print_dgraph(F, "F")
+    print_dgraph(Ft, "Ft")
 
+    gmin_tree = nx.minimum_spanning_tree(G)
+    gmax_tree = nx.maximum_spanning_tree(G)
+    gdfs = G.edge_subgraph(list(nx.dfs_edges(G, source=list(G.nodes)[0])))
+    gbfs = G.edge_subgraph(list(nx.bfs_edges(G, source=list(G.nodes)[0])))
+
+    fmin_tree = nx.minimum_spanning_tree(F)
+    fmax_tree = nx.maximum_spanning_tree(F)
+    fdfs = F.edge_subgraph(list(nx.dfs_edges(F, source=list(F.nodes)[0])))
+    fbfs = F.edge_subgraph(list(nx.bfs_edges(F, source=list(F.nodes)[0])))
+
+    print(nx.is_isomorphic(gbfs, fmin_tree))
+    print(nx.is_isomorphic(gbfs, fmax_tree))
+    print(nx.is_isomorphic(gbfs, fdfs))
+    print(nx.is_isomorphic(gbfs, fbfs))
+
+    tree2 = nx.algorithms.tree.branchings.maximum_branching(Gt)
+    tree3 = nx.algorithms.tree.branchings.maximum_branching(Ft)
+    print("is:", nx.is_isomorphic(tree3, tree2))
 
     # print_data(ap_graph(T.spec.canonical_pair.C, T.spec.canonical_pair.L, T.spec.root_label))
     # print_data(ap_graph(testC1, testL1))
