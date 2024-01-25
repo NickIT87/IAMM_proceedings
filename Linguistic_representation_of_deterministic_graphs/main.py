@@ -31,6 +31,7 @@ if __name__ == "__main__":
         ('0214', '0152105'),
         '0'
     )
+    print(ac_pair(Fc))
 
     isomorphic = nx.is_isomorphic(G, F)
     mst_edges_g = list(nx.dfs_edges(G, source=list(G.nodes)[0]))
@@ -45,7 +46,7 @@ if __name__ == "__main__":
     print("G F: ", nx.is_isomorphic(G, F))
     print("Ft Fct: ", nx.is_isomorphic(Ft, Fct))
 
-    print_data(Fc)
+    #print_data(Fc)
 
     isomorphic_trees = nx.is_isomorphic(Gt, Ft)
     print("isomorfic, isomorphic_trees: ", isomorphic, isomorphic_trees)
@@ -82,6 +83,10 @@ if __name__ == "__main__":
     tree2 = nx.algorithms.tree.branchings.maximum_branching(Gt)
     tree3 = nx.algorithms.tree.branchings.maximum_branching(Ft)
     print("is:", nx.is_isomorphic(tree3, tree2))
+
+    print("=======SPANING TREEE=========")
+
+    get_minimum_spanning_tree_for_labeled_dgraph(G, 0, "0")
 
     # print_data(ap_graph(T.spec.canonical_pair.C, T.spec.canonical_pair.L, T.spec.root_label))
     # print_data(ap_graph(testC1, testL1))

@@ -104,6 +104,65 @@ def verify_deterministic_graph(dgraph: nx.Graph, cycles: Tuple[str, ...],
                 f"Word: {c_word} does not end with a root label.")
 
 
+def compare_words(word1: str, word2: str) -> str:
+    if len(word1) > len(word2):
+        return word2
+    elif len(word1) < len(word2):
+        return word1
+    else:
+        if word1 > word2:
+            return word2
+        else:
+            return word1
+
+
+def get_minimum_spanning_tree_for_labeled_dgraph(dgraph: nx.Graph,
+                                                root: int,
+                                                root_label) -> nx.Graph:
+    """ acrobatic tree """
+    vertex_short_path_by_labels: Dict[int, str] = {}
+    ids = dgraph.nodes
+    glabels = []
+    for node in ids:
+        glabels.append(dgraph.nodes[node]['label'])
+
+    for i, j in zip(ids, glabels):
+        vertex_short_path_by_labels[i] = j
+
+    alphabet = list(set(glabels))
+    alphabet.sort()
+    alphabet_length = len(alphabet)
+
+    # STEP 1
+    vertex_short_path_by_labels[root] = root_label
+
+    count: int = 1
+    words: List[str] = []
+    words.append(root_label)
+    i: str = root_label
+    while count < len(ids):
+        for j in alphabet:
+            print(j)
+            try:
+                print(i)
+                obtained_node = get_node_id_by_word(dgraph, i+j, root)
+                print("onode: ", i, obtained_node)
+            except:
+                continue
+
+        count = len(ids)
+
+
+    # print(alphabet)
+    # print(f"root: id {root}, lbl {root_label}")
+    # print("id:", ids)
+    # print("labels: ", glabels)
+    # print("v_short_path: ", vertex_short_path_by_labels)
+
+
+
+
+
 # ======================== ALGORITHMS REALIZATION ============================
 def ar_nodes(graph: nx.Graph) -> nx.Graph:
     """ reduction algorithm AR """
@@ -261,4 +320,4 @@ def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> \
 # ============================ COMPRESSION ===================================
 def compression():
     """ in progress """
-    #pass
+    # pass
