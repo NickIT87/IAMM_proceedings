@@ -120,44 +120,57 @@ def get_minimum_spanning_tree_for_labeled_dgraph(dgraph: nx.Graph,
                                                 root: int,
                                                 root_label) -> nx.Graph:
     """ acrobatic tree """
-    vertex_short_path_by_labels: Dict[int, str] = {}
+    nodes_shortest_paths: Dict[
+        int, Dict[str, Union[str, List[int], None]]
+    ] = {}
     ids = dgraph.nodes
     glabels = []
     for node in ids:
         glabels.append(dgraph.nodes[node]['label'])
 
     for i, j in zip(ids, glabels):
-        vertex_short_path_by_labels[i] = j
+        nodes_shortest_paths[i] = {"npl": None, "npid": None}
 
     alphabet = list(set(glabels))
     alphabet.sort()
-    alphabet_length = len(alphabet)
+
+    print(nodes_shortest_paths)
 
     # STEP 1
-    vertex_short_path_by_labels[root] = root_label
+    # vertex_short_path_by_labels[root] = root_label
+    print(nodes_shortest_paths)
 
+    i_number: int = 0
     count: int = 1
+    qq = 0
     words: List[str] = []
     words.append(root_label)
-    i: str = root_label
+    SL:str = ""
+
     while count < len(ids):
         for j in alphabet:
-            print(j)
+            SL = words[i_number] + j
             try:
-                print(i)
-                obtained_node = get_node_id_by_word(dgraph, i+j, root)
-                print("onode: ", i, obtained_node)
-            except:
+                print("Try")
+                obtained_node = get_node_id_by_word(dgraph, SL, root)
+                print(obtained_node)
+                if nodes_shortest_paths[obtained_node]["npl"] == None:
+                    print(None)
+                    nodes_shortest_paths[obtained_node]["npl"] = SL
+                    print(SL, nodes_shortest_paths[obtained_node]["npl"])
+                    count += 1
+                    words.append(SL)
+                    qq += 1
+            except ValueError:
+                print("except")
                 continue
+        i_number += 1
 
-        count = len(ids)
-
-
-    # print(alphabet)
-    # print(f"root: id {root}, lbl {root_label}")
-    # print("id:", ids)
-    # print("labels: ", glabels)
-    # print("v_short_path: ", vertex_short_path_by_labels)
+    print(nodes_shortest_paths)
+    print(alphabet)
+    print(f"root: id {root}, lbl {root_label}")
+    print("id:", ids)
+    print("labels: ", glabels)
 
 
 
