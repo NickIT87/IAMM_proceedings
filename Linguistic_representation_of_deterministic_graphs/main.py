@@ -88,6 +88,8 @@ if __name__ == "__main__":
 
     get_minimum_spanning_tree_for_labeled_dgraph(G, 0, "0")
 
+    print_data(G)
+
     # print_data(ap_graph(T.spec.canonical_pair.C, T.spec.canonical_pair.L, T.spec.root_label))
     # print_data(ap_graph(testC1, testL1))
     # print_data(ap_graph(testC1_4, testL1_4))

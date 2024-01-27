@@ -7,6 +7,7 @@ import networkx as nx  # type: ignore
 # =========================== HELPERS FUNCTIONS ==============================
 class IDsGenerator:
     """helper for the AP alg. Generate custom id for each node"""
+
     def __init__(self) -> None:
         self._counter: int = 0
 
@@ -105,59 +106,56 @@ def verify_deterministic_graph(dgraph: nx.Graph, cycles: Tuple[str, ...],
 
 
 def compare_words(word1: str, word2: str) -> str:
+    """ compare words by acrobatics '<' order """
     if len(word1) > len(word2):
         return word2
-    elif len(word1) < len(word2):
+    if len(word1) < len(word2):
         return word1
-    else:
+    if len(word1) == len(word2):
         if word1 > word2:
             return word2
-        else:
-            return word1
+    return word1
 
 
-def get_minimum_spanning_tree_for_labeled_dgraph(dgraph: nx.Graph,
-                                                root: int,
-                                                root_label) -> nx.Graph:
+def get_minimum_spanning_tree_for_labeled_dgraph(
+        dgraph: nx.Graph, root: int, root_label) -> nx.Graph:
     """ acrobatic tree """
+
+    # DECLARE & INIT VALUES
+    ids: List[int] = list(dgraph.nodes)
+    #glabels = [label for node, label in dgraph.nodes(data='label')]
+    glabels: List[str] = []
     nodes_shortest_paths: Dict[
         int, Dict[str, Union[str, List[int], None]]
     ] = {}
-    ids = dgraph.nodes
-    glabels = []
-    for node in ids:
-        glabels.append(dgraph.nodes[node]['label'])
-
-    for i, j in zip(ids, glabels):
-        nodes_shortest_paths[i] = {"npl": None, "npid": None}
+    for node, label in dgraph.nodes(data='label'):
+        nodes_shortest_paths[node] = {"npl": None, "npid": None}
+        glabels.append(label)
 
     alphabet = list(set(glabels))
     alphabet.sort()
 
-    print(nodes_shortest_paths)
+    print("nodes_shortest_paths: ", nodes_shortest_paths)
 
     # STEP 1
-    # vertex_short_path_by_labels[root] = root_label
-    print(nodes_shortest_paths)
 
     i_number: int = 0
     count: int = 1
     qq = 0
     words: List[str] = []
     words.append(root_label)
-    SL:str = ""
+    SL: str = ""
 
     while count < len(ids):
         for j in alphabet:
             SL = words[i_number] + j
             try:
-                print("Try")
                 obtained_node = get_node_id_by_word(dgraph, SL, root)
-                print(obtained_node)
+                print("TRY, obtained_node: ", obtained_node)
                 if nodes_shortest_paths[obtained_node]["npl"] == None:
-                    print(None)
                     nodes_shortest_paths[obtained_node]["npl"] = SL
-                    print(SL, nodes_shortest_paths[obtained_node]["npl"])
+                    print("nodes_shortest_paths[obtained_node]['npl'] = ", SL)
+                    print("SL, nodes_shortest_paths[obtained_node]['npl']: ", SL, nodes_shortest_paths[obtained_node]["npl"])
                     count += 1
                     words.append(SL)
                     qq += 1
@@ -166,14 +164,12 @@ def get_minimum_spanning_tree_for_labeled_dgraph(dgraph: nx.Graph,
                 continue
         i_number += 1
 
-    print(nodes_shortest_paths)
-    print(alphabet)
+    # DEBUG
+    print("nodes_shortest_paths: ", nodes_shortest_paths)
+    print("alphabet: ", alphabet)
     print(f"root: id {root}, lbl {root_label}")
     print("id:", ids)
     print("labels: ", glabels)
-
-
-
 
 
 # ======================== ALGORITHMS REALIZATION ============================
