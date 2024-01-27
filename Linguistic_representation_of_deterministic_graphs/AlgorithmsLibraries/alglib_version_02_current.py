@@ -137,38 +137,73 @@ def get_nodes_shortest_paths_of_labeled_dgraph(
     print("nodes_shortest_paths: ", nodes_shortest_paths)
 
     # STEP 1
-
     i_number: int = 0
-    count: int = 1
-    qq = 0
+    count: int = 0
     words: List[str] = []
     words.append(root_label)
-    SL: str = ""
 
-    while count < len(ids):
+    wordsids: List[int] = []
+    wordsids.append(root)
+
+    SL: str = ""
+    vasya: List[int] = [ root, ]
+
+    while count < len(ids) - 1:
         for j in alphabet:
             SL = words[i_number] + j
+            #vasya += wordsids[i_number]
+
+            print("===================")
+            print("words: ", words)
+            print("words[i_number]: ", words[i_number])
+            # print("SL: ", SL)
+            # print("j: ", j)
+            # print("count: ", count)
+            #print("vasya: ", vasya)
+
             try:
                 obtained_node = get_node_id_by_word(dgraph, SL, root)
                 print("TRY, obtained_node: ", obtained_node)
-                if nodes_shortest_paths[obtained_node]["npl"] == None:
+
+                if nodes_shortest_paths[obtained_node]["npl"] == None and obtained_node != root:
                     nodes_shortest_paths[obtained_node]["npl"] = SL
-                    print("nodes_shortest_paths[obtained_node]['npl'] = ", SL)
-                    print("SL, nodes_shortest_paths[obtained_node]['npl']: ", SL, nodes_shortest_paths[obtained_node]["npl"])
+                    # print("FIRST WRITING IN MAIN OBJECT")
+                    # print("words: ", words)
+                    # print("ALL: ", nodes_shortest_paths)
+                    # print("nodes_shortest_paths[obtained_node]['npl'] = ", SL)
+                    # print("SL, nodes_shortest_paths[obtained_node]['npl']: ", SL, nodes_shortest_paths[obtained_node]["npl"])
                     count += 1
                     words.append(SL)
-                    qq += 1
+
+                # if nodes_shortest_paths[obtained_node]["npid"] == None and obtained_node != root:
+                #
+                #
+                #     #vasya.append(obtained_node)
+                #     wordsids.append(vasya + [obtained_node])
+                #
+                #     print("wordsids", wordsids)
+                #     print("words: ", words)
+                #
+                #     nodes_shortest_paths[obtained_node]["npid"] = vasya
+                #
+                #     print("vasya: ", vasya)
             except ValueError:
                 print("except")
                 continue
+        #vasya = wordsids[i_number]
         i_number += 1
 
-    # DEBUG
+
+
+        # DEBUG
+    nodes_shortest_paths[root]['npl'] = root_label
     print("nodes_shortest_paths: ", nodes_shortest_paths)
     print("alphabet: ", alphabet)
     print(f"root: id {root}, lbl {root_label}")
     print("id:", ids)
     print("labels: ", glabels)
+
+
 
 
 # ======================== ALGORITHMS REALIZATION ============================
