@@ -117,17 +117,16 @@ def compare_words(word1: str, word2: str) -> str:
     return word1
 
 
-def get_minimum_spanning_tree_for_labeled_dgraph(
+def get_nodes_shortest_paths_of_labeled_dgraph(
         dgraph: nx.Graph, root: int, root_label) -> nx.Graph:
-    """ acrobatic tree """
-
+    """ acrobatic tree IN PROGRESS need to rename function """
     # DECLARE & INIT VALUES
-    ids: List[int] = list(dgraph.nodes)
+    ids: List[int] = list(dgraph.nodes)                 # id of each node list
     #glabels = [label for node, label in dgraph.nodes(data='label')]
-    glabels: List[str] = []
+    glabels: List[str] = []                                 # labels for graph
     nodes_shortest_paths: Dict[
         int, Dict[str, Union[str, List[int], None]]
-    ] = {}
+    ] = {}                                   # main object Nodes Shortest Path
     for node, label in dgraph.nodes(data='label'):
         nodes_shortest_paths[node] = {"npl": None, "npid": None}
         glabels.append(label)
