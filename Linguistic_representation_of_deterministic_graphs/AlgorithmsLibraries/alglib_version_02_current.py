@@ -1,4 +1,5 @@
 """ IAMM - Graphs - ASP Work """
+from copy import deepcopy
 from typing import Tuple, List, Union, Dict
 from math import ceil, sqrt
 import networkx as nx  # type: ignore
@@ -134,67 +135,73 @@ def get_nodes_shortest_paths_of_labeled_dgraph(
     alphabet = list(set(glabels))
     alphabet.sort()
 
-    print("nodes_shortest_paths: ", nodes_shortest_paths)
-
     # STEP 1 get labels paths variables
-    i_number: int = 0
-    count: int = 0
-    SL: str
-    words: List[str] = []
-    words.append(root_label)
+    current_array_index: int = 0
+    vertex_count_result: int = 0
+
+    labeled_short_path: str
+    shortest_words: List[str] = []
+    shortest_words.append(root_label)
     nodes_shortest_paths[root]['npl'] = root_label
 
     # STEP 2 get ids paths variables
-    wordsids: List[int] = []
-    wordsids.append(root)
+    shortest_words_ids: List[List[int]] = []
+    shortest_words_ids.append([root])
     nodes_shortest_paths[root]['npid'] = [root]
+    current_node_shortest_paths_by_ids: List[int] = [root]
 
-    vasya: List[int] = [ root, ]
-
-    while count < len(ids) - 1:
+    while vertex_count_result < len(ids) - 1:
         for j in alphabet:
-            SL = words[i_number] + j
-            #vasya += wordsids[i_number]
+            labeled_short_path = shortest_words[current_array_index] + j
+            #vasya.append(wordsids[i_number])
 
             print("===================")
-            print("words: ", words)
-            print("words[i_number]: ", words[i_number])
+            #print("words: ", words)
+            #print("words[i_number]: ", words[i_number])
             # print("SL: ", SL)
             # print("j: ", j)
             # print("count: ", count)
-            #print("vasya: ", vasya)
+            # print("vasya: ", vasya)
 
             try:
-                obtained_node = get_node_id_by_word(dgraph, SL, root)
-                print("TRY, obtained_node: ", obtained_node)
+                obtained_node = get_node_id_by_word(dgraph, labeled_short_path, root)
+                # print("TRY, obtained_node: ", obtained_node)
 
                 if nodes_shortest_paths[obtained_node]["npl"] == None and obtained_node != root:
-                    nodes_shortest_paths[obtained_node]["npl"] = SL
+                    nodes_shortest_paths[obtained_node]["npl"] = labeled_short_path
+
+                    result_node_shortest_path_by_ids = deepcopy(current_node_shortest_paths_by_ids)
+                    result_node_shortest_path_by_ids.append(obtained_node)
+                    shortest_words_ids.append(result_node_shortest_path_by_ids)
+
+                    nodes_shortest_paths[obtained_node]["npid"] = result_node_shortest_path_by_ids
+
                     # print("FIRST WRITING IN MAIN OBJECT")
                     # print("words: ", words)
                     # print("ALL: ", nodes_shortest_paths)
                     # print("nodes_shortest_paths[obtained_node]['npl'] = ", SL)
                     # print("SL, nodes_shortest_paths[obtained_node]['npl']: ", SL, nodes_shortest_paths[obtained_node]["npl"])
-                    count += 1
-                    words.append(SL)
+                    vertex_count_result += 1
+                    shortest_words.append(labeled_short_path)
+                    print()
+                    print("vasya: ", current_node_shortest_paths_by_ids)
+                    print("wordsids", shortest_words_ids)
+                    print("other_vasya: ", result_node_shortest_path_by_ids)
 
-                if nodes_shortest_paths[obtained_node]["npid"] == None and obtained_node != root:
 
-                    vasya.append(obtained_node)
-                    wordsids.append(vasya + [obtained_node])
+                #if nodes_shortest_paths[obtained_node]["npid"] == None and obtained_node != root:
 
-                    print("wordsids", wordsids)
-                    print("words: ", words)
+                    # vasya.append(obtained_node)
+                    # wordsids.append(vasya + [obtained_node])
 
                     #nodes_shortest_paths[obtained_node]["npid"] = vasya
 
-                    print("vasya: ", vasya)
             except ValueError:
                 print("except")
                 continue
         #vasya = wordsids[i_number]
-        i_number += 1
-
+        current_array_index += 1
+        current_node_shortest_paths_by_ids = shortest_words_ids[current_array_index]
 
         # DEBUG
 
