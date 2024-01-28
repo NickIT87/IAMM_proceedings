@@ -86,9 +86,8 @@ if __name__ == "__main__":
 
     print("=======SPANING TREEE=========")
 
-    get_nodes_shortest_paths_of_labeled_dgraph(G, root=0, root_label="0")
+    print(get_nodes_shortest_paths_of_labeled_dgraph(G, root=0, root_label="0"))
     # get_minimum_spanning_tree_for_labeled_dgraph(G, 0, "0")
-
     print_data(G)
 
     # print_data(ap_graph(T.spec.canonical_pair.C, T.spec.canonical_pair.L, T.spec.root_label))
