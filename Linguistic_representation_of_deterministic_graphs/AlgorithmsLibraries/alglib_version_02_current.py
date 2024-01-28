@@ -136,16 +136,19 @@ def get_nodes_shortest_paths_of_labeled_dgraph(
 
     print("nodes_shortest_paths: ", nodes_shortest_paths)
 
-    # STEP 1
+    # STEP 1 get labels paths variables
     i_number: int = 0
     count: int = 0
+    SL: str
     words: List[str] = []
     words.append(root_label)
+    nodes_shortest_paths[root]['npl'] = root_label
 
+    # STEP 2 get ids paths variables
     wordsids: List[int] = []
     wordsids.append(root)
+    nodes_shortest_paths[root]['npid'] = [root]
 
-    SL: str = ""
     vasya: List[int] = [ root, ]
 
     while count < len(ids) - 1:
@@ -175,18 +178,17 @@ def get_nodes_shortest_paths_of_labeled_dgraph(
                     count += 1
                     words.append(SL)
 
-                # if nodes_shortest_paths[obtained_node]["npid"] == None and obtained_node != root:
-                #
-                #
-                #     #vasya.append(obtained_node)
-                #     wordsids.append(vasya + [obtained_node])
-                #
-                #     print("wordsids", wordsids)
-                #     print("words: ", words)
-                #
-                #     nodes_shortest_paths[obtained_node]["npid"] = vasya
-                #
-                #     print("vasya: ", vasya)
+                if nodes_shortest_paths[obtained_node]["npid"] == None and obtained_node != root:
+
+                    vasya.append(obtained_node)
+                    wordsids.append(vasya + [obtained_node])
+
+                    print("wordsids", wordsids)
+                    print("words: ", words)
+
+                    #nodes_shortest_paths[obtained_node]["npid"] = vasya
+
+                    print("vasya: ", vasya)
             except ValueError:
                 print("except")
                 continue
@@ -194,9 +196,8 @@ def get_nodes_shortest_paths_of_labeled_dgraph(
         i_number += 1
 
 
-
         # DEBUG
-    nodes_shortest_paths[root]['npl'] = root_label
+
     print("nodes_shortest_paths: ", nodes_shortest_paths)
     print("alphabet: ", alphabet)
     print(f"root: id {root}, lbl {root_label}")
