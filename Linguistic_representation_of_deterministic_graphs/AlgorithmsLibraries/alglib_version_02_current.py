@@ -265,12 +265,15 @@ def ac_pair(graph: nx.Graph) -> \
     lambda_g: List[str] = []
     reachability_basis: Dict[str, List[int]] = {}
     # ======== Find reachability basis in the graph and fill lambda_g ========
-    ms_tree = graph.edge_subgraph(list(nx.bfs_edges(graph, source=root)))
-    for node in ms_tree.nodes:
-        node_path_id: List[int] = nx.shortest_path(ms_tree,
-                                                   source=root, target=node)
-        node_path_labels: List[str] = [ms_tree.nodes[node_id]['label']
-                                       for node_id in node_path_id]
+    #ms_tree = graph.edge_subgraph(list(nx.bfs_edges(graph, source=root)))
+    ms_tree = get_nodes_shortest_paths_of_labeled_dgraph(
+        graph, root=root, root_label=graph.nodes[0]['label'])
+    #for node in ms_tree.nodes:
+    for node, data in ms_tree.items():
+        # node_path_id: List[int] = nx.shortest_path(ms_tree, source=root, target=node)
+        node_path_id: List[int] = data["npid"]
+        # node_path_labels: List[str] = [ms_tree.nodes[node_id]['label'] for node_id in node_path_id]
+        node_path_labels: List[str] = list(data["npl"])
         reachability_basis[''.join(node_path_labels)] = node_path_id
         if graph.degree(node) == 1 and node != root:
             lambda_g.append(''.join(node_path_labels))
