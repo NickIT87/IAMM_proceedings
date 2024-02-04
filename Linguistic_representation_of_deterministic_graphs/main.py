@@ -11,17 +11,7 @@ import scipy
 
 
 # Run function
-# =============================================================================
-if __name__ == "__main__":
-    # ============================== AK PAIR ==================================
-    # print(aс_pair(G))
-    # print_data(G)
-    # ============================ AR REDUCTION =======================++======
-    # print_data(ar_nodes(G))
-    # print_data(K)
-    # ar_nodes(K)
-    # print_data(ar_nodes(K))
-    # ============================== AP GRAPH =================================
+def run():
     G = ap_graph(T.sample.defining_pair.C, T.sample.defining_pair.L, T.sample.root_label)
     F = ap_graph(T.sample.canonical_pair.C, T.sample.canonical_pair.L, T.sample.root_label)
     print(ac_pair(G))
@@ -40,6 +30,11 @@ if __name__ == "__main__":
     isomorphic_t = nx.is_isomorphic(Gt, Ft)
 
     print(isomorphic, isomorphic_t)
+
+
+# =============================================================================
+if __name__ == "__main__":
+    run()
 
     # print_data(G)
     # ============================= PAIR METRICS ==============================
