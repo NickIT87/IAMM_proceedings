@@ -17,7 +17,7 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div([
     html.Br(),
-    html.H4('Linguistic representation of D-graph', style={'text-align': 'center'}),
+    html.H4('Linguistic representation of D-graph', style={'textAlign': 'center'}),
     html.Br(),
     html.I('Root label: ', style={'padding': '10px'}),
     dcc.Input(id='root_data', type='text', value='1', maxLength=1, style={
@@ -37,9 +37,9 @@ app.layout = html.Div([
         'padding': '10px',
         'width': '300px'
     }),
-    dbc.Button("Submit", id='submit-button', n_clicks=0, color="primary", style={'margin-left': '10px'}),
+    dbc.Button("Submit", id='submit-button', n_clicks=0, color="primary", style={'marginLeft': '10px'}),
     html.Br(),
-    dcc.Graph(id='network-graph', style={'margin-top': '10px'})
+    dcc.Graph(id='network-graph', style={'marginTop': '10px'})
 ])
 
 
