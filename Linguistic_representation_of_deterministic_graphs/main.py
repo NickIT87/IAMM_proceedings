@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     print(isomorphic, isomorphic_t)
 
-    print_data(G)
+    # print_data(G)
     # ============================= PAIR METRICS ==============================
     # print(get_canonical_pair_metrics_from_dgraph(G))
     # # print_data(G)
