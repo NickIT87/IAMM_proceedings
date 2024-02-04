@@ -9,7 +9,7 @@ import plotly.graph_objs as go
 import random
 import networkx as nx
 
-from AlgorithmsLibraries.alglib_version_02_current import ap_graph
+from AlgorithmsLibraries.alglib_version_02_current import ap_graph, ac_pair
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -39,12 +39,18 @@ app.layout = html.Div([
     }),
     dbc.Button("Submit", id='submit-button', n_clicks=0, color="primary", style={'marginLeft': '10px'}),
     html.Br(),
-    dcc.Graph(id='network-graph', style={'marginTop': '10px'})
+    dcc.Graph(id='network-graph', style={'marginTop': '10px'}),
+    html.Br(),
+    html.H4('graph metrics: ', style={'textAlign': 'center'}),
+    html.Br(),
+    dcc.Textarea(id='output-text', value='', style={'width': '100%', 'height': 200}),
 ])
 
 
 @app.callback(
-    Output('network-graph', 'figure'),
+    #Output('network-graph', 'figure'),
+    [Output('network-graph', 'figure'),
+     Output('output-text', 'value')],
     Input('submit-button', 'n_clicks'),
     State('c_data', 'value'),
     State('l_data', 'value'),
@@ -90,8 +96,9 @@ def update_graph(n_clicks, c_val, l_val, root_val):
             showscale=True,
             colorscale='YlGnBu',
             color=[f'rgb({random.randint(100, 255)}, {random.randint(100, 255)}, {random.randint(100, 255)})'
-                   for _ in G.nodes()],
-            size=25,
+                   for _ in G.nodes()
+            ],
+            size=50,
             colorbar=dict(
                 thickness=15,
                 title='Node Connections',
@@ -128,7 +135,9 @@ def update_graph(n_clicks, c_val, l_val, root_val):
 
     fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
 
-    return fig
+    output_text = str(ac_pair(G))
+
+    return fig, output_text
 
 
 if __name__ == '__main__':
