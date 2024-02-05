@@ -43,6 +43,7 @@ app.layout = html.Div([
     html.Br(),
     html.H4('graph metrics: ', style={'textAlign': 'center'}),
     html.Br(),
+    html.Div(id='error-message', style={'color': 'red'}),
     dcc.Textarea(id='output-text', value='', style={'width': '100%', 'height': 200}),
 ])
 
@@ -50,7 +51,8 @@ app.layout = html.Div([
 @app.callback(
     #Output('network-graph', 'figure'),
     [Output('network-graph', 'figure'),
-     Output('output-text', 'value')],
+     Output('output-text', 'value'),
+     Output('error-message', 'children')],
     Input('submit-button', 'n_clicks'),
     State('c_data', 'value'),
     State('l_data', 'value'),
@@ -70,7 +72,12 @@ def update_graph(n_clicks, c_val, l_val, root_val):
     except:
         l_component = tuple()
 
-    G = ap_graph(c_component, l_component, root_val)
+    try:
+        G = ap_graph(c_component, l_component, root_val)
+    except ValueError as e:
+        # Display error message to the user
+        return dash.no_update, '', f'Error: {str(e)}. Please check your input.'
+
     # Create Plotly figure from NetworkX graph
     pos = nx.spring_layout(G)  # Layout algorithm (e.g., spring_layout, circular_layout)
     edge_trace = go.Scatter(
@@ -137,7 +144,7 @@ def update_graph(n_clicks, c_val, l_val, root_val):
 
     output_text = str(ac_pair(G))
 
-    return fig, output_text
+    return fig, output_text, ''
 
 
 if __name__ == '__main__':
