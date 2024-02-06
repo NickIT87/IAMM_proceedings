@@ -5,16 +5,20 @@ import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
+from dash_bootstrap_templates import load_figure_template
 import plotly.graph_objs as go
 import random
 import networkx as nx
 
-from AlgorithmsLibraries.alglib_version_02_current import ap_graph, ac_pair
+from AlgorithmsLibraries.alglib_version_02_current import \
+    ap_graph, get_canonical_pair_metrics_from_dgraph
 
 
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 #app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+load_figure_template("darkly")
+app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
 
 root_input = html.Div(
     [
@@ -73,12 +77,13 @@ app.layout = dbc.Container(
         html.H4('graph metrics: ', style={'textAlign': 'center'}),
         html.Br(),
         dcc.Textarea(id='output-text', value='', style={'width': '100%', 'height': 200}),
-    ])
+    ],
+        #**{"data-bs-theme": "darkly"}
+    ),
 )
 
 
 @app.callback(
-    #Output('network-graph', 'figure'),
     [Output('network-graph', 'figure'),
      Output('output-text', 'value'),
      Output('error-message', 'children')],
@@ -171,7 +176,7 @@ def update_graph(n_clicks, c_val, l_val, root_val):
 
     fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
 
-    output_text = str(ac_pair(G))
+    output_text = str(get_canonical_pair_metrics_from_dgraph(G))
 
     return fig, output_text, ''
 
