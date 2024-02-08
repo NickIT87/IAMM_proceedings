@@ -17,8 +17,8 @@ from AlgorithmsLibraries.alglib_version_02_current import \
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 #app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-load_figure_template("darkly")
-app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
+load_figure_template("spacelab")
+app = dash.Dash(external_stylesheets=[dbc.themes.SPACELAB])
 
 root_input = html.Div(
     [
@@ -72,14 +72,17 @@ app.layout = dbc.Container(
         form,
         html.Br(),
         html.Div(id='error-message', style={'color': 'red'}),
-        dcc.Graph(id='network-graph', style={'marginTop': '10px'}),
         html.Br(),
         html.H4('graph metrics: ', style={'textAlign': 'center'}),
         html.Br(),
-        dcc.Textarea(id='output-text', value='', style={'width': '100%', 'height': 200}),
-    ],
-        #**{"data-bs-theme": "darkly"}
-    ),
+        dbc.Textarea(id='output-text', value='', style={'width': '100%', 'height': 100}),
+        html.Br(),
+        dcc.Graph(id='network-graph', style={'marginTop': '10px', 'marginBottom': '10px'}),
+        html.Br(),
+        html.Footer(
+            html.P("IAMM proceedings 2023 - 2024")
+        ),
+    ])
 )
 
 
@@ -139,7 +142,7 @@ def update_graph(n_clicks, c_val, l_val, root_val):
             color=[f'rgb({random.randint(100, 255)}, {random.randint(100, 255)}, {random.randint(100, 255)})'
                    for _ in G.nodes()
             ],
-            size=50,
+            size=35,
             colorbar=dict(
                 thickness=15,
                 title='Node Connections',
