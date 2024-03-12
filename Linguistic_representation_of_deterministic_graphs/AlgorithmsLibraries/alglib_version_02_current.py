@@ -334,6 +334,15 @@ def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> \
 
 
 # ============================ COMPRESSION ===================================
-def compression():
+def compression(C: tuple, L: tuple):
     """ in progress """
-    # pass
+    # 1 (обе компоненты) убираем реверсы xyx (каждое слово до удаленыя реверса в словарь)
+    # mamaxyxpapa -> maxpa
+
+    # 2 (только для 1) слово наоборот
+    # marina -> aniram if a<m acrobatics (check to reverse)
+
+    # 3 !!! синее-зеленое pass
+
+    # 4 (обе компоненты) убираем повторы, оставляем 1 экз.
+    # check each component for words repeating
