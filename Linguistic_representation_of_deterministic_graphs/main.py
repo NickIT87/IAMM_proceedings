@@ -1,17 +1,17 @@
-import cProfile
-import pstats
+# import cProfile
+# import pstats
 
-import networkx as nx
+# import networkx as nx
 
 from DataBenchmarks.data import print_data, TestCases as T
 from DataBenchmarks.flowerGraph import *
 from AlgorithmsLibraries.alglib_version_02_current import *
-from AlgorithmsLibraries.debug_helpers import *
-import scipy
+# from AlgorithmsLibraries.debug_helpers import *
+# import scipy
 
 
 # Run function
-def run():
+def run_test_flow():
     G = ap_graph(T.sample.defining_pair.C, T.sample.defining_pair.L, T.sample.root_label)
     F = ap_graph(T.sample.canonical_pair.C, T.sample.canonical_pair.L, T.sample.root_label)
     print(ac_pair(G))
@@ -19,7 +19,7 @@ def run():
     G.name = "G (dpair)"
     F.name = "F (canonical)"
     print("=======SPANING TREEE=========")
-    print(get_nodes_shortest_paths_of_labeled_dgraph(G, root=0, root_label="0"))
+    print(get_nodes_shortest_paths_of_dgraph(G, root=0, root_label="0"))
 
     isomorphic = nx.is_isomorphic(G, F)
     mst_edges_g = list(nx.dfs_edges(G, source=list(G.nodes)[0]))
@@ -30,11 +30,13 @@ def run():
     isomorphic_t = nx.is_isomorphic(Gt, Ft)
 
     print(isomorphic, isomorphic_t)
+    # ================= COMPRESSION =======================
+    print(compression(T.sample.defining_pair.C, T.sample.defining_pair.L))
 
 
 # =============================================================================
 if __name__ == "__main__":
-    run()
+    run_test_flow()
 
     # print_data(G)
     # ============================= PAIR METRICS ==============================

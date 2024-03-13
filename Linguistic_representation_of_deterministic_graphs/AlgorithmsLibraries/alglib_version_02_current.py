@@ -118,7 +118,7 @@ def compare_words(word1: str, word2: str) -> str:
     return word1
 
 
-def get_nodes_shortest_paths_of_labeled_dgraph(
+def get_nodes_shortest_paths_of_dgraph(
     dgraph: nx.Graph, root: int, root_label
 ) -> Dict[int, Dict[str, Union[str, List[int], None]]]:
     """
@@ -265,15 +265,15 @@ def ac_pair(graph: nx.Graph) -> \
     lambda_g: List[str] = []
     reachability_basis: Dict[str, List[int]] = {}
     # ======== Find reachability basis in the graph and fill lambda_g ========
-    #ms_tree = graph.edge_subgraph(list(nx.bfs_edges(graph, source=root)))
-    ms_tree = get_nodes_shortest_paths_of_labeled_dgraph(
+    # ms_tree = graph.edge_subgraph(list(nx.bfs_edges(graph, source=root)))
+    ms_tree = get_nodes_shortest_paths_of_dgraph(
         graph, root=root, root_label=graph.nodes[0]['label'])
-    #for node in ms_tree.nodes:
+    # for node in ms_tree.nodes:
     for node, data in ms_tree.items():
         # node_path_id: List[int] = nx.shortest_path(ms_tree, source=root, target=node)
-        node_path_id: List[int] = data["npid"] # type: ignore
+        node_path_id: List[int] = data["npid"]  # type: ignore
         # node_path_labels: List[str] = [ms_tree.nodes[node_id]['label'] for node_id in node_path_id]
-        node_path_labels: List[str] = list(data["npl"]) # type: ignore
+        node_path_labels: List[str] = list(data["npl"])  # type: ignore
         reachability_basis[''.join(node_path_labels)] = node_path_id
         if graph.degree(node) == 1 and node != root:
             lambda_g.append(''.join(node_path_labels))
@@ -334,10 +334,15 @@ def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> \
 
 
 # ============================ COMPRESSION ===================================
-def compression(C: tuple, L: tuple):
+def compression(c_component: tuple, l_component: tuple) -> List:
     """ in progress """
+    print(c_component, l_component)
+    result: List = []
     # 1 (обе компоненты) убираем реверсы xyx (каждое слово до удаленыя реверса в словарь)
     # mamaxyxpapa -> maxpa
+
+    word = 'mamaxyxpapa'
+
 
     # 2 (только для 1) слово наоборот
     # marina -> aniram if a<m acrobatics (check to reverse)
@@ -346,3 +351,5 @@ def compression(C: tuple, L: tuple):
 
     # 4 (обе компоненты) убираем повторы, оставляем 1 экз.
     # check each component for words repeating
+    return result
+
