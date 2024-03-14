@@ -2,6 +2,8 @@
 from typing import Tuple, List, Union, Dict
 from collections import defaultdict
 from math import ceil, sqrt
+import re
+
 import networkx as nx  # type: ignore
 
 
@@ -334,16 +336,28 @@ def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> \
 
 
 # ============================ COMPRESSION ===================================
+def find_sequences(string):
+    sequences = []
+    for i in range(len(string) - 2):
+        if string[i] == string[i + 2] and string[i] != string[i + 1]:
+            sequences.append(string[i:i + 3])
+    return sequences
+
+
 def compression(c_component: tuple, l_component: tuple) -> List:
     """ in progress """
     print(c_component, l_component)
     result: List = []
-    # 1 (обе компоненты) убираем реверсы xyx (каждое слово до удаленыя реверса в словарь)
+    # 1 (обе компоненты) убираем реверсы xyx (каждое слово до удаления реверса в словарь)
     # mamaxyxpapa -> maxpa
 
     word = 'mamaxyxpapa'
+    pattern_sequences = find_sequences(word)
 
+    for i in pattern_sequences:
+        word = re.sub(i, i[0], word)
 
+    print(word)
     # 2 (только для 1) слово наоборот
     # marina -> aniram if a<m acrobatics (check to reverse)
 
