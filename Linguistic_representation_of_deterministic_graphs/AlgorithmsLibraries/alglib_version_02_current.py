@@ -339,7 +339,7 @@ def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> \
 def find_sequences(string):
     sequences = []
     for i in range(len(string) - 2):
-        if string[i] == string[i + 2] and string[i] != string[i + 1]:
+        if string[i] == string[i + 2]: # and string[i] != string[i + 1]:
             sequences.append(string[i:i + 3])
     return sequences
 
@@ -351,7 +351,7 @@ def compression(c_component: tuple, l_component: tuple) -> List:
     # 1 (обе компоненты) убираем реверсы xyx (каждое слово до удаления реверса в словарь)
     # mamaxyxpapa -> maxpa
 
-    word = 'mamaxyxpapa'
+    word = 'mamaxyxpapaaaaaaa'
     pattern_sequences = find_sequences(word)
 
     for i in pattern_sequences:
