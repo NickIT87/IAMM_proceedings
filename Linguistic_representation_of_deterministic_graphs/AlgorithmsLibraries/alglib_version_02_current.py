@@ -336,28 +336,48 @@ def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> \
 
 
 # ============================ COMPRESSION ===================================
-def find_sequences(string):
+def find_reverse_sequences(word: str) -> List[str]:
     sequences = []
-    for i in range(len(string) - 2):
-        if string[i] == string[i + 2]: # and string[i] != string[i + 1]:
-            sequences.append(string[i:i + 3])
+    for i in range(len(word) - 2):
+        if word[i] == word[i + 2]: # and string[i] != string[i + 1]:
+            sequences.append(word[i:i + 3])
     return sequences
 
 
 def compression(c_component: tuple, l_component: tuple) -> List:
     """ in progress """
+    sigma_p = list(c_component)
+    lambda_p = list(l_component)
+    compressed_pair: List[List[str], List[str]] = [sigma_p, lambda_p]
+    # sl = []
+    # ll = []
+
     print(c_component, l_component)
-    result: List = []
     # 1 (обе компоненты) убираем реверсы xyx (каждое слово до удаления реверса в словарь)
     # mamaxyxpapa -> maxpa
+    for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
+        for idx_sl_element, word in enumerate(sigmaLambda_element):
+            pattern_sequences = find_reverse_sequences(word)
+            for sequence in pattern_sequences:
+                # print("DEBUG: ", word)
+                # word = re.sub(sequence, sequence[0], word)
+                # print("DEBUG 2: ", word)
+                compressed_pair[index_pair_element][idx_sl_element] = re.sub(sequence, sequence[0], word)
+                # if index_pair_element == 0:
+                #     sl.append(word)
+                # else:
+                #     ll.append(word)
 
-    word = 'mamaxyxpapaaaaaaa'
-    pattern_sequences = find_sequences(word)
+    # print(sl, ll)
 
-    for i in pattern_sequences:
-        word = re.sub(i, i[0], word)
+    # word = 'mamaxyxpapaaaaaaa'
+    # print(word)
+    # pattern_sequences = find_reverse_sequences(word)
+    # for i in pattern_sequences:
+    #     word = re.sub(i, i[0], word)
+    # print(word)
 
-    print(word)
+
     # 2 (только для 1) слово наоборот
     # marina -> aniram if a<m acrobatics (check to reverse)
 
@@ -365,5 +385,5 @@ def compression(c_component: tuple, l_component: tuple) -> List:
 
     # 4 (обе компоненты) убираем повторы, оставляем 1 экз.
     # check each component for words repeating
-    return result
+    return compressed_pair
 
