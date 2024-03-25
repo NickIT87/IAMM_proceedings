@@ -339,7 +339,7 @@ def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> \
 def find_reverse_sequences(word: str) -> List[str]:
     sequences = []
     for i in range(len(word) - 2):
-        if word[i] == word[i + 2]: # and string[i] != string[i + 1]:
+        if word[i] == word[i + 2]:   # and string[i] != string[i + 1]:
             sequences.append(word[i:i + 3])
     return sequences
 
@@ -355,18 +355,22 @@ def compression(c_component: tuple, l_component: tuple) -> List:
     print(c_component, l_component)
     # 1 (обе компоненты) убираем реверсы xyx (каждое слово до удаления реверса в словарь)
     # mamaxyxpapa -> maxpa
-    for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
-        for idx_sl_element, word in enumerate(sigmaLambda_element):
-            pattern_sequences = find_reverse_sequences(word)
-            for sequence in pattern_sequences:
-                # print("DEBUG: ", word)
-                # word = re.sub(sequence, sequence[0], word)
-                # print("DEBUG 2: ", word)
-                compressed_pair[index_pair_element][idx_sl_element] = re.sub(sequence, sequence[0], word)
-                # if index_pair_element == 0:
-                #     sl.append(word)
-                # else:
-                #     ll.append(word)
+    trigger: bool = True
+    while trigger:
+        for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
+            for idx_sl_element, word in enumerate(sigmaLambda_element):
+                pattern_sequences = find_reverse_sequences(word)
+                trigger = False
+                for sequence in pattern_sequences:
+                    # print("DEBUG: ", word)
+                    # word = re.sub(sequence, sequence[0], word)
+                    # print("DEBUG 2: ", word)
+                    compressed_pair[index_pair_element][idx_sl_element] = re.sub(sequence, sequence[0], word)
+                    trigger = True
+                    # if index_pair_element == 0:
+                    #     sl.append(word)
+                    # else:
+                    #     ll.append(word)
 
     # print(sl, ll)
 
