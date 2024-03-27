@@ -337,6 +337,8 @@ def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> \
 
 # ============================ COMPRESSION ===================================
 def find_reverse_sequences(word: str) -> List[str]:
+    """ Helper for the compression alg
+    find sequences of kind 'xyx' in word """
     sequences = []
     for i in range(len(word) - 2):
         if word[i] == word[i + 2]:   # and string[i] != string[i + 1]:
@@ -344,15 +346,15 @@ def find_reverse_sequences(word: str) -> List[str]:
     return sequences
 
 
-def compression(c_component: tuple, l_component: tuple) -> List:
+def compression(c_component: Tuple[str, ...],
+                l_component: Tuple[str, ...]) -> List:
     """ in progress """
-    sigma_p = list(c_component)
-    lambda_p = list(l_component)
-    compressed_pair: List[List[str], List[str]] = [sigma_p, lambda_p]
-    # sl = []
-    # ll = []
-
+    compressed_pair: List[List[str], List[str]] = [
+        list(c_component),
+        list(l_component)
+    ]
     print(c_component, l_component)
+
     # 1 (обе компоненты) убираем реверсы xyx (каждое слово до удаления реверса в словарь)
     # mamaxyxpapa -> maxpa
     trigger: bool = True
@@ -362,29 +364,19 @@ def compression(c_component: tuple, l_component: tuple) -> List:
                 pattern_sequences = find_reverse_sequences(word)
                 trigger = False
                 for sequence in pattern_sequences:
-                    # print("DEBUG: ", word)
-                    # word = re.sub(sequence, sequence[0], word)
-                    # print("DEBUG 2: ", word)
                     compressed_pair[index_pair_element][idx_sl_element] = re.sub(sequence, sequence[0], word)
                     trigger = True
-                    # if index_pair_element == 0:
-                    #     sl.append(word)
-                    # else:
-                    #     ll.append(word)
-
-    # print(sl, ll)
-
-    # word = 'mamaxyxpapaaaaaaa'
-    # print(word)
-    # pattern_sequences = find_reverse_sequences(word)
-    # for i in pattern_sequences:
-    #     word = re.sub(i, i[0], word)
-    # print(word)
-
 
     # 2 (только для 1) слово наоборот
     # marina -> aniram if a<m acrobatics (check to reverse)
+    print("DEBUG COMPRESSION AFTER 1 STEP: ", compressed_pair)
 
+    for idx_element, sigma_word in enumerate(compressed_pair[0]):
+        reversed_word = sigma_word[::-1]
+        if reversed_word < sigma_word:
+            compressed_pair[0][idx_element] = reversed_word
+
+    print("DEBUG COMPRESSION AFTER 2 STEP: ", compressed_pair)
     # 3 !!! синее-зеленое pass
 
     # 4 (обе компоненты) убираем повторы, оставляем 1 экз.
