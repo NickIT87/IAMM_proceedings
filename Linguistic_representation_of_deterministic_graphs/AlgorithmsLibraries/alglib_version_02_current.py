@@ -377,9 +377,14 @@ def compression(c_component: Tuple[str, ...],
             compressed_pair[0][idx_element] = reversed_word
 
     print("DEBUG COMPRESSION AFTER 2 STEP: ", compressed_pair)
+
     # 3 !!! синее-зеленое pass
 
     # 4 (обе компоненты) убираем повторы, оставляем 1 экз.
     # check each component for words repeating
-    return compressed_pair
+    for pair_component in compressed_pair:
+        pair_component[:] = list(set(pair_component))
 
+    print("DEBUG COMPRESSION AFTER 3 STEP: ", compressed_pair)
+
+    return compressed_pair

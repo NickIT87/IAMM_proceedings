@@ -31,6 +31,11 @@ def run_test_flow():
 
     print(isomorphic, isomorphic_t)
     # ================= COMPRESSION =======================
+    print(
+        "\nDEBUG COMPRESSION.\nCANONICAL PAIR: ",
+        T.sample.canonical_pair.C,
+        T.sample.canonical_pair.L
+    )
     print(compression(T.sample.defining_pair.C, T.sample.defining_pair.L))
 
 
