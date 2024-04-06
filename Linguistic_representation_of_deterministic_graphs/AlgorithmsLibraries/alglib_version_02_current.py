@@ -385,6 +385,14 @@ def compression(c_component: Tuple[str, ...],
     for pair_component in compressed_pair:
         pair_component[:] = list(set(pair_component))
 
-    print("DEBUG COMPRESSION AFTER 3 STEP: ", compressed_pair)
+    print("DEBUG COMPRESSION AFTER 4 STEP: ", compressed_pair)
+
+    # Define a custom sorting key function
+    def custom_sort_key(s):
+        return len(s), s
+
+    sorted_list = sorted(compressed_pair[0], key=custom_sort_key)
+    # Print the sorted list
+    print("SORTED: ", sorted_list)
 
     return compressed_pair
