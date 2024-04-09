@@ -379,6 +379,19 @@ def compression(c_component: Tuple[str, ...],
     print("DEBUG COMPRESSION AFTER 2 STEP: ", compressed_pair)
 
     # 3 !!! синее-зеленое pass
+    for index_of_word, word in enumerate(compressed_pair[0]):
+        lst_word = list(word)
+        for index_of_symbol, symbol in enumerate(word):
+            print(
+                word[:index_of_symbol],
+                symbol,
+                #word[index_of_symbol],
+                word[index_of_symbol:],
+                word[index_of_symbol:][::-1],
+                f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on (2){word[:index_of_symbol] + symbol} if 2 < 1 {word[:index_of_symbol] + symbol < word[index_of_symbol:][::-1]}"
+            )
+
+
 
     # 4 (обе компоненты) убираем повторы, оставляем 1 экз.
     # check each component for words repeating
