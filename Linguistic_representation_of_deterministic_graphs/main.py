@@ -12,31 +12,39 @@ from AlgorithmsLibraries.alglib_version_02_current import *
 
 # Run function
 def run_test_flow():
-    G = ap_graph(T.sample.defining_pair.C, T.sample.defining_pair.L, T.sample.root_label)
-    F = ap_graph(T.sample.canonical_pair.C, T.sample.canonical_pair.L, T.sample.root_label)
-    print(ac_pair(G))
-    print(ac_pair(F))
-    G.name = "G (dpair)"
-    F.name = "F (canonical)"
-    print("=======SPANING TREEE=========")
-    print(get_nodes_shortest_paths_of_dgraph(G, root=0, root_label="0"))
-
-    isomorphic = nx.is_isomorphic(G, F)
-    mst_edges_g = list(nx.dfs_edges(G, source=list(G.nodes)[0]))
-    mst_edges_f = list(nx.dfs_edges(F, source=list(F.nodes)[0]))
-
-    Gt = G.edge_subgraph(mst_edges_g)
-    Ft = F.edge_subgraph(mst_edges_f)
-    isomorphic_t = nx.is_isomorphic(Gt, Ft)
-
-    print(isomorphic, isomorphic_t)
+    # G = ap_graph(T.sample.defining_pair.C, T.sample.defining_pair.L, T.sample.root_label)
+    # F = ap_graph(T.sample.canonical_pair.C, T.sample.canonical_pair.L, T.sample.root_label)
+    # print(ac_pair(G))
+    # print(ac_pair(F))
+    # G.name = "G (dpair)"
+    # F.name = "F (canonical)"
+    # print("=======SPANING TREEE=========")
+    # print(get_nodes_shortest_paths_of_dgraph(G, root=0, root_label="0"))
+    #
+    # isomorphic = nx.is_isomorphic(G, F)
+    # mst_edges_g = list(nx.dfs_edges(G, source=list(G.nodes)[0]))
+    # mst_edges_f = list(nx.dfs_edges(F, source=list(F.nodes)[0]))
+    #
+    # Gt = G.edge_subgraph(mst_edges_g)
+    # Ft = F.edge_subgraph(mst_edges_f)
+    # isomorphic_t = nx.is_isomorphic(Gt, Ft)
+    #
+    # print(isomorphic, isomorphic_t)
     # ================= COMPRESSION =======================
     print(
-        "\nDEBUG COMPRESSION.\nCANONICAL PAIR: ",
+        "\n==== DEBUG COMPRESSION ====\nCANONICAL PAIR:\n",
         T.sample.canonical_pair.C,
-        T.sample.canonical_pair.L
+        T.sample.canonical_pair.L,
+        "\n"
     )
-    print(compression(T.sample.defining_pair.C, T.sample.defining_pair.L))
+    print(
+        "\nRETURNED DATA: \n",
+        compression(T.sample.defining_pair.C, T.sample.defining_pair.L),
+        "\nCANONICAL PAIR: ",
+        T.sample.canonical_pair.C,
+        T.sample.canonical_pair.L,
+        "\n"
+    )
 
 
 # =============================================================================

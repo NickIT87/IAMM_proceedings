@@ -353,7 +353,7 @@ def compression(c_component: Tuple[str, ...],
         list(c_component),
         list(l_component)
     ]
-    print(c_component, l_component)
+    print("UNCOMPRESSED DEFINING PAIR: \n", c_component, l_component)
 
     # 1 (обе компоненты) убираем реверсы xyx (каждое слово до удаления реверса в словарь)
     # mamaxyxpapa -> maxpa
@@ -369,15 +369,15 @@ def compression(c_component: Tuple[str, ...],
 
     # 2 (только для 1) слово наоборот
     # marina -> aniram if a<m acrobatics (check to reverse)
-    print("DEBUG COMPRESSION AFTER 1 STEP: ", compressed_pair)
+    print("\nDEBUG COMPRESSION AFTER 1 STEP: \n", compressed_pair)
 
     for idx_element, sigma_word in enumerate(compressed_pair[0]):
         reversed_word = sigma_word[::-1]
         if reversed_word < sigma_word:
             compressed_pair[0][idx_element] = reversed_word
 
-    print("DEBUG COMPRESSION AFTER 2 STEP: ", compressed_pair)
-
+    print("\nDEBUG COMPRESSION AFTER 2 STEP: \n", compressed_pair)
+    print("\nSTEP 3 started:\n ")
     # 3 !!! синее-зеленое pass
     for index_of_word, word in enumerate(compressed_pair[0]):
         lst_word = list(word)
@@ -391,14 +391,13 @@ def compression(c_component: Tuple[str, ...],
                 f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on (2){word[:index_of_symbol] + symbol} if 2 < 1 {word[:index_of_symbol] + symbol < word[index_of_symbol:][::-1]}"
             )
 
-
-
+    print("\nSTEP 3 stopped:\n ")
     # 4 (обе компоненты) убираем повторы, оставляем 1 экз.
     # check each component for words repeating
     for pair_component in compressed_pair:
         pair_component[:] = list(set(pair_component))
 
-    print("DEBUG COMPRESSION AFTER 4 STEP: ", compressed_pair)
+    print("\nDEBUG COMPRESSION AFTER 4 STEP: \n", compressed_pair)
 
     # Define a custom sorting key function
     def custom_sort_key(s):
@@ -406,6 +405,6 @@ def compression(c_component: Tuple[str, ...],
 
     sorted_list = sorted(compressed_pair[0], key=custom_sort_key)
     # Print the sorted list
-    print("SORTED: ", sorted_list)
+    print("\nSORTED C: ", sorted_list)
 
     return compressed_pair
