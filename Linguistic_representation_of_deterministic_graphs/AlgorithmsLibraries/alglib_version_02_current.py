@@ -388,7 +388,8 @@ def compression(c_component: Tuple[str, ...],
                 #word[index_of_symbol],
                 word[index_of_symbol:],
                 word[index_of_symbol:][::-1],
-                f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on (2){word[:index_of_symbol] + symbol} if 2 < 1 {word[:index_of_symbol] + symbol < word[index_of_symbol:][::-1]}"
+                f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on {compare_words(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}"
+                #f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on (2){word[:index_of_symbol] + symbol} if 2 < 1 {word[:index_of_symbol] + symbol < word[index_of_symbol:][::-1]}"
             )
 
     print("\nSTEP 3 stopped:\n ")
