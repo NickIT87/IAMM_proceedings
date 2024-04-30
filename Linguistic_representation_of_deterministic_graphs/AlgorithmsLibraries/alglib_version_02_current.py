@@ -383,14 +383,36 @@ def compression(c_component: Tuple[str, ...],
         lst_word = list(word)
         for index_of_symbol, symbol in enumerate(word):
             print(
+                "\n",
                 word[:index_of_symbol],
                 symbol,
                 #word[index_of_symbol],
                 word[index_of_symbol:],
                 word[index_of_symbol:][::-1],
-                f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on {compare_words(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}"
+                #f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on {compare_words(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}"
                 #f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on (2){word[:index_of_symbol] + symbol} if 2 < 1 {word[:index_of_symbol] + symbol < word[index_of_symbol:][::-1]}"
             )
+            shortest_word = compare_words(
+                word[:index_of_symbol] + symbol,
+                word[index_of_symbol:][::-1]
+            )
+            print(
+                "Shortest word: ",
+                shortest_word,
+                f"\nif shortest_word != word_index_symbol then if exists word that begin on: (1){word[:index_of_symbol] + symbol} replace this on {compare_words(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}"
+            )
+
+            # 1 нужно уточнить операции для каждой компоненти
+            # STEP 3
+            # 3.1. итериюсь по каждой букве из C .... а проверяю в C L на начала слов
+            # для С: проверки начинается(!) С L -> C + L => CL ... п
+            #
+            # 3.2. проверка конца клиент
+            #  0132134510
+            # все что заканчивается на 312310 заменяем на 34510 только в клиентах из С
+            # ..... заканчивается ???
+            # 3 для L: только то что начинается
+
 
     print("\nSTEP 3 stopped:\n ")
     # 4 (обе компоненты) убираем повторы, оставляем 1 экз.
@@ -398,6 +420,7 @@ def compression(c_component: Tuple[str, ...],
     for pair_component in compressed_pair:
         pair_component[:] = list(set(pair_component))
 
+    # check 5 if len(word_c) == 1 then kick this word
     print("\nDEBUG COMPRESSION AFTER 4 STEP: \n", compressed_pair)
 
     # Define a custom sorting key function
