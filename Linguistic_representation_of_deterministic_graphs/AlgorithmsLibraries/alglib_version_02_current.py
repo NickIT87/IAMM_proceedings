@@ -401,6 +401,23 @@ def compression(c_component: Tuple[str, ...],
                 shortest_word,
                 f"\nif shortest_word != word_index_symbol then if exists word that begin on: (1){word[:index_of_symbol] + symbol} replace this on {compare_words(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}"
             )
+            # 3.1
+            if shortest_word != word[:index_of_symbol] + symbol:
+                for i, row in enumerate(compressed_pair):
+                    for j, w in enumerate(row):
+                        if w == word:
+                            continue
+                        if w.startswith(word[:index_of_symbol] + symbol):
+                            compressed_pair[i][j] = w.replace(word[:index_of_symbol] + symbol, shortest_word)
+                            print("ZAMENA 3.1: ", compressed_pair[i][j])
+
+                # 3.2
+                for idx, ww in enumerate(compressed_pair[0]):
+                    if ww == word:
+                        continue
+                    if ww.endswith(''.join(reversed(word[:index_of_symbol] + symbol))):
+                        compressed_pair[0][idx] = ww.replace(''.join(reversed(word[:index_of_symbol] + symbol)), shortest_word)
+                        print("ZAMENA 3.2: ", compressed_pair[0][idx])
 
             # 1 нужно уточнить операции для каждой компоненти
             # STEP 3
@@ -415,20 +432,20 @@ def compression(c_component: Tuple[str, ...],
 
 
     print("\nSTEP 3 stopped:\n ")
-    # 4 (обе компоненты) убираем повторы, оставляем 1 экз.
-    # check each component for words repeating
-    for pair_component in compressed_pair:
-        pair_component[:] = list(set(pair_component))
-
-    # check 5 if len(word_c) == 1 then kick this word
-    print("\nDEBUG COMPRESSION AFTER 4 STEP: \n", compressed_pair)
-
-    # Define a custom sorting key function
-    def custom_sort_key(s):
-        return len(s), s
-
-    sorted_list = sorted(compressed_pair[0], key=custom_sort_key)
-    # Print the sorted list
-    print("\nSORTED C: ", sorted_list)
+    # # 4 (обе компоненты) убираем повторы, оставляем 1 экз.
+    # # check each component for words repeating
+    # for pair_component in compressed_pair:
+    #     pair_component[:] = list(set(pair_component))
+    #
+    # # check 5 if len(word_c) == 1 then kick this word
+    # print("\nDEBUG COMPRESSION AFTER 4 STEP: \n", compressed_pair)
+    #
+    # # Define a custom sorting key function
+    # def custom_sort_key(s):
+    #     return len(s), s
+    #
+    # sorted_list = sorted(compressed_pair[0], key=custom_sort_key)
+    # # Print the sorted list
+    # print("\nSORTED C: ", sorted_list)
 
     return compressed_pair
