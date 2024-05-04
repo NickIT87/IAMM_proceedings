@@ -108,7 +108,7 @@ def verify_deterministic_graph(dgraph: nx.Graph, cycles: Tuple[str, ...],
                 f"Word: {c_word} does not end with a root label.")
 
 
-def compare_words(word1: str, word2: str) -> str:
+def min_word_using_special_order(word1: str, word2: str) -> str:
     """ compare words by acrobatics '<' order """
     if len(word1) > len(word2):
         return word2
@@ -373,8 +373,9 @@ def compression(c_component: Tuple[str, ...],
 
     for idx_element, sigma_word in enumerate(compressed_pair[0]):
         reversed_word = sigma_word[::-1]
-        if reversed_word < sigma_word:
-            compressed_pair[0][idx_element] = reversed_word
+        compressed_pair[0][idx_element] = min_word_using_special_order(reversed_word, sigma_word)
+        # if reversed_word < sigma_word:
+        #     compressed_pair[0][idx_element] = reversed_word
 
     print("\nDEBUG COMPRESSION AFTER 2 STEP: \n", compressed_pair)
     print("\nSTEP 3 started:\n ")
@@ -392,14 +393,14 @@ def compression(c_component: Tuple[str, ...],
                 #f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on {compare_words(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}"
                 #f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on (2){word[:index_of_symbol] + symbol} if 2 < 1 {word[:index_of_symbol] + symbol < word[index_of_symbol:][::-1]}"
             )
-            shortest_word = compare_words(
+            shortest_word = min_word_using_special_order(
                 word[:index_of_symbol] + symbol,
                 word[index_of_symbol:][::-1]
             )
             print(
                 "Shortest word: ",
                 shortest_word,
-                f"\nif shortest_word != word_index_symbol then if exists word that begin on: (1){word[:index_of_symbol] + symbol} replace this on {compare_words(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}"
+                f"\nif shortest_word != word_index_symbol then if exists word that begin on: (1){word[:index_of_symbol] + symbol} replace this on {min_word_using_special_order(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}"
             )
             # 3.1
             if shortest_word != word[:index_of_symbol] + symbol:
@@ -408,16 +409,28 @@ def compression(c_component: Tuple[str, ...],
                         if w == word:
                             continue
                         if w.startswith(word[:index_of_symbol] + symbol):
+                            print("ZAMENA 3.1 UDALENO: ", compressed_pair[i][j])
                             compressed_pair[i][j] = w.replace(word[:index_of_symbol] + symbol, shortest_word)
-                            print("ZAMENA 3.1: ", compressed_pair[i][j])
+                            print("ZAMENA 3.1 ZAMENENO: ", compressed_pair[i][j])
 
-                # 3.2
+                # # 3.2
                 for idx, ww in enumerate(compressed_pair[0]):
                     if ww == word:
                         continue
                     if ww.endswith(''.join(reversed(word[:index_of_symbol] + symbol))):
-                        compressed_pair[0][idx] = ww.replace(''.join(reversed(word[:index_of_symbol] + symbol)), shortest_word)
-                        print("ZAMENA 3.2: ", compressed_pair[0][idx])
+                        print("ZAMENA 3.2 UDALENO: ", compressed_pair[0][idx])
+                        compressed_pair[0][idx] = ww.replace(''.join(reversed(word[:index_of_symbol] + symbol)),
+                                                             shortest_word)
+                        print("ZAMENA 3.2 ZAMENENO: ", compressed_pair[0][idx])
+
+            # # 3.2
+            # for idx, ww in enumerate(compressed_pair[0]):
+            #     if ww == word:
+            #         continue
+            #     if ww.endswith(''.join(reversed(word[:index_of_symbol] + symbol))):
+            #         print("ZAMENA 3.2 UDALENO: ", compressed_pair[0][idx])
+            #         compressed_pair[0][idx] = ww.replace(''.join(reversed(word[:index_of_symbol] + symbol)), shortest_word)
+            #         print("ZAMENA 3.2 ZAMENENO: ", compressed_pair[0][idx])
 
             # 1 нужно уточнить операции для каждой компоненти
             # STEP 3
