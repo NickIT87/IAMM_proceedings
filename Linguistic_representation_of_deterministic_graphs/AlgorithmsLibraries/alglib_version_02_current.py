@@ -381,7 +381,7 @@ def compression(c_component: Tuple[str, ...],
     print("\nSTEP 3 started:\n ")
     # 3 !!! синее-зеленое pass
     for index_of_word, word in enumerate(compressed_pair[0]):
-        lst_word = list(word)
+        #lst_word = list(word)
         for index_of_symbol, symbol in enumerate(word):
             print(
                 "\n",
@@ -400,7 +400,8 @@ def compression(c_component: Tuple[str, ...],
             print(
                 "Shortest word: ",
                 shortest_word,
-                f"\nif shortest_word != word_index_symbol then if exists word that begin on: (1){word[:index_of_symbol] + symbol} replace this on {min_word_using_special_order(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}"
+                f"\nif shortest_word != word_index_symbol then if exists word that begin on: {word[:index_of_symbol] + symbol} replace this on {min_word_using_special_order(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}",
+                f"\nif exists word that ended on {''.join(reversed(word[:index_of_symbol] + symbol))} replace this on shortest word"
             )
             # 3.1
             if shortest_word != word[:index_of_symbol] + symbol:
@@ -419,8 +420,10 @@ def compression(c_component: Tuple[str, ...],
                         continue
                     if ww.endswith(''.join(reversed(word[:index_of_symbol] + symbol))):
                         print("ZAMENA 3.2 UDALENO: ", compressed_pair[0][idx])
-                        compressed_pair[0][idx] = ww.replace(''.join(reversed(word[:index_of_symbol] + symbol)),
-                                                             shortest_word)
+                        compressed_pair[0][idx] = ww.replace(
+                            ''.join(reversed(word[:index_of_symbol] + symbol)),
+                            shortest_word[::-1]
+                        )
                         print("ZAMENA 3.2 ZAMENENO: ", compressed_pair[0][idx])
 
             # # 3.2
@@ -429,7 +432,10 @@ def compression(c_component: Tuple[str, ...],
             #         continue
             #     if ww.endswith(''.join(reversed(word[:index_of_symbol] + symbol))):
             #         print("ZAMENA 3.2 UDALENO: ", compressed_pair[0][idx])
-            #         compressed_pair[0][idx] = ww.replace(''.join(reversed(word[:index_of_symbol] + symbol)), shortest_word)
+            #         compressed_pair[0][idx] = ww.replace(
+            #             ''.join(reversed(word[:index_of_symbol] + symbol)),
+            #             shortest_word[::-1]
+            #         )
             #         print("ZAMENA 3.2 ZAMENENO: ", compressed_pair[0][idx])
 
             # 1 нужно уточнить операции для каждой компоненти
