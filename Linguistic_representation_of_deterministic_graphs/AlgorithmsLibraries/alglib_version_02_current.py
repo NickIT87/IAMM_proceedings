@@ -346,6 +346,24 @@ def find_reverse_sequences(word: str) -> List[str]:
     return sequences
 
 
+def bubble_acrobatics_sort(arr: List[str]):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if arr[j] != min_word_using_special_order(arr[j], arr[j + 1]):
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+
+
+def insertion_acrobatics_sort(arr: List[str]):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and key == min_word_using_special_order(key, arr[j]):
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+
+
 def compression(c_component: Tuple[str, ...],
                 l_component: Tuple[str, ...]) -> List:
     """ in progress """
