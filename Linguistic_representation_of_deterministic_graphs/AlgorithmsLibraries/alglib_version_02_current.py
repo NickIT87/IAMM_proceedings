@@ -364,15 +364,8 @@ def insertion_acrobatics_sort(arr: List[str]):
         arr[j + 1] = key
 
 
-def compression(c_component: Tuple[str, ...],
-                l_component: Tuple[str, ...]) -> List:
-    """ in progress """
-    compressed_pair: List[List[str], List[str]] = [
-        list(c_component),
-        list(l_component)
-    ]
-    print("UNCOMPRESSED DEFINING PAIR: \n", c_component, l_component)
-
+def remove_reverse_sequences(compressed_pair: List[List[str]]):
+    "remove all sequences from each pair component XYX -> X; included (C, L)"
     # 1 (обе компоненты) убираем реверсы xyx (каждое слово до удаления реверса в словарь)
     # mamaxyxpapa -> maxpa
     trigger: bool = True
@@ -384,6 +377,18 @@ def compression(c_component: Tuple[str, ...],
                 for sequence in pattern_sequences:
                     compressed_pair[index_pair_element][idx_sl_element] = re.sub(sequence, sequence[0], word)
                     trigger = True
+
+
+def compression(c_component: Tuple[str, ...],
+                l_component: Tuple[str, ...]) -> List:
+    """ in progress """
+    compressed_pair: List[List[str], List[str]] = [
+        list(c_component),
+        list(l_component)
+    ]
+    print("UNCOMPRESSED DEFINING PAIR: \n", c_component, l_component)
+
+    remove_reverse_sequences(compressed_pair)
 
     # 2 (только для 1) слово наоборот
     # marina -> aniram if a<m acrobatics (check to reverse)
