@@ -121,7 +121,7 @@ def min_word_using_special_order(word1: str, word2: str) -> str:
 
 
 def get_nodes_shortest_paths_of_dgraph(
-    dgraph: nx.Graph, root: int, root_label
+        dgraph: nx.Graph, root: int, root_label
 ) -> Dict[int, Dict[str, Union[str, List[int], None]]]:
     """
         Get shortest labeled path for each node
@@ -341,9 +341,19 @@ def find_reverse_sequences(word: str) -> List[str]:
     find sequences of kind 'xyx' in word """
     sequences = []
     for i in range(len(word) - 2):
-        if word[i] == word[i + 2]:   # and string[i] != string[i + 1]:
+        if word[i] == word[i + 2]:  # and string[i] != string[i + 1]:
             sequences.append(word[i:i + 3])
     return sequences
+
+
+def get_modified_word(word: str) -> str:
+    """operation 3: find sequences of kind 'xyx' in word
+    and return modified word xyx -> x """
+    modified_word = word
+    for i in range(len(word) - 2):
+        if word[i] == word[i + 2]:  # and string[i] != string[i + 1]:
+            modified_word = word[:i+1] + word[i+3:]
+    return modified_word
 
 
 def bubble_acrobatics_sort(arr: List[str]):
@@ -364,19 +374,51 @@ def insertion_acrobatics_sort(arr: List[str]):
         arr[j + 1] = key
 
 
-def remove_reverse_sequences(compressed_pair: List[List[str]]):
-    "remove all sequences from each pair component XYX -> X; included (C, L)"
-    # 1 (обе компоненты) убираем реверсы xyx (каждое слово до удаления реверса в словарь)
-    # mamaxyxpapa -> maxpa
-    trigger: bool = True
-    while trigger:
-        for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
-            for idx_sl_element, word in enumerate(sigmaLambda_element):
-                pattern_sequences = find_reverse_sequences(word)
-                trigger = False
-                for sequence in pattern_sequences:
-                    compressed_pair[index_pair_element][idx_sl_element] = re.sub(sequence, sequence[0], word)
-                    trigger = True
+def remove_repeating_words(compressed_pair: List[str]):
+    """ operation 1: transform the components of the pair
+    into ordered sets without repetitions """
+    for pair_component in compressed_pair:
+        pair_component[:] = list(set(pair_component))
+        insertion_acrobatics_sort(pair_component)
+
+
+def remove_word_of_one_symbol(pair_component: List[str]):
+    """operation 2: remove words of length 1 from the first component """
+    for index, word in enumerate(pair_component):
+        if len(word) < 2:
+            pair_component.pop(index)
+
+
+def remove_reverse_sequence(compressed_pair: List[List[str]]):
+    """ operation 3: remove first sequence from
+        each pair component XYX -> X; included (C, L)"""
+    for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
+        for idx_sl_element, word in enumerate(sigmaLambda_element):
+            modified_word = get_modified_word(word)
+            if word != modified_word:
+                compressed_pair[index_pair_element][idx_sl_element] = modified_word
+                # return
+
+
+    # trigger: bool = True
+    # while trigger:
+    #     for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
+    #         for idx_sl_element, word in enumerate(sigmaLambda_element):
+    #             pattern_sequences = find_reverse_sequences(word)
+    #             trigger = False
+    #             for sequence in pattern_sequences:
+    #                 compressed_pair[index_pair_element][idx_sl_element] = re.sub(sequence, sequence[0], word)
+    #                 trigger = True
+
+
+def acrobatic_reverce(compressed_pair: List[List[str]]):
+    """operation 4: replace lesser word for acrobatic  """
+    for idx_element, sigma_word in enumerate(compressed_pair[0]):
+        reversed_word = sigma_word[::-1]
+        compressed_pair[0][idx_element] = min_word_using_special_order(reversed_word, sigma_word)
+        # if reversed_word < sigma_word:
+        #     compressed_pair[0][idx_element] = reversed_word
+
 
 
 def compression(c_component: Tuple[str, ...],
@@ -388,66 +430,70 @@ def compression(c_component: Tuple[str, ...],
     ]
     print("UNCOMPRESSED DEFINING PAIR: \n", c_component, l_component)
 
-    remove_reverse_sequences(compressed_pair)
+    insertion_acrobatics_sort(compressed_pair[0])
+    insertion_acrobatics_sort(compressed_pair[1])
 
-    # 2 (только для 1) слово наоборот
-    # marina -> aniram if a<m acrobatics (check to reverse)
-    print("\nDEBUG COMPRESSION AFTER 1 STEP: \n", compressed_pair)
+    print("\nDEBUG COMPRESSION AFTER 1 STEP (sorting): \n", compressed_pair)
 
-    for idx_element, sigma_word in enumerate(compressed_pair[0]):
-        reversed_word = sigma_word[::-1]
-        compressed_pair[0][idx_element] = min_word_using_special_order(reversed_word, sigma_word)
-        # if reversed_word < sigma_word:
-        #     compressed_pair[0][idx_element] = reversed_word
+    remove_reverse_sequence(compressed_pair[0])
+    remove_reverse_sequence(compressed_pair[1])
 
-    print("\nDEBUG COMPRESSION AFTER 2 STEP: \n", compressed_pair)
+    print("\nDEBUG COMPRESSION AFTER 2 STEP (operation 1): \n", compressed_pair)
+
+    # operation 2
+    remove_word_of_one_symbol(compressed_pair[0])
+
+
+
     print("\nSTEP 3 started:\n ")
-    # 3 !!! синее-зеленое pass
-    for index_of_word, word in enumerate(compressed_pair[0]):
-        #lst_word = list(word)
-        for index_of_symbol, symbol in enumerate(word):
-            print(
-                "\n",
-                word[:index_of_symbol],
-                symbol,
-                #word[index_of_symbol],
-                word[index_of_symbol:],
-                word[index_of_symbol:][::-1],
-                #f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on {compare_words(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}"
-                #f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on (2){word[:index_of_symbol] + symbol} if 2 < 1 {word[:index_of_symbol] + symbol < word[index_of_symbol:][::-1]}"
-            )
-            shortest_word = min_word_using_special_order(
-                word[:index_of_symbol] + symbol,
-                word[index_of_symbol:][::-1]
-            )
-            print(
-                "Shortest word: ",
-                shortest_word,
-                f"\nif shortest_word != word_index_symbol then if exists word that begin on: {word[:index_of_symbol] + symbol} replace this on {min_word_using_special_order(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}",
-                f"\nif exists word that ended on {''.join(reversed(word[:index_of_symbol] + symbol))} replace this on shortest word"
-            )
-            # 3.1
-            if shortest_word != word[:index_of_symbol] + symbol:
-                for i, row in enumerate(compressed_pair):
-                    for j, w in enumerate(row):
-                        if w == word:
-                            continue
-                        if w.startswith(word[:index_of_symbol] + symbol):
-                            print("ZAMENA 3.1 UDALENO: ", compressed_pair[i][j])
-                            compressed_pair[i][j] = w.replace(word[:index_of_symbol] + symbol, shortest_word)
-                            print("ZAMENA 3.1 ZAMENENO: ", compressed_pair[i][j])
 
-                # # 3.2
-                for idx, ww in enumerate(compressed_pair[0]):
-                    if ww == word:
-                        continue
-                    if ww.endswith(''.join(reversed(word[:index_of_symbol] + symbol))):
-                        print("ZAMENA 3.2 UDALENO: ", compressed_pair[0][idx])
-                        compressed_pair[0][idx] = ww.replace(
-                            ''.join(reversed(word[:index_of_symbol] + symbol)),
-                            shortest_word[::-1]
-                        )
-                        print("ZAMENA 3.2 ZAMENENO: ", compressed_pair[0][idx])
+
+    ## 3 !!! синее-зеленое pass
+    # for index_of_word, word in enumerate(compressed_pair[0]):
+    #     # lst_word = list(word)
+    #     for index_of_symbol, symbol in enumerate(word):
+    #         print(
+    #             "\n",
+    #             word[:index_of_symbol],
+    #             symbol,
+    #             # word[index_of_symbol],
+    #             word[index_of_symbol:],
+    #             word[index_of_symbol:][::-1],
+    #             # f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on {compare_words(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}"
+    #             # f"if exists word that begin on: (1){word[index_of_symbol:][::-1]} replace this on (2){word[:index_of_symbol] + symbol} if 2 < 1 {word[:index_of_symbol] + symbol < word[index_of_symbol:][::-1]}"
+    #         )
+    #         shortest_word = min_word_using_special_order(
+    #             word[:index_of_symbol] + symbol,
+    #             word[index_of_symbol:][::-1]
+    #         )
+    #         print(
+    #             "Shortest word: ",
+    #             shortest_word,
+    #             f"\nif shortest_word != word_index_symbol then if exists word that begin on: {word[:index_of_symbol] + symbol} replace this on {min_word_using_special_order(word[:index_of_symbol] + symbol, word[index_of_symbol:][::-1])}",
+    #             f"\nif exists word that ended on {''.join(reversed(word[:index_of_symbol] + symbol))} replace this on shortest word"
+    #         )
+    #         # 3.1
+    #         if shortest_word != word[:index_of_symbol] + symbol:
+    #             for i, row in enumerate(compressed_pair):
+    #                 for j, w in enumerate(row):
+    #                     if w == word:
+    #                         continue
+    #                     if w.startswith(word[:index_of_symbol] + symbol):
+    #                         print("ZAMENA 3.1 UDALENO: ", compressed_pair[i][j])
+    #                         compressed_pair[i][j] = w.replace(word[:index_of_symbol] + symbol, shortest_word)
+    #                         print("ZAMENA 3.1 ZAMENENO: ", compressed_pair[i][j])
+    #
+    #             # # 3.2
+    #             for idx, ww in enumerate(compressed_pair[0]):
+    #                 if ww == word:
+    #                     continue
+    #                 if ww.endswith(''.join(reversed(word[:index_of_symbol] + symbol))):
+    #                     print("ZAMENA 3.2 UDALENO: ", compressed_pair[0][idx])
+    #                     compressed_pair[0][idx] = ww.replace(
+    #                         ''.join(reversed(word[:index_of_symbol] + symbol)),
+    #                         shortest_word[::-1]
+    #                     )
+    #                     print("ZAMENA 3.2 ZAMENENO: ", compressed_pair[0][idx])
 
             # # 3.2
             # for idx, ww in enumerate(compressed_pair[0]):
@@ -472,8 +518,7 @@ def compression(c_component: Tuple[str, ...],
             # ..... заканчивается ???
             # 3 для L: только то что начинается
 
-
-    print("\nSTEP 3 stopped:\n ")
+    # print("\nSTEP 3 stopped:\n ")
     # # 4 (обе компоненты) убираем повторы, оставляем 1 экз.
     # # check each component for words repeating
     # for pair_component in compressed_pair:
