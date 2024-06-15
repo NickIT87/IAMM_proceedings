@@ -374,12 +374,14 @@ def insertion_acrobatics_sort(arr: List[str]):
         arr[j + 1] = key
 
 
-def remove_repeating_words(compressed_pair: List[str]):
+def remove_repeating_words_into_pair_component(pair_component: List[str]):
     """ operation 1: transform the components of the pair
     into ordered sets without repetitions """
-    for pair_component in compressed_pair:
-        pair_component[:] = list(set(pair_component))
-        insertion_acrobatics_sort(pair_component)
+    pair_component[:] = list(set(pair_component))
+    insertion_acrobatics_sort(pair_component)
+    # for pair_component in compressed_pair:
+    #     pair_component[:] = list(set(pair_component))
+    #     insertion_acrobatics_sort(pair_component)
 
 
 def remove_word_of_one_symbol(pair_component: List[str]):
@@ -389,7 +391,7 @@ def remove_word_of_one_symbol(pair_component: List[str]):
             pair_component.pop(index)
 
 
-def remove_reverse_sequence(compressed_pair: List[List[str]]):
+def remove_reverse_sequence(compressed_pair: List[List[str]]) -> bool:
     """ operation 3: remove first sequence from
         each pair component XYX -> X; included (C, L)"""
     for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
@@ -397,7 +399,8 @@ def remove_reverse_sequence(compressed_pair: List[List[str]]):
             modified_word = get_modified_word(word)
             if word != modified_word:
                 compressed_pair[index_pair_element][idx_sl_element] = modified_word
-                # return
+                return True
+    return False
 
 
     # trigger: bool = True
@@ -411,14 +414,14 @@ def remove_reverse_sequence(compressed_pair: List[List[str]]):
     #                 trigger = True
 
 
-def acrobatic_reverce(compressed_pair: List[List[str]]):
-    """operation 4: replace lesser word for acrobatic  """
-    for idx_element, sigma_word in enumerate(compressed_pair[0]):
+def acrobatic_reverce(c_component: List[str]) -> bool:
+    """ operation 4: replace lesser word for acrobatic  """
+    for idx_element, sigma_word in enumerate(c_component):
         reversed_word = sigma_word[::-1]
-        compressed_pair[0][idx_element] = min_word_using_special_order(reversed_word, sigma_word)
-        # if reversed_word < sigma_word:
-        #     compressed_pair[0][idx_element] = reversed_word
-
+        if reversed_word < sigma_word:
+            c_component[idx_element] = min_word_using_special_order(reversed_word, sigma_word)
+            return True
+    return False
 
 
 def compression(c_component: Tuple[str, ...],
@@ -430,22 +433,43 @@ def compression(c_component: Tuple[str, ...],
     ]
     print("UNCOMPRESSED DEFINING PAIR: \n", c_component, l_component)
 
-    insertion_acrobatics_sort(compressed_pair[0])
-    insertion_acrobatics_sort(compressed_pair[1])
+    trigger = True
+    while trigger:
+        for component in compressed_pair:
+            insertion_acrobatics_sort(component)
+            remove_repeating_words_into_pair_component(component)
 
-    print("\nDEBUG COMPRESSION AFTER 1 STEP (sorting): \n", compressed_pair)
+        print("\nDEBUG COMPRESSION AFTER 1, 2 STEP (sorting): \n", compressed_pair)
 
-    remove_reverse_sequence(compressed_pair[0])
-    remove_reverse_sequence(compressed_pair[1])
+        remove_word_of_one_symbol(compressed_pair[0])
 
-    print("\nDEBUG COMPRESSION AFTER 2 STEP (operation 1): \n", compressed_pair)
+        print("\nDEBUG COMPRESSION AFTER 3 STEP (remove 1 symbol from C): \n", compressed_pair)
 
-    # operation 2
-    remove_word_of_one_symbol(compressed_pair[0])
+        if remove_reverse_sequence(compressed_pair):
+            print("pair if zamena TRUE: ", compressed_pair)
+            continue
+
+        print("\nDEBUG COMPRESSION AFTER 4 STEP (remove XYX): \n", compressed_pair)
+
+        if acrobatic_reverce(compressed_pair[0]):
+            print("acrobatic reverse if zamena TRUE: ", compressed_pair)
+            continue
+
+        trigger = False
+
+    #remove_reverse_sequence(compressed_pair[0])
+    #remove_reverse_sequence(compressed_pair[1])
+    #
+    # print("\nDEBUG COMPRESSION AFTER 2 STEP (operation 1): \n", compressed_pair)
+    #
+    # # operation 2
+    # remove_word_of_one_symbol(compressed_pair[0])
+    #
+    #
+    #
+    # print("\nSTEP 3 started:\n ")
 
 
-
-    print("\nSTEP 3 started:\n ")
 
 
     ## 3 !!! синее-зеленое pass
