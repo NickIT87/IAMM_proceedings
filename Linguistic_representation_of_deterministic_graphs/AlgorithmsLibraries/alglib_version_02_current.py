@@ -7,6 +7,8 @@ import re
 import networkx as nx  # type: ignore
 
 
+num = 100
+
 # =========================== HELPERS FUNCTIONS ==============================
 class IDsGenerator:
     """helper for the AP alg. Generate custom id for each node"""
@@ -377,50 +379,87 @@ def insertion_acrobatics_sort(arr: List[str]):
 def remove_repeating_words_into_pair_component(pair_component: List[str]):
     """ operation 1: transform the components of the pair
     into ordered sets without repetitions """
+    global num
+    a = pair_component
     pair_component[:] = list(set(pair_component))
     insertion_acrobatics_sort(pair_component)
-    # for pair_component in compressed_pair:
-    #     pair_component[:] = list(set(pair_component))
-    #     insertion_acrobatics_sort(pair_component)
+    if a != pair_component:
+        print(num, " Operation 1 is performed.\n")
+        num = num +1
 
 
 def remove_word_of_one_symbol(pair_component: List[str]):
     """operation 2: remove words of length 1 from the first component """
+    global num
     for index, word in enumerate(pair_component):
         if len(word) < 2:
             pair_component.pop(index)
+            print(num, " Operation 2 is performed.\n")
+            num = num + 1
 
 
 def remove_reverse_sequence(compressed_pair: List[List[str]]) -> bool:
     """ operation 3: remove first sequence from
         each pair component XYX -> X; included (C, L)"""
+    global num
     for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
         for idx_sl_element, word in enumerate(sigmaLambda_element):
             modified_word = get_modified_word(word)
             if word != modified_word:
                 compressed_pair[index_pair_element][idx_sl_element] = modified_word
+                print(num, f" Operation 3 is performed. word={word}, modified={modified_word} \n")
+                num = num + 1
                 return True
     return False
 
 
-    # trigger: bool = True
-    # while trigger:
-    #     for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
-    #         for idx_sl_element, word in enumerate(sigmaLambda_element):
-    #             pattern_sequences = find_reverse_sequences(word)
-    #             trigger = False
-    #             for sequence in pattern_sequences:
-    #                 compressed_pair[index_pair_element][idx_sl_element] = re.sub(sequence, sequence[0], word)
-    #                 trigger = True
-
-
 def acrobatic_reverce(c_component: List[str]) -> bool:
     """ operation 4: replace lesser word for acrobatic  """
+    global num
     for idx_element, sigma_word in enumerate(c_component):
         reversed_word = sigma_word[::-1]
         if reversed_word < sigma_word:
             c_component[idx_element] = min_word_using_special_order(reversed_word, sigma_word)
+            print(num, f" Operation 4 is performed. sigma={sigma_word} reversed={reversed_word}.\n")
+            num = num + 1
             return True
+    return False
+
+
+def operation5(compressed_pair: List[List[str]]) -> bool:
+    global num
+    for index_of_word, word in enumerate(compressed_pair[0]):
+        left = (len(word) + 1) // 2
+        w1 = word[::-1][:int(len(word) / 2) + 1]
+        w2 = word[:left]
+        for idx_cword, cword in enumerate(compressed_pair[0]):
+            if (cword != word) and cword.startswith(w1):
+                modified_cword = cword.replace(w1, w2, 1)
+                print(num, f" Operation 5 is performed. cword={cword}, modified={modified_cword}, w1={w1}, w2={w2} Begin. word={word} \n")
+                num = num + 1
+                compressed_pair[0][idx_cword] = modified_cword
+                return True
+        for idx_lword, lword in enumerate(compressed_pair[1]):
+            if lword.startswith(w1):
+                modified_lword = lword.replace(w1, w2, 1)
+                print(num, f" Operation 5 is performed. lword={lword}, modified={modified_lword} w1={w1}, w2={w2} Begin. word={word} \n")
+                num = num + 1
+                compressed_pair[1][idx_lword] = modified_lword
+                return True
+        for idx_cword, cword in enumerate(compressed_pair[0]):
+            if (cword != word) and cword.endswith(w1):
+                # rcword = cword[::-1]
+                # modified_rcword = rcword.replace(w1[::-1], w2[::-1], 1)
+                # modified_cword = modified_rcword[::-1]
+                # Найти индекс последнего вхождения w1 в cword
+                entry_index = cword.rfind(w1)
+                if entry_index != -1:
+                    # Заменить последнее вхождение w1 на w2
+                    modified_cword = cword[:entry_index] + w2 + cword[entry_index + len(w1):]
+                    print(num, f" Operation 5 END: cword={cword}, modified={modified_cword} w1={w1}, w2={w2} End. word={word} \n")
+                    num = num + 1
+                    compressed_pair[1][idx_cword] = modified_cword
+                return True
     return False
 
 
@@ -439,21 +478,26 @@ def compression(c_component: Tuple[str, ...],
             insertion_acrobatics_sort(component)
             remove_repeating_words_into_pair_component(component)
 
-        print("\nDEBUG COMPRESSION AFTER 1, 2 STEP (sorting): \n", compressed_pair)
+        #print("\nDEBUG COMPRESSION AFTER 1, 2 STEP (sorting): \n", compressed_pair)
 
         remove_word_of_one_symbol(compressed_pair[0])
 
-        print("\nDEBUG COMPRESSION AFTER 3 STEP (remove 1 symbol from C): \n", compressed_pair)
+        #print("\nDEBUG COMPRESSION AFTER 3 STEP (remove 1 symbol from C): \n", compressed_pair)
 
         if remove_reverse_sequence(compressed_pair):
-            print("pair if zamena TRUE: ", compressed_pair)
+            #print("pair if zamena TRUE: ", compressed_pair)
             continue
 
-        print("\nDEBUG COMPRESSION AFTER 4 STEP (remove XYX): \n", compressed_pair)
+        #print("\nDEBUG COMPRESSION AFTER 4 STEP (remove XYX): \n", compressed_pair)
 
         if acrobatic_reverce(compressed_pair[0]):
-            print("acrobatic reverse if zamena TRUE: ", compressed_pair)
+            #print("acrobatic reverse if zamena TRUE: ", compressed_pair)
             continue
+
+        if operation5(compressed_pair):
+            continue
+
+        #operation5(compressed_pair)
 
         trigger = False
 
