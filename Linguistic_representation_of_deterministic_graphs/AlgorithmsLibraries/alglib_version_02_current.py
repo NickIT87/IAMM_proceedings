@@ -7,7 +7,7 @@ import re
 import networkx as nx  # type: ignore
 
 
-num = 100
+num = 101
 
 # =========================== HELPERS FUNCTIONS ==============================
 class IDsGenerator:
@@ -381,11 +381,17 @@ def remove_repeating_words_into_pair_component(pair_component: List[str]):
     into ordered sets without repetitions """
     global num
     a = pair_component
+
+    print("Bylo: ", len(pair_component))
+
     pair_component[:] = list(set(pair_component))
     insertion_acrobatics_sort(pair_component)
+
+    print("stalo: ", len(pair_component))
+
     if a != pair_component:
         print(num, " Operation 1 is performed.\n")
-        num = num +1
+        num = num + 1
 
 
 def remove_word_of_one_symbol(pair_component: List[str]):
@@ -430,36 +436,64 @@ def operation5(compressed_pair: List[List[str]]) -> bool:
     global num
     for index_of_word, word in enumerate(compressed_pair[0]):
         left = (len(word) + 1) // 2
-        w1 = word[::-1][:int(len(word) / 2) + 1]
-        w2 = word[:left]
+        right = ((len(word) + 1) // 2) + 1
+        w_left_1 = word[::-1][:int(len(word) / 2) + 1]
+        w_left_2 = word[:left]
+        w_right_1 = word[:right]
+        w_right_2 = word[::-1][:len(word) // 2]
         for idx_cword, cword in enumerate(compressed_pair[0]):
-            if (cword != word) and cword.startswith(w1):
-                modified_cword = cword.replace(w1, w2, 1)
-                print(num, f" Operation 5 is performed. cword={cword}, modified={modified_cword}, w1={w1}, w2={w2} Begin. word={word} \n")
+            if (cword != word) and cword.startswith(w_left_1):
+                modified_cword = cword.replace(w_left_1, w_left_2, 1)
+                print(num, f" Operation 5 is performed. cword={cword}, modified={modified_cword}, w1={w_left_1}, w2={w_left_2} LEFT Begin. word={word} \n")
                 num = num + 1
                 compressed_pair[0][idx_cword] = modified_cword
                 return True
         for idx_lword, lword in enumerate(compressed_pair[1]):
-            if lword.startswith(w1):
-                modified_lword = lword.replace(w1, w2, 1)
-                print(num, f" Operation 5 is performed. lword={lword}, modified={modified_lword} w1={w1}, w2={w2} Begin. word={word} \n")
+            if lword.startswith(w_left_1):
+                modified_lword = lword.replace(w_left_1, w_left_2, 1)
+                print(num, f" Operation 5 is performed. lword={lword}, modified={modified_lword} w1={w_left_1}, w2={w_left_2} LEFT Begin. word={word} \n")
                 num = num + 1
                 compressed_pair[1][idx_lword] = modified_lword
                 return True
         for idx_cword, cword in enumerate(compressed_pair[0]):
-            if (cword != word) and cword.endswith(w1):
+            if cword != word and cword.endswith(w_left_1[::-1]):
                 # rcword = cword[::-1]
                 # modified_rcword = rcword.replace(w1[::-1], w2[::-1], 1)
                 # modified_cword = modified_rcword[::-1]
                 # Найти индекс последнего вхождения w1 в cword
-                entry_index = cword.rfind(w1)
+                entry_index = cword.rfind(w_left_1[::-1])
                 if entry_index != -1:
                     # Заменить последнее вхождение w1 на w2
-                    modified_cword = cword[:entry_index] + w2 + cword[entry_index + len(w1):]
-                    print(num, f" Operation 5 END: cword={cword}, modified={modified_cword} w1={w1}, w2={w2} End. word={word} \n")
+                    modified_cword = cword[:entry_index] + w_left_2[::-1] + cword[entry_index + len(w_left_1):]
+                    print(num, f" Operation 5 LEFT END: cword={cword}, modified={modified_cword} w1reversed={w_left_1[::-1]}, w2={w_left_2[::-1]} End. word={word} \n")
                     num = num + 1
-                    compressed_pair[1][idx_cword] = modified_cword
+                    compressed_pair[0][idx_cword] = modified_cword
                 return True
+        for idx_cword, cword in enumerate(compressed_pair[0]):
+            if (cword != word) and cword.startswith(w_right_1):
+                modified_cword = cword.replace(w_right_1, w_right_2, 1)
+                print(num, f" Operation 5 is performed. cword={cword}, modified={modified_cword}, w1={w_right_1}, w2={w_right_2} RIGHT Begin. word={word} \n")
+                num = num + 1
+                compressed_pair[0][idx_cword] = modified_cword
+                return True
+        # for idx_lword, lword in enumerate(compressed_pair[1]):
+        #     if lword.startswith(w1):
+        #         modified_lword = lword.replace(w1, w2, 1)
+        #         print(num, f" Operation 5 is performed. lword={lword}, modified={modified_lword} w1={w1}, w2={w2} RIGHT Begin. word={word} \n")
+        #         num = num + 1
+        #         compressed_pair[1][idx_lword] = modified_lword
+        #         return True
+        # for idx_cword, cword in enumerate(compressed_pair[0]):
+        #     if cword != word and cword.endswith(w1[::-1]):
+        #         entry_index = cword.rfind(w1[::-1])
+        #         if entry_index != -1:
+        #             # Заменить последнее вхождение w1 на w2
+        #             modified_cword = cword[:entry_index] + w2[::-1] + cword[entry_index + len(w1):]
+        #             print(num, f" Operation 5 RIGHT END: cword={cword}, modified={modified_cword} w1reversed={w1[::-1]}, w2={w2[::-1]} End. word={word} \n")
+        #             num = num + 1
+        #             compressed_pair[0][idx_cword] = modified_cword
+        #         return True
+
     return False
 
 
