@@ -8,6 +8,7 @@ import networkx as nx  # type: ignore
 
 
 num = 101
+deleted_paths = set()
 
 # =========================== HELPERS FUNCTIONS ==============================
 class IDsGenerator:
@@ -419,6 +420,36 @@ def remove_reverse_sequence(compressed_pair: List[List[str]]) -> bool:
     return False
 
 
+def get_modified_word_1(idx: int, word: str) -> str:
+    """operation 3: find sequences of kind 'xyx' in word
+    and return modified word xyx -> x """
+    global deleted_paths
+    modified_word = word
+    for i in range(len(word) - 2):
+        if word[i] == word[i + 2]:  # and string[i] != string[i + 1]:
+            if idx == 0:
+                deleted_paths.add(min_word_using_special_order(word[:i+2], word[::-1][:len(word)-i-1]))
+            else:
+                deleted_paths.add(word[:i+2])
+            modified_word = word[:i+1] + word[i+3:]
+            return modified_word
+    return modified_word
+
+
+def operation3_modified(compressed_pair: List[List[str]]) -> bool:
+    global deleted_paths
+    global num
+    for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
+        for idx_sl_element, word in enumerate(sigmaLambda_element):
+            modified_word = get_modified_word_1(index_pair_element, word)
+            if word != modified_word:
+                compressed_pair[index_pair_element][idx_sl_element] = modified_word
+                print(num, f" Operation 3 is performed. word={word}, modified={modified_word},\n global_deleted_paths={deleted_paths} \n")
+                num = num + 1
+                return True
+    return False
+
+
 def acrobatic_reverce(c_component: List[str]) -> bool:
     """ operation 4: replace lesser word for acrobatic  """
     global num
@@ -514,8 +545,11 @@ def compression(c_component: Tuple[str, ...],
 
         #print("\nDEBUG COMPRESSION AFTER 3 STEP (remove 1 symbol from C): \n", compressed_pair)
 
-        if remove_reverse_sequence(compressed_pair):
-            #print("pair if zamena TRUE: ", compressed_pair)
+        # if remove_reverse_sequence(compressed_pair):
+        #     #print("pair if zamena TRUE: ", compressed_pair)
+        #     continue
+
+        if operation3_modified(compressed_pair):
             continue
 
         #print("\nDEBUG COMPRESSION AFTER 4 STEP (remove XYX): \n", compressed_pair)
