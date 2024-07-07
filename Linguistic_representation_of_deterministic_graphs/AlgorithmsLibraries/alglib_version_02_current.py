@@ -432,7 +432,7 @@ def acrobatic_reverce(c_component: List[str]) -> bool:
     return False
 
 
-def operation5(compressed_pair: List[List[str]]) -> bool:
+def path_optimization(compressed_pair: List[List[str]]) -> bool:
     global num
     for index_of_word, word in enumerate(compressed_pair[0]):
         left = (len(word) + 1) // 2
@@ -524,7 +524,7 @@ def compression(c_component: Tuple[str, ...],
             #print("acrobatic reverse if zamena TRUE: ", compressed_pair)
             continue
 
-        if operation5(compressed_pair):
+        if path_optimization(compressed_pair):
             continue
 
         trigger = False
