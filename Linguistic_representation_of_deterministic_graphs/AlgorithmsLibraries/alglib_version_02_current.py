@@ -444,7 +444,7 @@ def operation3_modified(compressed_pair: List[List[str]]) -> bool:
             modified_word = get_modified_word_1(index_pair_element, word)
             if word != modified_word:
                 compressed_pair[index_pair_element][idx_sl_element] = modified_word
-                print(num, f" Operation 3 is performed. word={word}, modified={modified_word},\n global_deleted_paths={deleted_paths} \n")
+                print(num, f" Operation 3 is performed. word={word}, modified={modified_word}, \n global_deleted_paths={deleted_paths} \n")
                 num = num + 1
                 return True
     return False
@@ -524,6 +524,47 @@ def path_optimization(compressed_pair: List[List[str]]) -> bool:
     return False
 
 
+def path_optimization2(compressed_pair: List[List[str]]) -> bool:
+    """ need docstring """
+    for index_of_word, word in enumerate(compressed_pair[0]):
+        left = (len(word) + 1) // 2
+        right = ((len(word) + 1) // 2) + 1
+        w_left_1 = word[::-1][:int(len(word) / 2) + 1]
+        w_left_2 = word[:left]
+        w_right_1 = word[:right]
+        w_right_2 = word[::-1][:len(word) // 2]
+        for idx_cword, cword in enumerate(compressed_pair[0]):
+            if cword != word:
+                if cword.startswith(w_left_1):
+                    compressed_pair[0][idx_cword] = cword.replace(w_left_1, w_left_2, 1)
+                    return True
+                if cword.startswith(w_right_1):
+                    compressed_pair[0][idx_cword] = cword.replace(w_right_1, w_right_2, 1)
+                    return True
+                if cword.endswith(w_left_1[::-1]):
+                    last_entry_index = cword.rfind(w_left_1[::-1])
+                    if last_entry_index != -1:
+                        compressed_pair[0][idx_cword] = \
+                            cword[:last_entry_index] + w_left_2[::-1] + \
+                            cword[last_entry_index + len(w_left_1):]
+                        return True
+                if cword.endswith(w_right_1[::-1]):
+                    last_entry_index = cword.rfind(w_right_1[::-1])
+                    if last_entry_index != -1:
+                        compressed_pair[0][idx_cword] = \
+                            cword[:last_entry_index] + w_right_2[::-1] + \
+                            cword[last_entry_index + len(w_right_1):]
+                        return True
+        for idx_lword, lword in enumerate(compressed_pair[1]):
+            if lword.startswith(w_left_1):
+                compressed_pair[1][idx_lword] = lword.replace(w_left_1, w_left_2, 1)
+                return True
+            if lword.startswith(w_right_1):
+                compressed_pair[1][idx_lword] = lword.replace(w_right_1, w_right_2, 1)
+                return True
+    return False
+
+
 def compression(c_component: Tuple[str, ...],
                 l_component: Tuple[str, ...]) -> List:
     """ in progress """
@@ -558,7 +599,7 @@ def compression(c_component: Tuple[str, ...],
             #print("acrobatic reverse if zamena TRUE: ", compressed_pair)
             continue
 
-        if path_optimization(compressed_pair):
+        if path_optimization2(compressed_pair):
             continue
 
         trigger = False
