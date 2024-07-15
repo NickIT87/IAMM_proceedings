@@ -526,6 +526,7 @@ def path_optimization(compressed_pair: List[List[str]]) -> bool:
 
 def path_optimization2(compressed_pair: List[List[str]]) -> bool:
     """ need docstring """
+    global num
     for index_of_word, word in enumerate(compressed_pair[0]):
         left = (len(word) + 1) // 2
         right = ((len(word) + 1) // 2) + 1
@@ -536,31 +537,55 @@ def path_optimization2(compressed_pair: List[List[str]]) -> bool:
         for idx_cword, cword in enumerate(compressed_pair[0]):
             if cword != word:
                 if cword.startswith(w_left_1):
-                    compressed_pair[0][idx_cword] = cword.replace(w_left_1, w_left_2, 1)
+                    modified_cword = cword.replace(w_left_1, w_left_2, 1)
+                    print(num, f" Operation 5 is performed. LEFT Begin. cword={cword}, modified={modified_cword}, w1={w_left_1}, w2={w_left_2} word={word} \n")
+                    num = num + 1
+                    compressed_pair[0][idx_cword] = modified_cword
+                    #compressed_pair[0][idx_cword] = cword.replace(w_left_1, w_left_2, 1)
                     return True
                 if cword.startswith(w_right_1):
-                    compressed_pair[0][idx_cword] = cword.replace(w_right_1, w_right_2, 1)
+                    modified_cword = cword.replace(w_right_1, w_right_2, 1)
+                    print(num,f" Operation 5 is performed. RIGHT Begin. cword={cword}, modified={modified_cword}, w1={w_right_1}, w2={w_right_2} word={word} \n")
+                    num = num + 1
+                    compressed_pair[0][idx_cword] = modified_cword
+                    #compressed_pair[0][idx_cword] = cword.replace(w_right_1, w_right_2, 1)
                     return True
                 if cword.endswith(w_left_1[::-1]):
                     last_entry_index = cword.rfind(w_left_1[::-1])
                     if last_entry_index != -1:
-                        compressed_pair[0][idx_cword] = \
-                            cword[:last_entry_index] + w_left_2[::-1] + \
-                            cword[last_entry_index + len(w_left_1):]
+                        modified_cword = cword[:last_entry_index] + w_left_2[::-1] + cword[last_entry_index + len(w_left_1):]
+                        print(num, f" Operation 5 LEFT END: cword={cword}, modified={modified_cword} w1reversed={w_left_1[::-1]}, w2={w_left_2[::-1]} End. word={word} \n")
+                        num = num + 1
+                        compressed_pair[0][idx_cword] = modified_cword
+                        # compressed_pair[0][idx_cword] = \
+                        #     cword[:last_entry_index] + w_left_2[::-1] + \
+                        #     cword[last_entry_index + len(w_left_1):]
                         return True
                 if cword.endswith(w_right_1[::-1]):
                     last_entry_index = cword.rfind(w_right_1[::-1])
                     if last_entry_index != -1:
-                        compressed_pair[0][idx_cword] = \
-                            cword[:last_entry_index] + w_right_2[::-1] + \
-                            cword[last_entry_index + len(w_right_1):]
+                        modified_cword = cword[:last_entry_index] + w_right_2[::-1] + cword[last_entry_index + len(w_right_1):]
+                        print(num, f" Operation 5 RIGHT END: cword={cword}, modified={modified_cword} w1reversed={w_right_1[::-1]}, w2={w_right_2[::-1]} word={word} \n")
+                        num = num + 1
+                        compressed_pair[0][idx_cword] = modified_cword
+                        # compressed_pair[0][idx_cword] = \
+                        #     cword[:last_entry_index] + w_right_2[::-1] + \
+                        #     cword[last_entry_index + len(w_right_1):]
                         return True
         for idx_lword, lword in enumerate(compressed_pair[1]):
             if lword.startswith(w_left_1):
-                compressed_pair[1][idx_lword] = lword.replace(w_left_1, w_left_2, 1)
+                modified_lword = lword.replace(w_left_1, w_left_2, 1)
+                print(num, f" Operation 5 is performed. LEFT Begin. lword={lword}, modified={modified_lword} w1={w_left_1}, w2={w_left_2} word={word} \n")
+                num = num + 1
+                compressed_pair[1][idx_lword] = modified_lword
+                #compressed_pair[1][idx_lword] = lword.replace(w_left_1, w_left_2, 1)
                 return True
             if lword.startswith(w_right_1):
-                compressed_pair[1][idx_lword] = lword.replace(w_right_1, w_right_2, 1)
+                modified_lword = lword.replace(w_right_1, w_right_2, 1)
+                print(num, f" Operation 5 is performed. RIGHT BEGIN lword={lword}, modified={modified_lword} w1={w_right_1}, w2={w_right_2} word={word} \n")
+                num = num + 1
+                compressed_pair[1][idx_lword] = modified_lword
+                #compressed_pair[1][idx_lword] = lword.replace(w_right_1, w_right_2, 1)
                 return True
     return False
 
@@ -599,7 +624,7 @@ def compression(c_component: Tuple[str, ...],
             #print("acrobatic reverse if zamena TRUE: ", compressed_pair)
             continue
 
-        if path_optimization2(compressed_pair):
+        if path_optimization(compressed_pair):
             continue
 
         trigger = False
