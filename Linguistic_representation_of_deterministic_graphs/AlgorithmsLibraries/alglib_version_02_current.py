@@ -624,7 +624,7 @@ def compression(c_component: Tuple[str, ...],
             #print("acrobatic reverse if zamena TRUE: ", compressed_pair)
             continue
 
-        if path_optimization(compressed_pair):
+        if path_optimization2(compressed_pair):
             continue
 
         trigger = False

@@ -3,7 +3,7 @@
 
 # import networkx as nx
 
-from DataBenchmarks.data import print_data, TestCases as T
+from DataBenchmarks.data import print_data, sample, TestCases as T
 from DataBenchmarks.flowerGraph import *
 from AlgorithmsLibraries.alglib_version_02_current import *
 # from AlgorithmsLibraries.debug_helpers import *
@@ -49,9 +49,11 @@ def run_test_flow():
 
 # =============================================================================
 if __name__ == "__main__":
-    run_test_flow()
-
-    # print_data(G)
+    #run_test_flow()
+    G = ap_graph(sample[0], sample[1], "1")
+    #print_data(G)
+    print(compression(sample[0], sample[1]))
+    print(ac_pair(G))
     # ============================= PAIR METRICS ==============================
     # print(get_canonical_pair_metrics_from_dgraph(G))
     # # print_data(G)
