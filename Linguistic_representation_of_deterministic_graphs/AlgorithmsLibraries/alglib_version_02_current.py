@@ -1,4 +1,4 @@
-""" IAMM - Graphs - ASP Work """
+""" IAMM - Graphs - ASP Work dev version """
 from typing import Tuple, List, Union, Dict
 from collections import defaultdict
 from math import ceil, sqrt
@@ -8,7 +8,9 @@ import networkx as nx  # type: ignore
 
 
 num = 101
-deleted_paths = set()
+_deleted_paths = set()
+_true_pair: bool = False
+
 
 # =========================== HELPERS FUNCTIONS ==============================
 class IDsGenerator:
@@ -423,28 +425,32 @@ def remove_reverse_sequence(compressed_pair: List[List[str]]) -> bool:
 def get_modified_word_1(idx: int, word: str) -> str:
     """operation 3: find sequences of kind 'xyx' in word
     and return modified word xyx -> x """
-    global deleted_paths
+    global _deleted_paths
+    global _true_pair
     modified_word = word
     for i in range(len(word) - 2):
         if word[i] == word[i + 2]:  # and string[i] != string[i + 1]:
-            if idx == 0:
-                deleted_paths.add(min_word_using_special_order(word[:i+2], word[::-1][:len(word)-i-1]))
-            else:
-                deleted_paths.add(word[:i+2])
+            if idx == 0 and not _true_pair:
+                _deleted_paths.add(min_word_using_special_order(word[:i+2], word[::-1][:len(word)-i-1]))
+            elif not _true_pair:
+                _deleted_paths.add(word[:i+2])
             modified_word = word[:i+1] + word[i+3:]
             return modified_word
     return modified_word
 
 
 def operation3_modified(compressed_pair: List[List[str]]) -> bool:
-    global deleted_paths
+    global _deleted_paths
+    global _true_pair
     global num
     for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
         for idx_sl_element, word in enumerate(sigmaLambda_element):
             modified_word = get_modified_word_1(index_pair_element, word)
             if word != modified_word:
                 compressed_pair[index_pair_element][idx_sl_element] = modified_word
-                print(num, f" Operation 3 is performed. word={word}, modified={modified_word}, \n global_deleted_paths={deleted_paths} \n")
+                print(num, f" Operation 3 is performed. word={word}, modified={modified_word}, \n")
+                if not _true_pair:
+                    print(f" global_deleted_paths={_deleted_paths} \n")
                 num = num + 1
                 return True
     return False
@@ -591,9 +597,12 @@ def path_optimization2(compressed_pair: List[List[str]]) -> bool:
 
 
 def compression(c_component: Tuple[str, ...],
-                l_component: Tuple[str, ...]) -> List:
+                l_component: Tuple[str, ...]) -> Tuple[Tuple[str, ...], ...]:
     """ in progress """
-    compressed_pair: List[List[str], List[str]] = [
+    global _deleted_paths
+    _deleted_paths = set()
+
+    compressed_pair: List[List[str]] = [
         list(c_component),
         list(l_component)
     ]
@@ -628,4 +637,11 @@ def compression(c_component: Tuple[str, ...],
             continue
 
         trigger = False
-    return compressed_pair
+
+    returned_data = tuple(tuple(sublist) for sublist in compressed_pair)
+
+    return returned_data
+
+
+def check_global_path_words() -> bool:
+    return False

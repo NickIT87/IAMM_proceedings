@@ -51,9 +51,15 @@ def run_test_flow():
 if __name__ == "__main__":
     #run_test_flow()
     G = ap_graph(sample[0], sample[1], "1")
+    acpair = ac_pair(G)
+    compressed_pair = compression(sample[0], sample[1])
+
     #print_data(G)
-    print(compression(sample[0], sample[1]))
-    print(ac_pair(G))
+    print("AC pair: ", acpair)
+    print("Compression: ", compressed_pair)
+
+    print(acpair == compressed_pair)
+
     # ============================= PAIR METRICS ==============================
     # print(get_canonical_pair_metrics_from_dgraph(G))
     # # print_data(G)
