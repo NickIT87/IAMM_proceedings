@@ -638,10 +638,20 @@ def compression(c_component: Tuple[str, ...],
 
         trigger = False
 
-    returned_data = tuple(tuple(sublist) for sublist in compressed_pair)
-
-    return returned_data
+    return tuple(tuple(sublist) for sublist in compressed_pair)
 
 
-def check_global_path_words() -> bool:
+def check_global_path_words(word, compressed_pair) -> bool:
+    """ word minimization in progress """
+    trigger = True
+    modified_word = word
+    while trigger:
+        for i in range(len(modified_word) - 2):
+            if modified_word[i] == modified_word[i + 2]:
+                modified_word = modified_word[:i + 1] + modified_word[i + 3:]
+                break
+            if word != modified_word:
+                pass
+        trigger = False
+
     return False
