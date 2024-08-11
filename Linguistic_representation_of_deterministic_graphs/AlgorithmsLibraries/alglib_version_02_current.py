@@ -422,26 +422,24 @@ def remove_reverse_sequence(compressed_pair: List[List[str]]) -> bool:
     return False
 
 
-def get_modified_word_1(idx: int, word: str) -> str:
+def get_modified_word_1(idx: int, word: str, add_to_del_paths_flag=False) -> str:
     """operation 3: find sequences of kind 'xyx' in word
     and return modified word xyx -> x """
     global _deleted_paths
-    global _true_pair
     modified_word = word
     for i in range(len(word) - 2):
         if word[i] == word[i + 2]:  # and string[i] != string[i + 1]:
-            if idx == 0 and not _true_pair:
+            if idx == 0 and not add_to_del_paths_flag:
                 _deleted_paths.add(min_word_using_special_order(word[:i+2], word[::-1][:len(word)-i-1]))
-            elif not _true_pair:
+            elif not add_to_del_paths_flag:
                 _deleted_paths.add(word[:i+2])
             modified_word = word[:i+1] + word[i+3:]
             return modified_word
     return modified_word
 
 
-def operation3_modified(compressed_pair: List[List[str]]) -> bool:
+def operation3_modified(compressed_pair: List[List[str]], no_debug=False) -> bool:
     global _deleted_paths
-    global _true_pair
     global num
     for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
         for idx_sl_element, word in enumerate(sigmaLambda_element):
@@ -449,7 +447,7 @@ def operation3_modified(compressed_pair: List[List[str]]) -> bool:
             if word != modified_word:
                 compressed_pair[index_pair_element][idx_sl_element] = modified_word
                 print(num, f" Operation 3 is performed. word={word}, modified={modified_word}, \n")
-                if not _true_pair:
+                if not no_debug:
                     print(f" global_deleted_paths={_deleted_paths} \n")
                 num = num + 1
                 return True
@@ -597,7 +595,8 @@ def path_optimization2(compressed_pair: List[List[str]]) -> bool:
 
 
 def compression(c_component: Tuple[str, ...],
-                l_component: Tuple[str, ...]) -> Tuple[Tuple[str, ...], ...]:
+                l_component: Tuple[str, ...],
+                make_gdp=False) -> Tuple[Tuple[str, ...], ...]:
     """ in progress """
     global _deleted_paths
     _deleted_paths = set()
@@ -643,6 +642,28 @@ def compression(c_component: Tuple[str, ...],
 
 def check_global_path_words(word, compressed_pair) -> bool:
     """ word minimization in progress """
+
+    trigger = True
+    while trigger:
+        if word != get_modified_word_1(0, word):
+            print("CHECK GLOBAL PATH WORD: ", word, get_modified_word_1(0, word))
+
+
+        if operation3_modified(compressed_pair):
+            continue
+
+
+        if acrobatic_reverce(compressed_pair[0]):
+            #print("acrobatic reverse if zamena TRUE: ", compressed_pair)
+            continue
+
+        if path_optimization2(compressed_pair):
+            continue
+
+        trigger = False
+
+    return
+
     trigger = True
     modified_word = word
     while trigger:

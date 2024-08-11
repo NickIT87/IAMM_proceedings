@@ -53,12 +53,10 @@ if __name__ == "__main__":
     G = ap_graph(sample[0], sample[1], "1")
     acpair = ac_pair(G)
     compressed_pair = compression(sample[0], sample[1])
-
     #print_data(G)
     print("AC pair: ", acpair)
     print("Compression: ", compressed_pair)
-
-    print(acpair == compressed_pair)
+    print("acpair == compressed_pair: ", acpair == compressed_pair)
 
     # ============================= PAIR METRICS ==============================
     # print(get_canonical_pair_metrics_from_dgraph(G))
