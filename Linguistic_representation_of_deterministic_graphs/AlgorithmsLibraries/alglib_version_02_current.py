@@ -422,16 +422,16 @@ def remove_reverse_sequence(compressed_pair: List[List[str]]) -> bool:
     return False
 
 
-def get_modified_word_1(idx: int, word: str, add_to_del_paths_flag=False) -> str:
+def get_modified_word_1(idx: int, word: str, no_debug=False) -> str:
     """operation 3: find sequences of kind 'xyx' in word
     and return modified word xyx -> x """
     global _deleted_paths
     modified_word = word
     for i in range(len(word) - 2):
         if word[i] == word[i + 2]:  # and string[i] != string[i + 1]:
-            if idx == 0 and not add_to_del_paths_flag:
+            if idx == 0 and not no_debug:
                 _deleted_paths.add(min_word_using_special_order(word[:i+2], word[::-1][:len(word)-i-1]))
-            elif not add_to_del_paths_flag:
+            elif not no_debug:
                 _deleted_paths.add(word[:i+2])
             modified_word = word[:i+1] + word[i+3:]
             return modified_word
@@ -443,7 +443,7 @@ def operation3_modified(compressed_pair: List[List[str]], no_debug=False) -> boo
     global num
     for index_pair_element, sigmaLambda_element in enumerate(compressed_pair):
         for idx_sl_element, word in enumerate(sigmaLambda_element):
-            modified_word = get_modified_word_1(index_pair_element, word)
+            modified_word = get_modified_word_1(index_pair_element, word, no_debug=no_debug)
             if word != modified_word:
                 compressed_pair[index_pair_element][idx_sl_element] = modified_word
                 print(num, f" Operation 3 is performed. word={word}, modified={modified_word}, \n")
@@ -594,52 +594,6 @@ def path_optimization2(compressed_pair: List[List[str]]) -> bool:
     return False
 
 
-def compression(c_component: Tuple[str, ...],
-                l_component: Tuple[str, ...],
-                make_gdp=False) -> Tuple[Tuple[str, ...], ...]:
-    """ in progress """
-    global _deleted_paths
-    _deleted_paths = set()
-
-    compressed_pair: List[List[str]] = [
-        list(c_component),
-        list(l_component)
-    ]
-    print("UNCOMPRESSED DEFINING PAIR: \n", c_component, l_component)
-
-    trigger = True
-    while trigger:
-        for component in compressed_pair:
-            insertion_acrobatics_sort(component)
-            remove_repeating_words_into_pair_component(component)
-
-        #print("\nDEBUG COMPRESSION AFTER 1, 2 STEP (sorting): \n", compressed_pair)
-
-        remove_word_of_one_symbol(compressed_pair[0])
-
-        #print("\nDEBUG COMPRESSION AFTER 3 STEP (remove 1 symbol from C): \n", compressed_pair)
-
-        # if remove_reverse_sequence(compressed_pair):
-        #     #print("pair if zamena TRUE: ", compressed_pair)
-        #     continue
-
-        if operation3_modified(compressed_pair):
-            continue
-
-        #print("\nDEBUG COMPRESSION AFTER 4 STEP (remove XYX): \n", compressed_pair)
-
-        if acrobatic_reverce(compressed_pair[0]):
-            #print("acrobatic reverse if zamena TRUE: ", compressed_pair)
-            continue
-
-        if path_optimization2(compressed_pair):
-            continue
-
-        trigger = False
-
-    return tuple(tuple(sublist) for sublist in compressed_pair)
-
-
 def check_global_path_words(word, compressed_pair) -> bool:
     """ word minimization in progress """
 
@@ -676,3 +630,53 @@ def check_global_path_words(word, compressed_pair) -> bool:
         trigger = False
 
     return False
+
+
+def compression(c_component: Tuple[str, ...],
+                l_component: Tuple[str, ...],
+                no_gdp: bool = False) -> Tuple[Tuple[str, ...], ...]:
+    """ in progress """
+    global _deleted_paths
+    _deleted_paths = set()
+
+    compressed_pair: List[List[str]] = [
+        list(c_component),
+        list(l_component)
+    ]
+    print("UNCOMPRESSED DEFINING PAIR: \n", c_component, l_component)
+
+    trigger = True
+    while trigger:
+        for component in compressed_pair:
+            insertion_acrobatics_sort(component)
+            remove_repeating_words_into_pair_component(component)
+
+        #print("\nDEBUG COMPRESSION AFTER 1, 2 STEP (sorting): \n", compressed_pair)
+
+        remove_word_of_one_symbol(compressed_pair[0])
+
+        #print("\nDEBUG COMPRESSION AFTER 3 STEP (remove 1 symbol from C): \n", compressed_pair)
+
+        # if remove_reverse_sequence(compressed_pair):
+        #     #print("pair if zamena TRUE: ", compressed_pair)
+        #     continue
+
+        if operation3_modified(compressed_pair, no_debug=no_gdp):
+            continue
+
+        #print("\nDEBUG COMPRESSION AFTER 4 STEP (remove XYX): \n", compressed_pair)
+
+        if acrobatic_reverce(compressed_pair[0]):
+            #print("acrobatic reverse if zamena TRUE: ", compressed_pair)
+            continue
+
+        if path_optimization2(compressed_pair):
+            continue
+
+        trigger = False
+
+
+    print(_deleted_paths)
+    check_global_path_words()
+
+    return tuple(tuple(sublist) for sublist in compressed_pair)

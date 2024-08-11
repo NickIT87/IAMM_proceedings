@@ -52,7 +52,7 @@ if __name__ == "__main__":
     #run_test_flow()
     G = ap_graph(sample[0], sample[1], "1")
     acpair = ac_pair(G)
-    compressed_pair = compression(sample[0], sample[1])
+    compressed_pair = compression(sample[0], sample[1], no_gdp=False)
     #print_data(G)
     print("AC pair: ", acpair)
     print("Compression: ", compressed_pair)
