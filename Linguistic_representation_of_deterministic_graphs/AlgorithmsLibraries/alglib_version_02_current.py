@@ -594,42 +594,55 @@ def path_optimization2(compressed_pair: List[List[str]]) -> bool:
     return False
 
 
+
+def path_optimization3(word: str, c_component: List[str]) -> str:
+    """ need docstring """
+    shortest_word = word
+    for c_word in c_component:
+        left = (len(c_word) + 1) // 2
+        right = ((len(c_word) + 1) // 2) + 1
+        w_left_1 = c_word[::-1][:int(len(c_word) / 2) + 1]
+        w_left_2 = c_word[:left]
+        w_right_1 = c_word[:right]
+        w_right_2 = c_word[::-1][:len(c_word) // 2]
+
+        if shortest_word.startswith(w_left_1):
+            print(f" Path optimization 3. LEFT Begin. c_word={c_word}, shortest_word_before={shortest_word}, w1={w_left_1}, w2={w_left_2} \n")
+            shortest_word = shortest_word.replace(w_left_1, w_left_2, 1)
+            print("SHORTEST WORD after: ", shortest_word)
+            return shortest_word
+
+        if shortest_word.startswith(w_right_1):
+            print(f" Path optimization 3. RIGHT Begin. c_word={c_word}, shortest_word_before={shortest_word}, w1={w_right_1}, w2={w_right_2} \n")
+            shortest_word = shortest_word.replace(w_right_1, w_right_2, 1)
+            print("SHORTEST WORD after: ", shortest_word)
+            return shortest_word
+    return shortest_word
+
+
 def check_global_path_words(word, compressed_pair) -> bool:
     """ word minimization in progress """
-
+    shortest_word = word
     trigger = True
     while trigger:
-        if word != get_modified_word_1(0, word):
-            print("CHECK GLOBAL PATH WORD: ", word, get_modified_word_1(0, word))
-
-
-        if operation3_modified(compressed_pair):
+        if shortest_word != get_modified_word_1(0, shortest_word, no_debug=True):
+            print(
+                "CHECK GLOBAL PATH WORD: ",
+                shortest_word,
+                get_modified_word_1(0, shortest_word, no_debug=True)
+            )
+            shortest_word = get_modified_word_1(0, shortest_word, True)
+            continue
+        if shortest_word != path_optimization3(shortest_word, compressed_pair[0]):
             continue
 
-
-        if acrobatic_reverce(compressed_pair[0]):
-            #print("acrobatic reverse if zamena TRUE: ", compressed_pair)
-            continue
-
-        if path_optimization2(compressed_pair):
-            continue
+        #
+        # if path_optimization2(compressed_pair):
+        #     continue
 
         trigger = False
-
-    return
-
-    trigger = True
-    modified_word = word
-    while trigger:
-        for i in range(len(modified_word) - 2):
-            if modified_word[i] == modified_word[i + 2]:
-                modified_word = modified_word[:i + 1] + modified_word[i + 3:]
-                break
-            if word != modified_word:
-                pass
-        trigger = False
-
-    return False
+    print("CHECK gpw: ", shortest_word)
+    return True
 
 
 def compression(c_component: Tuple[str, ...],
@@ -677,6 +690,7 @@ def compression(c_component: Tuple[str, ...],
 
 
     print(_deleted_paths)
-    check_global_path_words()
+
+    check_global_path_words("1450",compressed_pair)
 
     return tuple(tuple(sublist) for sublist in compressed_pair)
