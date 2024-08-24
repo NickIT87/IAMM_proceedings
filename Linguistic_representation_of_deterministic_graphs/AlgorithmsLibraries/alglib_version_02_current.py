@@ -595,8 +595,8 @@ def path_optimization2(compressed_pair: List[List[str]]) -> bool:
 
 
 
-def path_optimization3(word: str, c_component: List[str]) -> str:
-    """ need docstring """
+def ops5_for_check_gdp(word: str, c_component: List[str]) -> str:
+    """ operation 5 for check gdp function """
     shortest_word = word
     for c_word in c_component:
         left = (len(c_word) + 1) // 2
@@ -633,7 +633,8 @@ def check_global_path_words(word, compressed_pair) -> bool:
             )
             shortest_word = get_modified_word_1(0, shortest_word, True)
             continue
-        if shortest_word != path_optimization3(shortest_word, compressed_pair[0]):
+        if shortest_word != ops5_for_check_gdp(shortest_word, compressed_pair[0]):
+            shortest_word = ops5_for_check_gdp(shortest_word, compressed_pair[0])
             continue
 
         #
@@ -691,6 +692,6 @@ def compression(c_component: Tuple[str, ...],
 
     print(_deleted_paths)
 
-    check_global_path_words("1450",compressed_pair)
+    check_global_path_words("14331015361263",compressed_pair)
 
     return tuple(tuple(sublist) for sublist in compressed_pair)
