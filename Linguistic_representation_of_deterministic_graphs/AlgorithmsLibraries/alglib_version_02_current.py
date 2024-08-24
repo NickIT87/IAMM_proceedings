@@ -642,21 +642,38 @@ def check_global_path_words(word, compressed_pair) -> bool:
         #     continue
 
         trigger = False
-    print("CHECK gpw: ", shortest_word)
-    return True
+    #print("CHECK gpw: ", shortest_word)
+
+    for cword in compressed_pair[0]:
+        if cword.startswith(shortest_word):
+            return True
+        if cword[::-1].startswith(shortest_word):
+            return True
+
+    for lword in compressed_pair[1]:
+        if lword.startswith(shortest_word):
+            return True
+
+    print("word: ", word, "shortest_word: ", shortest_word)
+
+    return False
 
 
 def compression(c_component: Tuple[str, ...],
                 l_component: Tuple[str, ...],
-                no_gdp: bool = False) -> Tuple[Tuple[str, ...], ...]:
+                no_gdp: bool = False) -> Dict[str, Tuple[Tuple[str, ...], Tuple[str, ...]] | bool | None]:
     """ in progress """
-    global _deleted_paths
-    _deleted_paths = set()
+    if not no_gdp:
+        global _deleted_paths
+        _deleted_paths = set()
 
     compressed_pair: List[List[str]] = [
         list(c_component),
         list(l_component)
     ]
+
+    result = {"compressed_pair" : None, "graph_exists": None}
+
     print("UNCOMPRESSED DEFINING PAIR: \n", c_component, l_component)
 
     trigger = True
@@ -689,9 +706,22 @@ def compression(c_component: Tuple[str, ...],
 
         trigger = False
 
+    converted_compressed_pair = tuple(tuple(sublist) for sublist in compressed_pair)
 
-    print(_deleted_paths)
+    if not no_gdp:
+        for gdp_word in _deleted_paths:
+            if not check_global_path_words(gdp_word, compressed_pair):
+                print("problem word in check gdp: ", gdp_word)
+                result["compressed_pair"] = converted_compressed_pair
+                result["graph_exists"] = False
+                return result
+        result["compressed_pair"] = converted_compressed_pair
+        result["graph_exists"] = True
+    else:
+        result["compressed_pair"] = converted_compressed_pair
 
-    check_global_path_words("14331015361263",compressed_pair)
+    #print(_deleted_paths)
 
-    return tuple(tuple(sublist) for sublist in compressed_pair)
+    #print("RESULT check gdp: ", check_global_path_words("1424350",compressed_pair))
+
+    return result
