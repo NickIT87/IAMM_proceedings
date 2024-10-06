@@ -10,8 +10,9 @@ import plotly.graph_objs as go
 import random
 import networkx as nx
 
-from AlgorithmsLibraries.alglib_version_02_current import \
-    ap_graph, get_canonical_pair_metrics_from_dgraph
+from AlgorithmsLibraries.alglib_version_02_current import *
+# from AlgorithmsLibraries.alglib_version_02_current import \
+#     ap_graph, get_canonical_pair_metrics_from_dgraph, compression
 
 
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -58,7 +59,8 @@ l_input = html.Div(
 
 submit_btn = html.Div(
     [
-        dbc.Button("Submit", id='submit-button', n_clicks=0, color="primary")
+        dbc.Button("Make graph", id='submit-button', n_clicks=0, color="primary", style={'marginRight': '10px'}),
+        dbc.Button("Compress pair", id='new-action-button', n_clicks=0, color="secondary")
     ]
 )
 
@@ -90,98 +92,182 @@ app.layout = dbc.Container(
     [Output('network-graph', 'figure'),
      Output('output-text', 'value'),
      Output('error-message', 'children')],
-    Input('submit-button', 'n_clicks'),
-    State('c_data', 'value'),
-    State('l_data', 'value'),
-    State('root_data', 'value'),
+    [Input('submit-button', 'n_clicks'),
+     Input('new-action-button', 'n_clicks')],
+    [State('c_data', 'value'),
+     State('l_data', 'value'),
+     State('root_data', 'value')]
 )
-def update_graph(n_clicks, c_val, l_val, root_val):
-    if n_clicks == 0:  # Initial or no button click
-        return dash.no_update
+def update_graph_or_new_action(submit_n_clicks, new_action_n_clicks, c_val, l_val, root_val):
+    # Определяем, какая кнопка была нажата
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        return dash.no_update, '', ''
 
-    try:
-        c_component = tuple(c_val.split())
-    except:
-        c_component = tuple()
+    triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-    try:
-        l_component = tuple(l_val.split())
-    except:
-        l_component = tuple()
+    # Если была нажата кнопка "Submit"
+    if triggered_id == 'submit-button':
+        try:
+            c_component = tuple(c_val.split()) if c_val else tuple()
+            l_component = tuple(l_val.split()) if l_val else tuple()
+            G = ap_graph(c_component, l_component, root_val)
+        except ValueError as e:
+            return dash.no_update, '', f'Error: {str(e)} Please check your input.'
 
-    try:
-        G = ap_graph(c_component, l_component, root_val)
-    except ValueError as e:
-        # Display error message to the user
-        return dash.no_update, '', f'Error: {str(e)} Please check your input.'
+        pos = nx.spring_layout(G)
+        edge_trace = go.Scatter(
+            x=[], y=[], line=dict(width=1, color='#888'), hoverinfo='none', mode='lines'
+        )
 
-    # Create Plotly figure from NetworkX graph
-    pos = nx.spring_layout(G)  # Layout algorithm (e.g., spring_layout, circular_layout)
-    edge_trace = go.Scatter(
-        x=[],
-        y=[],
-        line=dict(width=1, color='#888'),
-        hoverinfo='none',
-        mode='lines')
+        for edge in G.edges():
+            x0, y0 = pos[edge[0]]
+            x1, y1 = pos[edge[1]]
+            edge_trace['x'] += (x0, x1, None)
+            edge_trace['y'] += (y0, y1, None)
 
-    for edge in G.edges():
-        x0, y0 = pos[edge[0]]
-        x1, y1 = pos[edge[1]]
-        edge_trace['x'] += (x0, x1, None)
-        edge_trace['y'] += (y0, y1, None)
-
-    node_trace = go.Scatter(
-        x=[],
-        y=[],
-        text=[],
-        mode='markers',
-        hoverinfo='text',
-        marker=dict(
-            showscale=True,
-            colorscale='YlGnBu',
-            color=[f'rgb({random.randint(100, 255)}, {random.randint(100, 255)}, {random.randint(100, 255)})'
-                   for _ in G.nodes()
-            ],
-            size=35,
-            colorbar=dict(
-                thickness=15,
-                title='Node Connections',
-                xanchor='left',
-                titleside='right'
+        node_trace = go.Scatter(
+            x=[], y=[], text=[], mode='markers', hoverinfo='text',
+            marker=dict(
+                showscale=True, colorscale='YlGnBu',
+                color=[f'rgb({random.randint(100, 255)}, {random.randint(100, 255)}, {random.randint(100, 255)})'
+                       for _ in G.nodes()],
+                size=35, colorbar=dict(thickness=15, title='Node Connections', xanchor='left', titleside='right')
             )
         )
-    )
 
-    for node in G.nodes():
-        x, y = pos[node]
-        node_trace['x'] += (x,)
-        node_trace['y'] += (y,)
-        node_trace['text'] += (f'Node {node}',)
+        for node in G.nodes():
+            x, y = pos[node]
+            node_trace['x'] += (x,)
+            node_trace['y'] += (y,)
+            node_trace['text'] += (f'Node {node}',)
 
-    layout = go.Layout(
-        showlegend=False,
-        hovermode='closest',
-        margin=dict(b=0, l=0, r=0, t=0),
-        height=600,
-        annotations=[
-            dict(
-                text=G.nodes[node]['label'],  # Use custom label or default if not found
-                x=pos[node][0],
-                y=pos[node][1],
-                xref='x',
-                yref='y',
-                showarrow=False,
-                font=dict(size=18, color="black")
-            )
-            for node in G.nodes()
-        ]
-    )
+        layout = go.Layout(
+            showlegend=False, hovermode='closest', margin=dict(b=0, l=0, r=0, t=0), height=600,
+            annotations=[
+                dict(text=G.nodes[node].get('label', node), x=pos[node][0], y=pos[node][1], xref='x', yref='y',
+                     showarrow=False, font=dict(size=18, color="black"))
+                for node in G.nodes()
+            ]
+        )
+        fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
 
-    fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
+        output_text = str(get_canonical_pair_metrics_from_dgraph(G))
 
-    output_text = str(get_canonical_pair_metrics_from_dgraph(G))
+        return fig, output_text, ''
 
-    return fig, output_text, ''
+    # Если была нажата кнопка "New Action"
+    elif triggered_id == 'new-action-button':
+
+        c_component = tuple(c_val.split()) if c_val else tuple()
+        l_component = tuple(l_val.split()) if l_val else tuple()
+
+        if validate_defining_pair(c_component, l_component, root_val):
+            result = f"{compression(c_component, l_component)}"
+        else:
+            return dash.no_update, '', f'Error: Please check your input.'
+
+        return dash.no_update, result, ''
+
+    return dash.no_update, '', ''
+
+
+# @app.callback(
+#     [Output('network-graph', 'figure'),
+#      Output('output-text', 'value'),
+#      Output('error-message', 'children')],
+#     Input('submit-button', 'n_clicks'),
+#     State('c_data', 'value'),
+#     State('l_data', 'value'),
+#     State('root_data', 'value'),
+# )
+# def update_graph(n_clicks, c_val, l_val, root_val):
+#     if n_clicks == 0:  # Initial or no button click
+#         return dash.no_update
+#
+#     try:
+#         c_component = tuple(c_val.split())
+#     except:
+#         c_component = tuple()
+#
+#     try:
+#         l_component = tuple(l_val.split())
+#     except:
+#         l_component = tuple()
+#
+#     try:
+#         G = ap_graph(c_component, l_component, root_val)
+#     except ValueError as e:
+#         # Display error message to the user
+#         return dash.no_update, '', f'Error: {str(e)} Please check your input.'
+#
+#     # Create Plotly figure from NetworkX graph
+#     pos = nx.spring_layout(G)  # Layout algorithm (e.g., spring_layout, circular_layout)
+#     edge_trace = go.Scatter(
+#         x=[],
+#         y=[],
+#         line=dict(width=1, color='#888'),
+#         hoverinfo='none',
+#         mode='lines')
+#
+#     for edge in G.edges():
+#         x0, y0 = pos[edge[0]]
+#         x1, y1 = pos[edge[1]]
+#         edge_trace['x'] += (x0, x1, None)
+#         edge_trace['y'] += (y0, y1, None)
+#
+#     node_trace = go.Scatter(
+#         x=[],
+#         y=[],
+#         text=[],
+#         mode='markers',
+#         hoverinfo='text',
+#         marker=dict(
+#             showscale=True,
+#             colorscale='YlGnBu',
+#             color=[f'rgb({random.randint(100, 255)}, {random.randint(100, 255)}, {random.randint(100, 255)})'
+#                    for _ in G.nodes()
+#             ],
+#             size=35,
+#             colorbar=dict(
+#                 thickness=15,
+#                 title='Node Connections',
+#                 xanchor='left',
+#                 titleside='right'
+#             )
+#         )
+#     )
+#
+#     for node in G.nodes():
+#         x, y = pos[node]
+#         node_trace['x'] += (x,)
+#         node_trace['y'] += (y,)
+#         node_trace['text'] += (f'Node {node}',)
+#
+#     layout = go.Layout(
+#         showlegend=False,
+#         hovermode='closest',
+#         margin=dict(b=0, l=0, r=0, t=0),
+#         height=600,
+#         annotations=[
+#             dict(
+#                 text=G.nodes[node]['label'],  # Use custom label or default if not found
+#                 x=pos[node][0],
+#                 y=pos[node][1],
+#                 xref='x',
+#                 yref='y',
+#                 showarrow=False,
+#                 font=dict(size=18, color="black")
+#             )
+#             for node in G.nodes()
+#         ]
+#     )
+#
+#     fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
+#
+#     output_text = str(get_canonical_pair_metrics_from_dgraph(G))
+#
+#     return fig, output_text, ''
 
 
 if __name__ == '__main__':
