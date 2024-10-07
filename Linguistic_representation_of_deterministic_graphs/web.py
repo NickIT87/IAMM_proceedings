@@ -38,7 +38,7 @@ c_input = html.Div(
         dbc.Label("C component: ", html_for="c_data"),
         dbc.Input(type="text", id="c_data", placeholder="Enter words that described graph cycles"),
         dbc.FormText(
-            "Enter words that described graph cycles",
+            "Input example: 01242154312310 02352510 02130214210 01320213025310 01323510 02141345320 015452034531210 0214130251320 01352101421320",
             color="secondary",
         ),
     ],
@@ -50,7 +50,7 @@ l_input = html.Div(
         dbc.Label("L component: ", html_for="l_data"),
         dbc.Input(type="text", id="l_data", placeholder="Enter words that described leaf nodes"),
         dbc.FormText(
-            "Enter words that described leaf nodes",
+            "Input example: 0235431302105 012410120314",
             color="secondary",
         ),
     ],
@@ -170,104 +170,6 @@ def update_graph_or_new_action(submit_n_clicks, new_action_n_clicks, c_val, l_va
         return dash.no_update, result, ''
 
     return dash.no_update, '', ''
-
-
-# @app.callback(
-#     [Output('network-graph', 'figure'),
-#      Output('output-text', 'value'),
-#      Output('error-message', 'children')],
-#     Input('submit-button', 'n_clicks'),
-#     State('c_data', 'value'),
-#     State('l_data', 'value'),
-#     State('root_data', 'value'),
-# )
-# def update_graph(n_clicks, c_val, l_val, root_val):
-#     if n_clicks == 0:  # Initial or no button click
-#         return dash.no_update
-#
-#     try:
-#         c_component = tuple(c_val.split())
-#     except:
-#         c_component = tuple()
-#
-#     try:
-#         l_component = tuple(l_val.split())
-#     except:
-#         l_component = tuple()
-#
-#     try:
-#         G = ap_graph(c_component, l_component, root_val)
-#     except ValueError as e:
-#         # Display error message to the user
-#         return dash.no_update, '', f'Error: {str(e)} Please check your input.'
-#
-#     # Create Plotly figure from NetworkX graph
-#     pos = nx.spring_layout(G)  # Layout algorithm (e.g., spring_layout, circular_layout)
-#     edge_trace = go.Scatter(
-#         x=[],
-#         y=[],
-#         line=dict(width=1, color='#888'),
-#         hoverinfo='none',
-#         mode='lines')
-#
-#     for edge in G.edges():
-#         x0, y0 = pos[edge[0]]
-#         x1, y1 = pos[edge[1]]
-#         edge_trace['x'] += (x0, x1, None)
-#         edge_trace['y'] += (y0, y1, None)
-#
-#     node_trace = go.Scatter(
-#         x=[],
-#         y=[],
-#         text=[],
-#         mode='markers',
-#         hoverinfo='text',
-#         marker=dict(
-#             showscale=True,
-#             colorscale='YlGnBu',
-#             color=[f'rgb({random.randint(100, 255)}, {random.randint(100, 255)}, {random.randint(100, 255)})'
-#                    for _ in G.nodes()
-#             ],
-#             size=35,
-#             colorbar=dict(
-#                 thickness=15,
-#                 title='Node Connections',
-#                 xanchor='left',
-#                 titleside='right'
-#             )
-#         )
-#     )
-#
-#     for node in G.nodes():
-#         x, y = pos[node]
-#         node_trace['x'] += (x,)
-#         node_trace['y'] += (y,)
-#         node_trace['text'] += (f'Node {node}',)
-#
-#     layout = go.Layout(
-#         showlegend=False,
-#         hovermode='closest',
-#         margin=dict(b=0, l=0, r=0, t=0),
-#         height=600,
-#         annotations=[
-#             dict(
-#                 text=G.nodes[node]['label'],  # Use custom label or default if not found
-#                 x=pos[node][0],
-#                 y=pos[node][1],
-#                 xref='x',
-#                 yref='y',
-#                 showarrow=False,
-#                 font=dict(size=18, color="black")
-#             )
-#             for node in G.nodes()
-#         ]
-#     )
-#
-#     fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
-#
-#     output_text = str(get_canonical_pair_metrics_from_dgraph(G))
-#
-#     return fig, output_text, ''
 
 
 if __name__ == '__main__':
