@@ -38,7 +38,7 @@ c_input = html.Div(
         dbc.Label("C component: ", html_for="c_data"),
         dbc.Input(type="text", id="c_data", placeholder="Enter words that described graph cycles"),
         dbc.FormText(
-            "Input example: 01242154312310 02352510 02130214210 01320213025310 01323510 02141345320 015452034531210 0214130251320 01352101421320",
+            "Input example: 01210 01242154312310 02352510 02130214210 01320213025310 01323510 02141345320 015452034531210 0214130251320 01352101421320",
             color="secondary",
         ),
     ],

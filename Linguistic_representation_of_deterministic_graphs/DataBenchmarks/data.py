@@ -7,7 +7,8 @@ from typing import Tuple
 
 
 sample_exists = (
-    ("14520542321241",
+    ("16361",
+     "14520542321241",
      "14501",
      "16521263301",
      "143513361",
@@ -61,6 +62,7 @@ class SpecCase:
 class EtalonSample:
     defining_pair: DefiningPair = DefiningPair(
         C=(
+            "01210",
             "01242154312310",
             "02352510",
             "02130214210",
