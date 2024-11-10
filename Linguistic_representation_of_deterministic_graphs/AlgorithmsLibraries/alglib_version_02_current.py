@@ -407,6 +407,16 @@ def remove_word_of_one_symbol(pair_component: List[str]):
             num = num + 1
 
 
+def remove_reverse_words(pair_component: List[str]):
+    """operation 2: remove reverse words from the first component """
+    global num
+    for index, word in enumerate(pair_component):
+        if len(word) == 3 and word[0] == word[2]:
+            pair_component.pop(index)
+            print(num, f" Operation 2 is performed. {word}\n")
+            num = num + 1
+
+
 def remove_reverse_sequence(compressed_pair: List[List[str]]) -> bool:
     """ operation 3: remove first sequence from
         each pair component XYX -> X; included (C, L)"""
@@ -684,7 +694,8 @@ def compression(c_component: Tuple[str, ...],
 
         #print("\nDEBUG COMPRESSION AFTER 1, 2 STEP (sorting): \n", compressed_pair)
 
-        remove_word_of_one_symbol(compressed_pair[0])
+        #remove_word_of_one_symbol(compressed_pair[0])
+        remove_reverse_words(compressed_pair[0])
 
         #print("\nDEBUG COMPRESSION AFTER 3 STEP (remove 1 symbol from C): \n", compressed_pair)
 
