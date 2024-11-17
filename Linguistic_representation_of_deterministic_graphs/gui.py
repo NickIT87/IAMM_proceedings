@@ -1,12 +1,15 @@
 import tkinter as tk
 from tkinter import messagebox
 import matplotlib.pyplot as plt
+import warnings
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from networkx.drawing.nx_pydot import to_pydot
 
 from DataBenchmarks.data import random_color
 from AlgorithmsLibraries.alglib_version_02_current import *
 
+
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="networkx")
 
 def on_closing():
     # Add any cleanup or save operations here before closing the window
@@ -84,13 +87,19 @@ def build_graph():
         messagebox.showerror("Error", f"Invalid input: {e}")
 
 
+def compress_pair():
+    data = get_info()
+    compressed_pair = compression(data[0], data[1], no_gdp=False)
+    update_text_area(message=compressed_pair)
+
+
 def save_graph_to_file():
     global G
     try:
         file_path = 'outputData/example.gml'
         nx.write_gml(G, file_path)
         dot_graph = to_pydot(G)
-        dot_graph.write_dot("graph.dot")
+        dot_graph.write_dot("outputData/graph.dot")
         dot_string = dot_graph.to_string()
         try:
             with open('outputData/simple.dot', 'w') as file:
@@ -155,14 +164,21 @@ def create_widgets(root):
     l_text.grid(row=2, column=1, padx=10, pady=10)
     button_frame = tk.Frame(root)
     button_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+    # build btn
     build_button = tk.Button(button_frame, text="Build Graph", command=build_graph)
     build_button.grid(row=0, column=0, padx=button_distance)
+    # compress btn
+    compress_button = tk.Button(button_frame, text="Compress pair", command=compress_pair)
+    compress_button.grid(row=0, column=1, padx=button_distance)
+    # save btn
     save_button = tk.Button(button_frame, text="Save graph to file", command=save_graph_to_file)
-    save_button.grid(row=0, column=1, padx=button_distance)
-    save_button = tk.Button(button_frame, text="Save info to file", command=save_info)
     save_button.grid(row=0, column=2, padx=button_distance)
+    # save info btn
+    save_info_button = tk.Button(button_frame, text="Save info to file", command=save_info)
+    save_info_button.grid(row=0, column=3, padx=button_distance)
+    # clear btn
     clear_button = tk.Button(button_frame, text="Clear output", command=clear_output)
-    clear_button.grid(row=0, column=3, padx=button_distance)
+    clear_button.grid(row=0, column=4, padx=button_distance)
     text_frame = tk.Frame(root)
     text_frame.grid(row=2, column=0, sticky='W', columnspan=2, padx=10, pady=10)
     info_label = tk.Label(text_frame, text="Info output:")

@@ -1,1 +1,1 @@
-{'n': 17, 'm': 19, 'delta': 4, 'formula_result': 90, 'total_p_count': 33, 'mu': 0, 'power_sigma_G': 90, 'canonical_pair': (['ABCPA', 'ABCDEFGHIJKLA', 'ALMPA'], ['ABCDENO', 'APG'])}
+{'n': 16, 'm': 20, 'delta': 5, 'formula_result': 130, 'total_p_count': 48, 'mu': 1, 'power_sigma_G': 132, 'canonical_pair': (('01320', '013510', '012412510', '01543120', '015203120'), ('0214', '0124105'))}
