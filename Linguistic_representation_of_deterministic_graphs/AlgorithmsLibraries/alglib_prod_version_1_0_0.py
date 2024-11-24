@@ -361,10 +361,10 @@ def remove_repeating_words_into_pair_component(pair_component: List[str]):
     insertion_acrobatics_sort(pair_component)
 
 
-def remove_word_of_one_symbol(pair_component: List[str]):
-    """operation 2: remove words of length 1 from the first component """
+def remove_reverse_words(pair_component: List[str]):
+    """operation 2: remove reverse words from the first component """
     for index, word in enumerate(pair_component):
-        if len(word) < 2:
+        if len(word) == 3 and word[0] == word[2]:
             pair_component.pop(index)
 
 
@@ -515,7 +515,7 @@ def compression(
             insertion_acrobatics_sort(component)
             remove_repeating_words_into_pair_component(component)
         # operation 2
-        remove_word_of_one_symbol(compressed_pair[0])
+        remove_reverse_words(compressed_pair[0])
         # operation 3
         if remove_reverse_sequence(compressed_pair, no_debug=no_gdp):
             continue

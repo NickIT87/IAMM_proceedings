@@ -40,7 +40,7 @@ def analyze_code(file_path):
     cc_rank_value = custom_cc_rank(total_complexity)  # Use the custom rank
 
     # Calculate Maintainability Index (MI)
-    mi_score = mi_visit(code, multi=False)
+    mi_score = mi_visit(code, multi=True)
 
     # Calculate Halstead Metrics (HAL)
     halstead_results = h_visit(code)
