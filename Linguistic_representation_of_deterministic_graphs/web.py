@@ -10,9 +10,9 @@ import plotly.graph_objs as go
 import random
 import networkx as nx
 
-from AlgorithmsLibraries.alglib_version_02_current import *
-# from AlgorithmsLibraries.alglib_version_02_current import \
-#     ap_graph, get_canonical_pair_metrics_from_dgraph, compression
+#from AlgorithmsLibraries.alglib_version_02_current import *
+from AlgorithmsLibraries.alglib_prod_version_1_0_0 import \
+    ap_graph, get_canonical_pair_metrics_from_dgraph, compression, validate_defining_pair, nx
 
 
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -75,14 +75,14 @@ app.layout = dbc.Container(
         html.Br(),
         html.Div(id='error-message', style={'color': 'red'}),
         html.Br(),
-        html.H4('graph metrics: ', style={'textAlign': 'center'}),
+        html.H4('Graph metrics', style={'textAlign': 'center'}),
         html.Br(),
         dbc.Textarea(id='output-text', value='', style={'width': '100%', 'height': 100}),
         html.Br(),
         dcc.Graph(id='network-graph', style={'marginTop': '10px', 'marginBottom': '10px'}),
         html.Br(),
         html.Footer(
-            html.P("IAMM proceedings 2023 - 2024")
+            html.P("IAMM proceedings 2023 - 2024; Test branch is enabled!")
         ),
     ])
 )

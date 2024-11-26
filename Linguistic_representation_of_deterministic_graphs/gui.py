@@ -6,7 +6,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from networkx.drawing.nx_pydot import to_pydot
 
 from DataBenchmarks.data import random_color
-from AlgorithmsLibraries.alglib_version_02_current import *
+from AlgorithmsLibraries.alglib_prod_version_1_0_0 import ap_graph, get_canonical_pair_metrics_from_dgraph, compression, nx
+#from AlgorithmsLibraries.alglib_version_02_current import *
 
 
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="networkx")
