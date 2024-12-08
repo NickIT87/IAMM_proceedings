@@ -425,7 +425,7 @@ def acrobatic_reverce(c_component: List[str]) -> bool:
 
 
 def path_optimization(compressed_pair: List[List[str]]) -> bool:
-    """need docstring"""
+    """Optimization of paths in accordance with the branching vertex"""
     for word in compressed_pair[0]:
         left = (len(word) + 1) // 2
         right = ((len(word) + 1) // 2) + 1
