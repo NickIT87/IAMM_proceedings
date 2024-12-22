@@ -283,11 +283,9 @@ def ac_pair(
     lambda_g: List[str] = []
     reachability_basis: Dict[str, List[int]] = {}
     # ======== Find reachability basis in the graph and fill lambda_g ========
-    # ms_tree = graph.edge_subgraph(list(nx.bfs_edges(graph, source=root)))
     ms_tree = get_nodes_shortest_paths_of_dgraph(
         graph, root=root, root_label=graph.nodes[0]["label"]
     )
-    # for node in ms_tree.nodes:
     for node, data in ms_tree.items():
         node_path_id: List[int] = data["npid"]  # type: ignore
         node_path_labels: List[str] = list(data["npl"])  # type: ignore
@@ -384,7 +382,7 @@ def get_modified_word(idx: int, word: str, no_debug=False) -> str:
     global _deleted_paths
     modified_word = word
     for i in range(len(word) - 2):
-        if word[i] == word[i + 2]:  # and string[i] != string[i + 1]:
+        if word[i] == word[i + 2]:
             if idx == 0 and not no_debug:
                 _deleted_paths.add(
                     min_word_using_special_order(
@@ -491,7 +489,7 @@ def ops5_for_check_gdp(word: str, c_component: List[str]) -> str:
 
 
 def check_global_path_words(word, compressed_pair) -> bool:
-    """word minimization in progress"""
+    """word minimization checker in case of correctness of defining pair"""
     shortest_word = word
     trigger = True
     while trigger:
