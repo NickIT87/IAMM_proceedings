@@ -3,7 +3,7 @@
 
 # import networkx as nx
 
-from DataBenchmarks.data import print_data, sample_exists, sample_not_exists, TestCases as T
+from DataBenchmarks.data import print_data, sample_exists, sample_not_exists, publication_sample, TestCases as T
 from DataBenchmarks.flowerGraph import *
 from AlgorithmsLibraries.alglib_version_02_current import *
 # from AlgorithmsLibraries.debug_helpers import *
@@ -32,34 +32,30 @@ def run_test_flow():
     # print(isomorphic, isomorphic_t)
     # ================= COMPRESSION =======================
     print(
-        "\n==== DEBUG COMPRESSION ====\nCANONICAL PAIR:\n",
-        T.sample.canonical_pair.C,
-        T.sample.canonical_pair.L,
+        "\n==== DEBUG COMPRESSION ====\nPUBLICATION DEFINING PAIR:\n",
+        publication_sample.C,
+        publication_sample.L,
         "\n"
     )
-    print(
-        "\nRETURNED DATA: \n",
-        compression(T.sample.defining_pair.C, T.sample.defining_pair.L),
-        "\nCANONICAL PAIR: ",
-        T.sample.canonical_pair.C,
-        T.sample.canonical_pair.L,
-        "\n"
-    )
+    G = ap_graph(publication_sample.C, publication_sample.L, "0")
+    compressed_pair = compression(publication_sample.C, publication_sample.L, no_gdp=False)
+    print("COMPRESSED PAIR: ", compressed_pair)
+    print_data(G)
 
 
 # =============================================================================
 if __name__ == "__main__":
-    #run_test_flow()
-    G = ap_graph(sample_exists[0], sample_exists[1], "1")
-    acpair = ac_pair(G)
-    compressed_pair = compression(sample_exists[0], sample_exists[1], no_gdp=False)
-    #print_data(G)
-    print("AC pair: ", acpair)
-    print("Compression: ", compressed_pair)
-    print("acpair == compressed_pair: ", acpair == compressed_pair['compressed_pair'])
-
-    compressed_pair_nxsts = compression(sample_not_exists[0], sample_not_exists[1], no_gdp=False)
-    print(compressed_pair_nxsts)
+    run_test_flow()
+    # G = ap_graph(sample_exists[0], sample_exists[1], "1")
+    # acpair = ac_pair(G)
+    # compressed_pair = compression(sample_exists[0], sample_exists[1], no_gdp=False)
+    # #print_data(G)
+    # print("AC pair: ", acpair)
+    # print("Compression: ", compressed_pair)
+    # print("acpair == compressed_pair: ", acpair == compressed_pair['compressed_pair'])
+    #
+    # compressed_pair_nxsts = compression(sample_not_exists[0], sample_not_exists[1], no_gdp=False)
+    # print(compressed_pair_nxsts)
     # ============================= PAIR METRICS ==============================
     # print(get_canonical_pair_metrics_from_dgraph(G))
     # # print_data(G)
