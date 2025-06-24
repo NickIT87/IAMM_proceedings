@@ -1,0 +1,168 @@
+import networkx as nx
+import random
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+from AlgorithmsLibraries.alglib_version_02_current import *
+from DataBenchmarks.data import publication_sample
+
+# === 1. Кастомный связный граф ===
+G = ap_graph(publication_sample.C, publication_sample.L, "0")
+
+# Простейшие координаты для визуализации (можно задать вручную)
+pos = nx.spring_layout(G, seed=42)  # Раскладка для красивой отрисовки
+
+# === 2. GraphAPI (как раньше) ===
+class GraphAPI:
+    def __init__(self, graph, start_node):
+        self._graph = graph
+        self._current_position = start_node
+
+    def get_position(self):
+        return self._current_position
+
+    def get_neighbors(self):
+        return list(self._graph.neighbors(self._current_position))
+
+    def move_to(self, node):
+        if node in self.get_neighbors():
+            self._current_position = node
+            return True
+        return False
+
+# === 3. Агент ===
+class Agent:
+    def __init__(self, api):
+        self.api = api
+
+    def move(self):
+        neighbors = self.api.get_neighbors()
+        if neighbors:
+            self.api.move_to(random.choice(neighbors))
+
+    def get_position(self):
+        return self.api.get_position()
+
+# === 4. Запуск анимации ===
+start_node = 0
+api = GraphAPI(G, start_node)
+agent = Agent(api)
+
+# fig, ax = plt.subplots(figsize=(6, 6))
+
+# def update(frame):
+#     ax.clear()
+#     nx.draw(G, pos, with_labels=True, node_color="lightgray", edge_color="gray", ax=ax)
+#     agent_pos = agent.get_position()
+#     nx.draw_networkx_nodes(G, pos, nodelist=[agent_pos], node_color="red", node_size=500, ax=ax)
+#     ax.set_title(f"Шаг {frame+1}, Агент в {agent_pos}")
+#     agent.move()
+
+
+# def update(frame):
+#     ax.clear()
+#
+#     # Получение лейблов с fallback
+#     raw_labels = nx.get_node_attributes(G, 'label')
+#     labels = {node: f"{raw_labels.get(node, '')}\n{node}" for node in G.nodes}
+#
+#     # Цвета узлов (если нет — случайный или серый)
+#     try:
+#         node_colors = [G.nodes[node]['color'] for node in G.nodes]
+#     except KeyError:
+#         node_colors = ['lightgray'] * len(G.nodes)
+#
+#     # Отрисовка графа
+#     nx.draw_networkx_nodes(G, pos, node_color=node_colors, ax=ax)
+#     nx.draw_networkx_edges(G, pos, edge_color='gray', ax=ax)
+#     nx.draw_networkx_labels(G, pos, labels, ax=ax, font_size=9)
+#
+#     # Отметка текущей позиции агента
+#     agent_pos = agent.get_position()
+#     nx.draw_networkx_nodes(G, pos, nodelist=[agent_pos], node_color="red", node_size=500, ax=ax)
+#
+#     ax.set_title(f"Шаг {frame+1}, Агент в {agent_pos}")
+#     ax.set_axis_off()
+#
+#     agent.move()
+#     print(f"Шаг {frame+1}, Агент в {agent_pos}")
+#
+# ani = FuncAnimation(fig, update, frames=20, interval=2000, repeat=False)
+# plt.show()
+
+# # LIVE DRAW
+# # === Отрисовка одного шага (в одном окне) ===
+def draw_step_live(G, pos, agent, step_number, ax):
+    ax.clear()
+
+    # Получение подписей вида label\nid
+    raw_labels = nx.get_node_attributes(G, 'label')
+    labels = {node: f"{raw_labels.get(node, '')}\n{node}" for node in G.nodes}
+
+    # Цвета узлов
+    try:
+        node_colors = [G.nodes[node]['color'] for node in G.nodes]
+    except KeyError:
+        node_colors = ['lightgray'] * len(G.nodes)
+
+    # Рисуем граф
+    nx.draw_networkx_nodes(G, pos, node_color=node_colors, edgecolors='black', ax=ax)
+    nx.draw_networkx_edges(G, pos, edge_color='gray', ax=ax)
+    nx.draw_networkx_labels(G, pos, labels, font_size=9, ax=ax)
+
+    # Агент
+    agent_pos = agent.get_position()
+    nx.draw_networkx_nodes(G, pos, nodelist=[agent_pos], node_color='red', node_size=500, ax=ax)
+
+    ax.set_title(f"Шаг {step_number + 1}, Агент в {agent_pos}")
+    ax.set_axis_off()
+    print(f"[Шаг {step_number + 1}] Агент находится в: {agent.get_position()}")
+    plt.pause(2)
+
+
+# === Инициализация окна ===
+fig, ax = plt.subplots(figsize=(6, 6))
+
+# === Симуляция движения агента ===
+steps = 20
+for i in range(steps):
+    draw_step_live(G, pos, agent, i, ax)
+    agent.move()
+
+
+# MANUAL CLOSING
+
+# # === Параметры ===
+# steps = 20
+#
+# # === Отрисовка одного кадра ===
+# def draw_step(G, pos, agent, step_number):
+#     # Получение лейблов
+#     raw_labels = nx.get_node_attributes(G, 'label')
+#     labels = {node: f"{raw_labels.get(node, '')}\n{node}" for node in G.nodes}
+#
+#     # Цвета узлов
+#     try:
+#         node_colors = [G.nodes[node]['color'] for node in G.nodes]
+#     except KeyError:
+#         node_colors = ['lightgray'] * len(G.nodes)
+#
+#     # Создание и отрисовка графа
+#     plt.figure(figsize=(6, 6))
+#     nx.draw_networkx_nodes(G, pos, node_color=node_colors, edgecolors='black')
+#     nx.draw_networkx_edges(G, pos, edge_color='gray')
+#     nx.draw_networkx_labels(G, pos, labels, font_size=9)
+#
+#     # Агент
+#     agent_pos = agent.get_position()
+#     nx.draw_networkx_nodes(G, pos, nodelist=[agent_pos], node_color='red', node_size=500)
+#
+#     plt.title(f"Шаг {step_number + 1}, Агент в {agent_pos}")
+#     plt.axis('off')
+#     plt.tight_layout()
+#     plt.show()
+#
+# # === Симуляция ===
+# for i in range(steps):
+#     draw_step(G, pos, agent, i)
+#     agent.move()
