@@ -736,3 +736,25 @@ def compression(c_component: Tuple[str, ...],
     #print("RESULT check gdp: ", check_global_path_words("1424350",compressed_pair))
 
     return result
+
+
+def find_shortest_path_by_word(valid_word: str, c_component: List[str]) -> str:
+    """ Get shortest path by special order from root
+        node to node that correspond to given word. """
+    shortest_word = valid_word
+
+    trigger = True
+    while trigger:
+        word = shortest_word
+        shortest_word = get_modified_word_1(0, shortest_word, True)
+        if word != shortest_word:
+            print(f"Operation DEL-RW (w) is performed; w = {word}, modified = {shortest_word}")
+            continue
+
+        shortest_word = ops5_for_check_gdp(shortest_word, c_component)
+        if word != shortest_word:
+            continue
+
+        trigger = False
+
+    return shortest_word

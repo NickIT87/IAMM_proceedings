@@ -98,9 +98,24 @@ class EtalonSample:
     root_label = "0"
 
 
+class FindShortPathCase:
+    defining_pair: DefiningPair = DefiningPair(
+        C = ('0120', '03530', '03524150', '03114251130', '012035241130'),
+        L = ('035230', '03114230', '0351130123')
+    )
+
+    canonical_pair: DefiningPair = DefiningPair(
+        C = ('0120', '0350', '031150', '0514250'),
+        L = ('023', '05230')
+    )
+
+    root_label = "0"
+
+
 class TestCases:
     spec = SpecCase
     sample = EtalonSample
+    shortPathCase = FindShortPathCase
 
     # # correct pair of base case with letters
     # base_letters: DefiningPair = DefiningPair(

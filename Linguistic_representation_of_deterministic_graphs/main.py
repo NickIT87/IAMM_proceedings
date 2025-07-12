@@ -31,16 +31,30 @@ def run_test_flow():
     #
     # print(isomorphic, isomorphic_t)
     # ================= COMPRESSION =======================
-    print(
-        "\n==== DEBUG COMPRESSION ====\nPUBLICATION DEFINING PAIR:\n",
-        publication_sample.C,
-        publication_sample.L,
-        "\n"
+    # print(
+    #     "\n==== DEBUG COMPRESSION ====\nPUBLICATION DEFINING PAIR:\n",
+    #     publication_sample.C,
+    #     publication_sample.L,
+    #     "\n"
+    # )
+    #G = ap_graph(publication_sample.C, publication_sample.L, "0")
+    # compressed_pair = compression(publication_sample.C, publication_sample.L, no_gdp=False)
+    # print("COMPRESSED PAIR: ", compressed_pair)
+    #print_data(G)
+    # ================= FIND SHORTEST PATH =======================
+    canonical_pair = compression(
+        T.shortPathCase.defining_pair.C,
+        T.shortPathCase.defining_pair.L,
     )
-    G = ap_graph(publication_sample.C, publication_sample.L, "0")
-    compressed_pair = compression(publication_sample.C, publication_sample.L, no_gdp=False)
-    print("COMPRESSED PAIR: ", compressed_pair)
-    print_data(G)
+    print(canonical_pair)
+    print("===== NEW FLOW ======")
+    spath = find_shortest_path_by_word(
+        #"035111523241",
+        #'0232102103511352324',
+        '03115241130210530120311423',
+        list(canonical_pair['compressed_pair'][0])
+    )
+    print(spath)
 
 
 # =============================================================================
