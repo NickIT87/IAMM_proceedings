@@ -128,12 +128,28 @@ def update_graph_or_new_action(submit_n_clicks, new_action_n_clicks, c_val, l_va
 
         node_trace = go.Scatter(
             x=[], y=[], text=[], mode='markers', hoverinfo='text',
+            # marker=dict(
+            #     showscale=True, colorscale='YlGnBu',
+            #     color=[f'rgb({random.randint(100, 255)}, {random.randint(100, 255)}, {random.randint(100, 255)})'
+            #            for _ in G.nodes()],
+            #     size=35, colorbar=dict(thickness=15, title='Node Connections', xanchor='left', titleside='right')
+            # )
             marker=dict(
-                showscale=True, colorscale='YlGnBu',
+                showscale=True,
+                colorscale='YlGnBu',
                 color=[f'rgb({random.randint(100, 255)}, {random.randint(100, 255)}, {random.randint(100, 255)})'
                        for _ in G.nodes()],
-                size=35, colorbar=dict(thickness=15, title='Node Connections', xanchor='left', titleside='right')
+                size=35,
+                colorbar=dict(
+                    thickness=15,
+                    xanchor='left',
+                    title=dict(
+                        text='Node Connections',
+                        side='right'
+                    )
+                )
             )
+
         )
 
         for node in G.nodes():
@@ -173,4 +189,5 @@ def update_graph_or_new_action(submit_n_clicks, new_action_n_clicks, c_val, l_va
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    #app.run_server(debug=True)
+    app.run(debug=True)

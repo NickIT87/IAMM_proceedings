@@ -1,13 +1,10 @@
 # import cProfile
 # import pstats
 
-# import networkx as nx
-
-from DataBenchmarks.data import print_data, sample_exists, sample_not_exists, publication_sample, TestCases as T
+from DataBenchmarks.data import sample_exists, sample_not_exists, publication_sample, TestCases as T
 from DataBenchmarks.flowerGraph import *
 from AlgorithmsLibraries.alglib_version_02_current import *
-# from AlgorithmsLibraries.debug_helpers import *
-# import scipy
+from AlgorithmsLibraries.debug_helpers import *
 
 
 # Run function
@@ -37,17 +34,19 @@ def run_test_flow():
     #     publication_sample.L,
     #     "\n"
     # )
-    #G = ap_graph(publication_sample.C, publication_sample.L, "0")
+    G = ap_graph(T.sample.defining_pair.C, T.sample.defining_pair.L, "0")
     # compressed_pair = compression(publication_sample.C, publication_sample.L, no_gdp=False)
     # print("COMPRESSED PAIR: ", compressed_pair)
-    #print_data(G)
+    G.name = "G({C, L} (0))"
+    print_data(G)
+    # save_graph_to_file(G)
     # ================= FIND SHORTEST PATH =======================
     canonical_pair = compression(
         T.shortPathCase.defining_pair.C,
         T.shortPathCase.defining_pair.L,
     )
     print(canonical_pair)
-    print("===== NEW FLOW ======")
+    # print("===== NEW FLOW ======")
     spath = find_shortest_path_by_word(
         #"035111523241",
         #'0232102103511352324',

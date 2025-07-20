@@ -488,18 +488,34 @@ def ops5_for_check_gdp(word: str, c_component: List[str]) -> str:
     return shortest_word
 
 
+def find_shortest_path_by_word(valid_word: str, c_component: List[str]) -> str:
+    """Get the shortest path by special order from root
+    node to node that corresponds to given word."""
+    shortest_word = valid_word
+
+    while True:
+        modified = get_modified_word(0, shortest_word, True)
+        if modified != shortest_word:
+            print(
+                f"Operation DEL-RW (w) is performed; w = {shortest_word}, modified = {modified}"
+            )
+            shortest_word = modified
+            continue
+
+        modified = ops5_for_check_gdp(shortest_word, c_component)
+        if modified != shortest_word:
+            shortest_word = modified
+            continue
+
+        break
+
+    return shortest_word
+
+
 def check_global_path_words(word, compressed_pair) -> bool:
     """word minimization checker in case of correctness of defining pair"""
-    shortest_word = word
-    trigger = True
-    while trigger:
-        if shortest_word != get_modified_word(0, shortest_word, no_debug=True):
-            shortest_word = get_modified_word(0, shortest_word, True)
-            continue
-        if shortest_word != ops5_for_check_gdp(shortest_word, compressed_pair[0]):
-            shortest_word = ops5_for_check_gdp(shortest_word, compressed_pair[0])
-            continue
-        trigger = False
+    shortest_word = find_shortest_path_by_word(word, compressed_pair[0])
+
     for cword in compressed_pair[0]:
         if cword.startswith(shortest_word):
             return True

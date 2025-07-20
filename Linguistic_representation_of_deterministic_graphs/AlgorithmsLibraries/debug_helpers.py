@@ -1,3 +1,11 @@
+""" helpers functions for alglib debug and IO of functions results"""
+import os
+import random
+import networkx as nx
+from networkx.drawing.nx_pydot import to_pydot
+import matplotlib.pyplot as plt     # type: ignore
+
+
 def print_dgraph(g, name="no name graph"):
     print(f"========={name}===========")
     print("Nodes:", g.nodes)
@@ -10,55 +18,83 @@ def print_dgraph(g, name="no name graph"):
     except:
         pass
 
-#
-# def get_nodes_shortest_paths_of_labeled_dgraph(
-#         dgraph: nx.Graph, root: int, root_label
-# ) -> Dict[int, Dict[str, Union[str, List[int], None]]]:
-#     """ acrobatic tree IN PROGRESS need to rename function """
-#     # DECLARE & INIT VALUES
-#     ids: List[int] = list(dgraph.nodes)  # id of each node list
-#     glabels: List[str] = []  # labels for graph
-#     nodes_shortest_paths: Dict[
-#         int, Dict[str, Union[str, List[int], None]]
-#     ] = {}  # main object Nodes Shortest Path
-#     for node, label in dgraph.nodes(data='label'):
-#         nodes_shortest_paths[node] = {"npl": None, "npid": None}
-#         glabels.append(label)
-#
-#     # cycle variables
-#     alphabet = list(set(glabels))
-#     alphabet.sort()
-#     current_array_index: int = 0
-#     vertex_count_result: int = 0
-#
-#     # STEP 1 get labels paths variables
-#     labeled_short_path: str
-#     shortest_words: List[str] = list()
-#     shortest_words.append(root_label)
-#     nodes_shortest_paths[root]['npl'] = root_label
-#
-#     # STEP 2 get ids paths variables
-#     shortest_words_ids: List[List[int]] = list()
-#     shortest_words_ids.append([root])
-#     nodes_shortest_paths[root]['npid'] = [root]
-#     current_node_shortest_paths_by_ids: List[int] = [root]
-#
-#     while vertex_count_result < len(ids) - 1:
-#         for j in alphabet:
-#             labeled_short_path = shortest_words[current_array_index] + j
-#             try:
-#                 obtained_node = get_node_id_by_word(dgraph, labeled_short_path, root)
-#                 if nodes_shortest_paths[obtained_node]["npl"] is None and obtained_node != root:
-#                     nodes_shortest_paths[obtained_node]["npl"] = labeled_short_path
-#                     result_node_shortest_path_by_ids = deepcopy(current_node_shortest_paths_by_ids)
-#                     result_node_shortest_path_by_ids.append(obtained_node)
-#                     shortest_words_ids.append(result_node_shortest_path_by_ids)
-#                     nodes_shortest_paths[obtained_node]["npid"] = result_node_shortest_path_by_ids
-#                     vertex_count_result += 1
-#                     shortest_words.append(labeled_short_path)
-#             except ValueError:
-#                 continue
-#         current_array_index += 1
-#         current_node_shortest_paths_by_ids = shortest_words_ids[current_array_index]
-#
-#     return nodes_shortest_paths
+
+def save_graph_to_file(G, output_dir='outputData'):
+    os.makedirs(output_dir, exist_ok=True)  # Ensure output directory exists
+
+    try:
+        # Save in GML format
+        gml_path = os.path.join(output_dir, 'example.gml')
+        nx.write_gml(G, gml_path)
+
+        # Convert to DOT format using pydot
+        dot_graph = to_pydot(G)
+
+        # Save as .dot file
+        dot_path = os.path.join(output_dir, 'graph.dot')
+        dot_graph.write_dot(dot_path)
+
+        # Save DOT string explicitly
+        dot_string = dot_graph.to_string()
+        simple_dot_path = os.path.join(output_dir, 'simple.dot')
+        with open(simple_dot_path, 'w') as file:
+            file.write(dot_string)
+
+    except (IOError, OSError, nx.NetworkXException, Exception) as e:
+        print(f"Error saving graph: {e}")
+
+    finally:
+        print("Graph saving process finished.")
+
+
+def random_color():
+    red = random.randint(100, 255)
+    green = random.randint(100, 255)
+    blue = random.randint(100, 255)
+    hex_color = '#{:02x}{:02x}{:02x}'.format(red, green, blue)
+    return hex_color
+
+
+def print_data(G):
+    # Set the node labels
+    labels = nx.get_node_attributes(G, 'label')
+    id_labels = labels.copy()
+    for key, value in labels.items():
+        id_labels[key] = f"{value}\n{key}"
+
+    try:
+        node_colors = [G.nodes[node]['color'] for node in G.nodes]
+    except KeyError:
+        node_colors = [random_color() for _ in range(len(G.nodes)-1)]
+        node_colors.insert(0, "red")
+    #T = nx.minimum_spanning_tree(G)
+    mst_edges = list(nx.bfs_edges(G, source=list(G.nodes)[0]))
+    T = G.edge_subgraph(mst_edges)
+    # Create subplots
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
+    # Draw the original graph on the first subplot (ax1)
+    pos = nx.spring_layout(G)  # positions for the nodes
+    nx.draw_networkx_nodes(G, pos, node_color=node_colors, ax=ax1)  # type: ignore
+    nx.draw_networkx_edges(G, pos, edge_color='b', ax=ax1)
+    nx.draw_networkx_labels(G, pos, labels, ax=ax1)
+    try:
+        ax1.set_title('Original Graph: ' + G.name)
+    except:
+        ax1.set_title('Original Graph: ' + "No name")
+
+    # Draw the minimum spanning tree on the second subplot (ax2)
+    pos = nx.spring_layout(T)  # positions for the nodes
+    nx.draw_networkx_nodes(T, pos, node_color=node_colors, ax=ax2)  # type: ignore
+    nx.draw_networkx_edges(T, pos, edge_color='b', ax=ax2)
+    nx.draw_networkx_labels(T, pos, id_labels, ax=ax2)
+    try:
+        ax2.set_title('Minimum spanning tree of: ' + T.name)
+    except:
+        ax2.set_title('Minimum spanning tree of: ' + "No name")
+    # Remove the axis ticks and labels
+    ax1.axis('off')
+    ax2.axis('off')
+    # Adjust the spacing between subplots
+    plt.tight_layout()
+    # Show the graph
+    plt.show()
