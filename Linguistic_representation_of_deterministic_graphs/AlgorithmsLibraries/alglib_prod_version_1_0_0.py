@@ -496,9 +496,6 @@ def find_shortest_path_by_word(valid_word: str, c_component: List[str]) -> str:
     while True:
         modified = get_modified_word(0, shortest_word, True)
         if modified != shortest_word:
-            print(
-                f"Operation DEL-RW (w) is performed; w = {shortest_word}, modified = {modified}"
-            )
             shortest_word = modified
             continue
 
