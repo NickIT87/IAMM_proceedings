@@ -36,6 +36,9 @@ def build_graph():
     try:
         G = ap_graph(data[0], data[1], data[2])
         labels = nx.get_node_attributes(G, 'label')
+        id_labels = labels.copy()
+        for key, value in labels.items():
+            id_labels[key] = f"{value}\n{key}"
 
         try:
             node_colors = [G.nodes[node]['color'] for node in G.nodes]
@@ -43,7 +46,8 @@ def build_graph():
             node_colors = [random_color() for _ in range(len(G.nodes) - 1)]
             node_colors.insert(0, "red")
 
-        T = nx.minimum_spanning_tree(G)
+        mst_edges = list(nx.bfs_edges(G, source=list(G.nodes)[0]))
+        T = G.edge_subgraph(mst_edges)
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7, 4))
 
         # pos = nx.spring_layout(G)
@@ -66,7 +70,7 @@ def build_graph():
         pos = nx.spring_layout(T)  # positions for the nodes
         nx.draw_networkx_nodes(T, pos, node_color=node_colors, ax=ax2)  # type: ignore
         nx.draw_networkx_edges(T, pos, edge_color='b', ax=ax2)
-        nx.draw_networkx_labels(T, pos, ax=ax2)
+        nx.draw_networkx_labels(T, pos, id_labels, ax=ax2)
         ax2.set_title('Minimum Spanning Tree')
         # Remove the axis ticks and labels
         ax1.axis('off')
@@ -179,22 +183,27 @@ def main():
     root = tk.Tk()
     root.title("Linguistic Representation of Deterministic Graphs")
 
-    canvas = tk.Canvas(root)
-    scrollbar = tk.Scrollbar(root, orient="vertical", command=canvas.yview)
+    container = tk.Frame(root)  # общий контейнер
+    container.pack(fill="both", expand=True)
+
+    canvas = tk.Canvas(container)
+    v_scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+    h_scrollbar = tk.Scrollbar(root, orient="horizontal", command=canvas.xview)
+
     scrollable_frame = tk.Frame(canvas)
 
     scrollable_frame.bind(
         "<Configure>",
-        lambda e: canvas.configure(
-            scrollregion=canvas.bbox("all")
-        )
+        lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
     )
 
     canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-    canvas.configure(yscrollcommand=scrollbar.set)
+    canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
 
     canvas.pack(side="left", fill="both", expand=True)
-    scrollbar.pack(side="right", fill="y")
+    v_scrollbar.pack(side="right", fill="y")
+
+    h_scrollbar.pack(side="bottom", fill="x")
 
     create_widgets(scrollable_frame)
 
@@ -202,6 +211,36 @@ def main():
     root.resizable(True, True)
     root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()
+
+
+# def main():
+#     global root
+#     root = tk.Tk()
+#     root.title("Linguistic Representation of Deterministic Graphs")
+#
+#     canvas = tk.Canvas(root)
+#     scrollbar = tk.Scrollbar(root, orient="vertical", command=canvas.yview)
+#     scrollable_frame = tk.Frame(canvas)
+#
+#     scrollable_frame.bind(
+#         "<Configure>",
+#         lambda e: canvas.configure(
+#             scrollregion=canvas.bbox("all")
+#         )
+#     )
+#
+#     canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+#     canvas.configure(yscrollcommand=scrollbar.set)
+#
+#     canvas.pack(side="left", fill="both", expand=True)
+#     scrollbar.pack(side="right", fill="y")
+#
+#     create_widgets(scrollable_frame)
+#
+#     root.geometry("800x870")
+#     root.resizable(True, True)
+#     root.protocol("WM_DELETE_WINDOW", on_closing)
+#     root.mainloop()
 
 if __name__ == "__main__":
     main()
