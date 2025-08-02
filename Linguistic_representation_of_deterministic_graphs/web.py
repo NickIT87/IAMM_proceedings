@@ -10,7 +10,7 @@ import plotly.graph_objs as go
 import random
 import networkx as nx
 
-from AlgorithmsLibraries.alglib_version_02_current import *
+from AlgorithmsLibraries.alglib_prod_version_1_0_0 import *
 # from AlgorithmsLibraries.alglib_version_02_current import \
 #     ap_graph, get_canonical_pair_metrics_from_dgraph, compression
 
@@ -57,6 +57,18 @@ l_input = html.Div(
     className="mb-3",
 )
 
+fsp_input = html.Div(
+    [
+        dbc.Label("Word for compress: ", html_for="fsp_data"),
+        dbc.Input(type="text", id="fsp_data", placeholder="Enter correct word for finding shortest path to node"),
+        dbc.FormText(
+            "Input example: 015214215",
+            color="secondary",
+        ),
+    ],
+    className="mb-3",
+)
+
 submit_btn = html.Div(
     [
         dbc.Button("Make graph", id='submit-button', n_clicks=0, color="primary", style={'marginRight': '10px'}),
@@ -64,7 +76,24 @@ submit_btn = html.Div(
     ]
 )
 
-form = dbc.Form([root_input, c_input, l_input, submit_btn])
+form = dbc.Form([
+    dbc.Row([
+        dbc.Col(root_input, width=4),
+        dbc.Col(fsp_input, width=8),
+    ], className="mb-3"),
+
+    dbc.Row([
+        dbc.Col(c_input, width=12),
+    ], className="mb-3"),
+
+    dbc.Row([
+        dbc.Col(l_input, width=12),
+    ], className="mb-3"),
+
+    dbc.Row([
+        dbc.Col(submit_btn),
+    ])
+])
 
 app.layout = dbc.Container(
     html.Div([
@@ -82,7 +111,7 @@ app.layout = dbc.Container(
         dcc.Graph(id='network-graph', style={'marginTop': '10px', 'marginBottom': '10px'}),
         html.Br(),
         html.Footer(
-            html.P("IAMM proceedings 2023 - 2024")
+            html.P("IAMM proceedings 2022 - 2025")
         ),
     ])
 )
@@ -96,9 +125,10 @@ app.layout = dbc.Container(
      Input('new-action-button', 'n_clicks')],
     [State('c_data', 'value'),
      State('l_data', 'value'),
-     State('root_data', 'value')]
+     State('root_data', 'value'),
+     State('fsp_data', 'value')]
 )
-def update_graph_or_new_action(submit_n_clicks, new_action_n_clicks, c_val, l_val, root_val):
+def update_graph_or_new_action(submit_n_clicks, new_action_n_clicks, c_val, l_val, root_val, fsp_val):
     # Определяем, какая кнопка была нажата
     ctx = dash.callback_context
     if not ctx.triggered:
@@ -172,14 +202,16 @@ def update_graph_or_new_action(submit_n_clicks, new_action_n_clicks, c_val, l_va
 
         return fig, output_text, ''
 
-    # Если была нажата кнопка "New Action"
     elif triggered_id == 'new-action-button':
 
         c_component = tuple(c_val.split()) if c_val else tuple()
         l_component = tuple(l_val.split()) if l_val else tuple()
+        fsp_word = fsp_val if fsp_val else ""
 
         if validate_defining_pair(c_component, l_component, root_val):
-            result = f"{compression(c_component, l_component)}"
+            compression_data = compression(c_component, l_component)
+            fsp_result = find_shortest_path_by_word(fsp_word, list(compression_data['compressed_pair'][0]))
+            result = f"{compression(c_component, l_component)} \n Shortest path by word compression: {fsp_result}"
         else:
             return dash.no_update, '', f'Error: Please check your input.'
 

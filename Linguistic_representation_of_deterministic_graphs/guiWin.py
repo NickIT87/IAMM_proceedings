@@ -86,7 +86,7 @@ def build_graph():
             build_graph.toolbar.destroy()
         build_graph.toolbar = NavigationToolbar2Tk(build_graph.canvas, graph_frame)
         build_graph.toolbar.update()
-        build_graph.toolbar.pack(padx=10, pady=5)
+        build_graph.toolbar.pack(padx=10, pady=10)
 
         update_text_area(graph=G)
     except ValueError as e:
@@ -133,50 +133,69 @@ def clear_output():
 
 def create_widgets(parent):
     global text_area, graph_frame, c_text, l_text, r_text, fsp_text, G
-    text_field_width = 70
-    button_distance = 10
+    
+    def validate_single_char(input_text):
+        return len(input_text) <= 1
 
-    label_frame = tk.Frame(parent)
-    label_frame.pack(fill="x", padx=10, pady=10)
+    vcmd = parent.register(validate_single_char)
+    
+    text_field_width = 80
 
-    r_label = tk.Label(label_frame, text="root label:")
-    r_label.grid(row=0, column=0, padx=5, pady=5)
-    r_text = tk.Entry(label_frame, width=1)
+    label_frame = tk.LabelFrame(parent, text="Graph Configuration", padx=10, pady=10)
+    label_frame.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+
+    label_frame.columnconfigure(1, weight=1)
+    label_frame.columnconfigure(3, weight=1)
+
+    # Row 0
+    tk.Label(label_frame, text="Root label:").grid(row=0, column=0, sticky="e", padx=5, pady=5)
+    r_text = tk.Entry(label_frame, width=2, validate="key", validatecommand=(vcmd, "%P"))
     r_text.insert(0, "1")
-    r_text.grid(row=0, column=1, padx=5, pady=5)
+    r_text.grid(row=0, column=1, sticky="w", padx=5, pady=5)
 
-    fsp_label = tk.Label(label_frame, text="FSP word:")
-    fsp_label.grid(row=0, column=2, padx=5, pady=5)
-    fsp_text = tk.Entry(label_frame, width=50)
-    fsp_text.grid(row=0, column=3, columnspan=2, padx=5, pady=5)
+    tk.Label(label_frame, text="FSP word:").grid(row=0, column=2, sticky="e", padx=5, pady=5)
+    fsp_text = tk.Entry(label_frame, width=text_field_width)
+    fsp_text.grid(row=0, column=3, sticky="we", padx=5, pady=5)
 
-    c_label = tk.Label(label_frame, text="Sigma G:")
-    c_label.grid(row=1, column=0, padx=5, pady=5)
+    # Row 1
+    tk.Label(label_frame, text="Sigma G:").grid(row=1, column=0, sticky="e", padx=5, pady=5)
     c_text = tk.Entry(label_frame, width=text_field_width)
-    c_text.grid(row=1, column=1, columnspan=4, padx=5, pady=5, sticky="we")
+    c_text.grid(row=1, column=1, columnspan=3, sticky="we", padx=5, pady=5)
 
-    l_label = tk.Label(label_frame, text="Lambda G:")
-    l_label.grid(row=2, column=0, padx=5, pady=5)
+    # Row 2
+    tk.Label(label_frame, text="Lambda G:").grid(row=2, column=0, sticky="e", padx=5, pady=5)
     l_text = tk.Entry(label_frame, width=text_field_width)
-    l_text.grid(row=2, column=1, columnspan=4, padx=5, pady=5, sticky="we")
+    l_text.grid(row=2, column=1, columnspan=3, sticky="we", padx=5, pady=5)
 
+    # Buttons
     button_frame = tk.Frame(parent)
-    button_frame.pack(fill="x", padx=10, pady=10)
-    tk.Button(button_frame, text="Build Graph", command=build_graph).pack(side="left", padx=button_distance)
-    tk.Button(button_frame, text="Compress pair", command=compress_pair).pack(side="left", padx=button_distance)
-    tk.Button(button_frame, text="Save graph to file", command=save_graph_to_file).pack(side="left", padx=button_distance)
-    tk.Button(button_frame, text="Save info to file", command=save_info).pack(side="left", padx=button_distance)
-    tk.Button(button_frame, text="Clear output", command=clear_output).pack(side="left", padx=button_distance)
+    button_frame.grid(row=1, column=0, padx=10, pady=10, sticky="w")
+    button_frame.columnconfigure((0, 1, 2, 3, 4), weight=1)
 
+    tk.Button(button_frame, text="Build Graph", command=build_graph).grid(row=0, column=0, padx=5)
+    tk.Button(button_frame, text="Compress pair", command=compress_pair).grid(row=0, column=1, padx=5)
+    tk.Button(button_frame, text="Save graph to file", command=save_graph_to_file).grid(row=0, column=2, padx=5)
+    tk.Button(button_frame, text="Save info to file", command=save_info).grid(row=0, column=3, padx=5)
+    tk.Button(button_frame, text="Clear output", command=clear_output).grid(row=0, column=4, padx=5)
+
+    # Text area
     text_frame = tk.Frame(parent)
-    text_frame.pack(fill="both", expand=True, padx=10, pady=10)
-    info_label = tk.Label(text_frame, text="Info output:")
-    info_label.pack(anchor="w")
-    text_area = tk.Text(text_frame, wrap=tk.WORD, font=("Arial", 16), state=tk.DISABLED, height=7, width=70)
-    text_area.pack(fill="both", expand=True)
+    text_frame.grid(row=2, column=0, padx=10, pady=10, sticky="nsew")
 
+    tk.Label(text_frame, text="Info output:").grid(row=0, column=0, sticky="w")
+    text_area = tk.Text(text_frame, wrap=tk.WORD, font=("Arial", 13), state=tk.DISABLED, height=5)
+    text_area.grid(row=1, column=0, sticky="nsew")
+
+    text_frame.rowconfigure(1, weight=1)
+    text_frame.columnconfigure(0, weight=1)
+
+    # Graph frame
     graph_frame = tk.Frame(parent)
-    graph_frame.pack(fill="both", expand=True, padx=10, pady=10)
+    graph_frame.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
+
+    parent.rowconfigure(3, weight=1)
+    parent.columnconfigure(0, weight=1)
+
 
 def main():
     global root
@@ -194,7 +213,7 @@ def main():
 
     scrollable_frame.bind(
         "<Configure>",
-        lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        lambda e: canvas.configure(scrollregion=canvas.bbox("all"), width=e.width)
     )
 
     canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -207,7 +226,7 @@ def main():
 
     create_widgets(scrollable_frame)
 
-    root.geometry("800x870")
+    root.geometry("800x900")
     root.resizable(True, True)
     root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()
