@@ -339,14 +339,14 @@ def get_canonical_pair_metrics_from_dgraph(
         + mu_mn * (delta - mu_mn - 2) * (2 * n_nodes - 2 * delta + 5)
     )
     return {
-        "n": n_nodes,
-        "m": m_edges,
-        "delta": delta,
-        "formula_result": result,
-        "total_p_count": total_pair_count,
-        "mu": mu_mn,
-        "power_sigma_G": power_of_sigma_g,
+        "nodes": n_nodes,
+        "edges": m_edges,
+        "pair_power": total_pair_count,
         "canonical_pair": canonical_pair,
+        #"delta": delta,
+        #"formula_result": result,
+        #"mu": mu_mn,
+        #"power_sigma_G": power_of_sigma_g,
     }
 
 

@@ -98,7 +98,7 @@ form = dbc.Form([
 app.layout = dbc.Container(
     html.Div([
         html.Br(),
-        html.H4('Linguistic representation of D-graph', style={'textAlign': 'center'}),
+        html.H4('Linguistic Presentation of D-graph', style={'textAlign': 'center'}),
         html.Br(),
         form,
         html.Br(),
