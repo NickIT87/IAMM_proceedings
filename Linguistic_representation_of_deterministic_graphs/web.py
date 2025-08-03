@@ -198,7 +198,10 @@ def update_graph_or_new_action(submit_n_clicks, new_action_n_clicks, c_val, l_va
         )
         fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
 
-        output_text = str(get_canonical_pair_metrics_from_dgraph(G))
+        output_data = get_canonical_pair_metrics_from_dgraph(G)
+        keys_to_remove = {"delta", "formula_result", "mu",  "power_sigma_G"}
+        output_data = {k: v for k, v in output_data.items() if k not in keys_to_remove}
+        output_text = str(output_data)
 
         return fig, output_text, ''
 

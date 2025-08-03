@@ -333,10 +333,10 @@ def get_canonical_pair_metrics_from_dgraph(graph: nx.Graph) -> \
         "edges": m_edges,
         "pair_power": total_pair_count,
         "canonical_pair": canonical_pair,
-        #"delta": delta,
-        #"formula_result": result,
-        #"mu": mu_mn,
-        #"power_sigma_G": power_of_sigma_g,
+        "delta": delta,
+        "formula_result": result,
+        "mu": mu_mn,
+        "power_sigma_G": power_of_sigma_g,
     }
 
 
