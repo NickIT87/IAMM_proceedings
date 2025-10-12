@@ -527,7 +527,7 @@ def check_global_path_words(word, compressed_pair) -> bool:
 def compression(
     c_component: Tuple[str, ...], l_component: Tuple[str, ...], no_gdp: bool = False
 ) -> Dict[str, Union[Tuple[Tuple[str, ...], ...], bool, None]]:
-    """in progress"""
+    """ The algorithm performs equivalent transformations of a correct pair """
     global _deleted_paths
     if not no_gdp:
         _deleted_paths = set()

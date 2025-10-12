@@ -673,7 +673,7 @@ def check_global_path_words(word, compressed_pair) -> bool:
 def compression(c_component: Tuple[str, ...],
                 l_component: Tuple[str, ...],
                 no_gdp: bool = False) -> Dict[str, Tuple[Tuple[str, ...], Tuple[str, ...]] | bool | None]:
-    """ in progress """
+    """ The algorithm performs equivalent transformations of a correct pair """
     if not no_gdp:
         global _deleted_paths
         _deleted_paths = set()
