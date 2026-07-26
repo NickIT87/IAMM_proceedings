@@ -1,10 +1,21 @@
 """ helpers functions for alglib debug and IO of functions results"""
 import os
 import random
+import logging
 import networkx as nx
 from networkx.drawing.nx_pydot import to_pydot
 import matplotlib.pyplot as plt     # type: ignore
 
+
+class LogCounter(logging.Filter):
+    def __init__(self):
+        super().__init__()
+        self.counter = 0
+
+    def filter(self, record):
+        self.counter += 1
+        record.counter = self.counter
+        return True
 
 def print_dgraph(g, name="no name graph"):
     print(f"========={name}===========")

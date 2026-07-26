@@ -3,9 +3,19 @@
 
 from DataBenchmarks.data import sample_exists, sample_not_exists, publication_sample, TestCases as T
 from DataBenchmarks.flowerGraph import *
-from AlgorithmsLibraries.alglib_version_02_current import *
+#from AlgorithmsLibraries.alglib_version_02_current import *
 from AlgorithmsLibraries.debug_helpers import *
+from AlgorithmsLibraries.lpdg import *
 
+# logger settings
+handler = logging.StreamHandler()
+handler.addFilter(LogCounter())
+formatter = logging.Formatter(
+    "%(levelname)s %(asctime)s %(name)s:%(lineno)d %(counter)04d %(message)s",
+    datefmt="%Y-%m-%d %H:%M"
+)
+handler.setFormatter(formatter)
+logging.basicConfig(level=logging.DEBUG, handlers=[handler])
 
 # Run function
 def run_test_flow():
@@ -38,7 +48,7 @@ def run_test_flow():
     # compressed_pair = compression(publication_sample.C, publication_sample.L, no_gdp=False)
     # print("COMPRESSED PAIR: ", compressed_pair)
     G.name = "G({C, L} (0))"
-    print_data(G)
+    #print_data(G)
     # save_graph_to_file(G)
     # ================= FIND SHORTEST PATH =======================
     canonical_pair = compression(
