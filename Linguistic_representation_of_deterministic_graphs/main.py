@@ -3,15 +3,17 @@
 
 from DataBenchmarks.data import sample_exists, sample_not_exists, publication_sample, TestCases as T
 from DataBenchmarks.flowerGraph import *
-#from AlgorithmsLibraries.alglib_version_02_current import *
+from AlgorithmsLibraries import alglib_version_02_current
 from AlgorithmsLibraries.debug_helpers import *
-from AlgorithmsLibraries.lpdg import *
+from AlgorithmsLibraries.lpdg_dev import *
+
 
 # logger settings
 handler = logging.StreamHandler()
 handler.addFilter(LogCounter())
 formatter = logging.Formatter(
-    "%(levelname)s %(asctime)s %(name)s:%(lineno)d %(counter)04d %(message)s",
+    #"%(levelname)s %(asctime)s %(name)s:%(lineno)d %(counter)04d %(message)s",
+    "%(levelname)s %(asctime)s line:%(lineno)d %(counter)04d %(message)s",
     datefmt="%Y-%m-%d %H:%M"
 )
 handler.setFormatter(formatter)
@@ -56,7 +58,8 @@ def run_test_flow():
         T.shortPathCase.defining_pair.L,
     )
     print(canonical_pair)
-    # print("===== NEW FLOW ======")
+    logger.info("===== FSP NEW FLOW ======")
+    print("===== NEW FLOW ======")
     spath = find_shortest_path_by_word(
         #"035111523241",
         #'0232102103511352324',
