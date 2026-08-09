@@ -17,7 +17,7 @@ formatter = logging.Formatter(
     datefmt="%Y-%m-%d %H:%M"
 )
 handler.setFormatter(formatter)
-logging.basicConfig(level=logging.DEBUG, handlers=[handler])
+logging.basicConfig(level=logging.INFO, handlers=[handler])
 
 # Run function
 def run_test_flow():
@@ -58,8 +58,8 @@ def run_test_flow():
         T.shortPathCase.defining_pair.L,
     )
     print(canonical_pair)
-    logger.info("===== FSP NEW FLOW ======")
-    print("===== NEW FLOW ======")
+    logger.debug("===== FSP NEW FLOW ======")
+    print("===== FSP NEW FLOW ======")
     spath = find_shortest_path_by_word(
         #"035111523241",
         #'0232102103511352324',

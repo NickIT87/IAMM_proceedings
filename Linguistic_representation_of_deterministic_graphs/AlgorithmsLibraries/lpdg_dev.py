@@ -1,5 +1,5 @@
 """
-IAMM - Graphs - ASP Work production version 1.0.0
+IAMM - Graphs - ASP Work debug version 1.0.1
 Authors:
     Oleksiy S. Senchenko,
     Mykola I. Prytula
@@ -8,7 +8,7 @@ Linguistic presentation of Deterministic graph
 """
 
 from typing import Tuple, List, Union, Dict
-from collections import defaultdict
+from collections import defaultdict, Counter
 from math import ceil, sqrt
 import logging
 
@@ -380,13 +380,17 @@ def remove_repeating_words_into_pair_component(pair_component: List[str]):
     """operation 1: transform the components of the pair
     into ordered sets without repetitions"""
     logger.debug("Operation 1 DEL-REP is called for: %s", pair_component)
-    before_ops = len(pair_component)
-
+    before_operation = Counter(pair_component)
     pair_component[:] = list(set(pair_component))
     insertion_acrobatics_sort(pair_component)
-
-    if len(pair_component) != before_ops:
-        logger.info("Operation 1 DEL-REP is performed. Remaining words: %s", pair_component)
+    after_operation = Counter(pair_component)
+    removed = before_operation - after_operation
+    if removed:
+        logger.info(
+            "Operation 1 DEL-REP is performed. Removed words: %s. Remaining words: %s",
+            dict(removed),
+            pair_component,
+        )
 
 
 def remove_reverse_words(pair_component: List[str]):
@@ -422,7 +426,9 @@ def remove_reverse_sequence(compressed_pair: List[List[str]], no_debug=False) ->
     """operation 3: find sequences of kind 'xyx' in word
     and return modified word xyx -> x"""
     global _deleted_paths
-    logger.debug("Operation 3 REM-R is called for: %s no_debug=%s", compressed_pair, no_debug)
+    logger.debug(
+        "Operation 3 REM-R is called for: %s no_debug=%s", compressed_pair, no_debug
+    )
     for index_pair_element, sigma_lambda_element in enumerate(compressed_pair):
         for idx_sl_element, word in enumerate(sigma_lambda_element):
             modified_word = get_modified_word(
@@ -430,7 +436,11 @@ def remove_reverse_sequence(compressed_pair: List[List[str]], no_debug=False) ->
             )
             if word != modified_word:
                 compressed_pair[index_pair_element][idx_sl_element] = modified_word
-                logger.info("Operation 3 REM-R is performed. Word: %s, modified word: %s", word, modified_word)
+                logger.info(
+                    "Operation 3 REM-R is performed. Word: %s, modified word: %s",
+                    word,
+                    modified_word,
+                )
                 if not no_debug:
                     logger.debug("global_deleted_paths: %s", _deleted_paths)
                 return True
@@ -446,7 +456,11 @@ def acrobatic_reverce(c_component: List[str]) -> bool:
             c_component[idx_element] = min_word_using_special_order(
                 reversed_word, sigma_word
             )
-            logger.info("Operation 4 ORD is performed. Word: %s, modified word: %s", sigma_word, reversed_word)
+            logger.info(
+                "Operation 4 ORD is performed. Word: %s, modified word: %s",
+                sigma_word,
+                reversed_word,
+            )
             return True
     return False
 
@@ -465,37 +479,75 @@ def path_optimization(compressed_pair: List[List[str]]) -> bool:
             if cword != word:
                 if cword.startswith(w_left_1):
                     modified_cword = cword.replace(w_left_1, w_left_2, 1)
-                    logger.info("Operation 5 OPT-LB (s, word) from C component is performed. Word: %s, modified word: %s, s: %s", cword, modified_cword, word)
+                    logger.info(
+                        "Operation 5 OPT-LB (s, word) from C component is performed. Word: %s, modified word: %s, s: %s",
+                        cword,
+                        modified_cword,
+                        word,
+                    )
                     compressed_pair[0][idx_cword] = modified_cword
                     return True
                 if cword.startswith(w_right_1):
                     modified_cword = cword.replace(w_right_1, w_right_2, 1)
-                    logger.info("Operation 5 OPT-RB (s, word) from C component is performed. Word: %s, modified word: %s, s: %s", cword, modified_cword, word)
+                    logger.info(
+                        "Operation 5 OPT-RB (s, word) from C component is performed. Word: %s, modified word: %s, s: %s",
+                        cword,
+                        modified_cword,
+                        word,
+                    )
                     compressed_pair[0][idx_cword] = modified_cword
                     return True
                 if cword.endswith(w_left_1[::-1]):
                     last_entry_index = cword.rfind(w_left_1[::-1])
                     if last_entry_index != -1:
-                        modified_cword = cword[:last_entry_index] + w_left_2[::-1] + cword[last_entry_index + len(w_left_1):]
-                        logger.info("Operation 5 OPT-LE (s, word) is performed. Word: %s, modified word: %s, s: %s", cword, modified_cword, word)
+                        modified_cword = (
+                            cword[:last_entry_index]
+                            + w_left_2[::-1]
+                            + cword[last_entry_index + len(w_left_1) :]
+                        )
+                        logger.info(
+                            "Operation 5 OPT-LE (s, word) is performed. Word: %s, modified word: %s, s: %s",
+                            cword,
+                            modified_cword,
+                            word,
+                        )
                         compressed_pair[0][idx_cword] = modified_cword
                         return True
                 if cword.endswith(w_right_1[::-1]):
                     last_entry_index = cword.rfind(w_right_1[::-1])
                     if last_entry_index != -1:
-                        modified_cword = cword[:last_entry_index] + w_right_2[::-1] + cword[last_entry_index + len(w_right_1):]
-                        logger.info("Operation 5 OPT-RE (s, word) is performed. Word: %s, modified word: %s, s: %s", cword, modified_cword, word)
+                        modified_cword = (
+                            cword[:last_entry_index]
+                            + w_right_2[::-1]
+                            + cword[last_entry_index + len(w_right_1) :]
+                        )
+                        logger.info(
+                            "Operation 5 OPT-RE (s, word) is performed. Word: %s, modified word: %s, s: %s",
+                            cword,
+                            modified_cword,
+                            word,
+                        )
                         compressed_pair[0][idx_cword] = modified_cword
                         return True
         for idx_lword, lword in enumerate(compressed_pair[1]):
             if lword.startswith(w_left_1):
                 modified_lword = lword.replace(w_left_1, w_left_2, 1)
-                logger.info("Operation 5 OPT-LB (s, word) from L component is performed. Word: %s, modified word: %s, s: %s", lword, modified_lword, word)
+                logger.info(
+                    "Operation 5 OPT-LB (s, word) from L component is performed. Word: %s, modified word: %s, s: %s",
+                    lword,
+                    modified_lword,
+                    word,
+                )
                 compressed_pair[1][idx_lword] = modified_lword
                 return True
             if lword.startswith(w_right_1):
                 modified_lword = lword.replace(w_right_1, w_right_2, 1)
-                logger.info("Operation 5 is performed. RIGHT Begin. lword=%s, modified=%s, w1=%s, w2=%s, word=%s", lword, modified_lword, w_right_1, w_right_2, word)
+                logger.info(
+                    "Operation 5 OPT-RB (s, word) from L component is performed. Word: %s, modified word: %s, s: %s",
+                    lword,
+                    modified_lword,
+                    word,
+                )
                 compressed_pair[1][idx_lword] = modified_lword
                 return True
     return False
@@ -503,7 +555,9 @@ def path_optimization(compressed_pair: List[List[str]]) -> bool:
 
 def ops5_for_check_gdp(word: str, c_component: List[str]) -> str:
     """operation 5 for check gdp function"""
-    logger.debug("Ops5 for check gdp is called for: word=%s, c_component=%s", word, c_component)
+    logger.debug(
+        "Ops5 for check gdp is called for: word=%s, c_component=%s", word, c_component
+    )
     shortest_word = word
     for c_word in c_component:
         left = (len(c_word) + 1) // 2
@@ -513,14 +567,26 @@ def ops5_for_check_gdp(word: str, c_component: List[str]) -> str:
         w_right_1 = c_word[:right]
         w_right_2 = c_word[::-1][: len(c_word) // 2]
         if shortest_word.startswith(w_left_1):
-            logger.info("Path optimization 3. LEFT Begin. c_word=%s, shortest_word_before=%s, w1=%s, w2=%s", c_word, shortest_word, w_left_1, w_left_2)
+            logger.debug(
+                "Path optimization 3. LEFT Begin. c_word=%s, shortest_word_before=%s, w1=%s, w2=%s",
+                c_word,
+                shortest_word,
+                w_left_1,
+                w_left_2,
+            )
             shortest_word = shortest_word.replace(w_left_1, w_left_2, 1)
-            logger.info("SHORTEST WORD after: %s", shortest_word)
+            logger.debug("SHORTEST WORD after: %s", shortest_word)
             return shortest_word
         if shortest_word.startswith(w_right_1):
-            logger.info("Path optimization 3. RIGHT Begin. c_word=%s, shortest_word_before=%s, w1=%s, w2=%s", c_word, shortest_word, w_right_1, w_right_2)
+            logger.debug(
+                "Path optimization 3. RIGHT Begin. c_word=%s, shortest_word_before=%s, w1=%s, w2=%s",
+                c_word,
+                shortest_word,
+                w_right_1,
+                w_right_2,
+            )
             shortest_word = shortest_word.replace(w_right_1, w_right_2, 1)
-            logger.info("SHORTEST WORD after: %s", shortest_word)
+            logger.debug("SHORTEST WORD after: %s", shortest_word)
             return shortest_word
     return shortest_word
 
@@ -533,7 +599,11 @@ def find_shortest_path_by_word(valid_word: str, c_component: List[str]) -> str:
     while True:
         modified = get_modified_word(0, shortest_word, True)
         if modified != shortest_word:
-            logger.info("Operation DEL-RW (w) is performed; w = %s, modified = %s", shortest_word, modified)
+            logger.debug(
+                "Operation DEL-RW (w) is performed; w = %s, modified = %s",
+                shortest_word,
+                modified,
+            )
             shortest_word = modified
             continue
 
@@ -549,7 +619,11 @@ def find_shortest_path_by_word(valid_word: str, c_component: List[str]) -> str:
 
 def check_global_path_words(word, compressed_pair) -> bool:
     """word minimization checker in case of correctness of defining pair"""
-    logger.debug("check_global_path_words is called for: word=%s, compressed_pair=%s", word, compressed_pair)
+    logger.debug(
+        "check_global_path_words is called for: word=%s, compressed_pair=%s",
+        word,
+        compressed_pair,
+    )
     shortest_word = find_shortest_path_by_word(word, compressed_pair[0])
 
     for cword in compressed_pair[0]:
@@ -561,7 +635,7 @@ def check_global_path_words(word, compressed_pair) -> bool:
         if lword.startswith(shortest_word):
             return True
 
-    logger.info("word: %s, shortest_word: %s", word, shortest_word)
+    logger.debug("word: %s, shortest_word: %s", word, shortest_word)
 
     return False
 
@@ -569,7 +643,7 @@ def check_global_path_words(word, compressed_pair) -> bool:
 def compression(
     c_component: Tuple[str, ...], l_component: Tuple[str, ...], no_gdp: bool = False
 ) -> Dict[str, Union[Tuple[Tuple[str, ...], ...], bool, None]]:
-    """ The algorithm performs equivalent transformations of a correct pair """
+    """The algorithm performs equivalent transformations of a correct pair"""
     global _deleted_paths
     if not no_gdp:
         _deleted_paths = set()
