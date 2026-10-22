@@ -46,11 +46,12 @@ def run_test_flow():
     #     publication_sample.L,
     #     "\n"
     # )
-    G = ap_graph(T.sample.defining_pair.C, T.sample.defining_pair.L, "0")
+    # G = ap_graph(T.sample.defining_pair.C, T.sample.defining_pair.L, "0")
+    G = ap_graph(T.shortPathCase.defining_pair.C, T.shortPathCase.defining_pair.L, "0")
     # compressed_pair = compression(publication_sample.C, publication_sample.L, no_gdp=False)
     # print("COMPRESSED PAIR: ", compressed_pair)
     G.name = "G({C, L} (0))"
-    #print_data(G)
+    print_data(G)
     # save_graph_to_file(G)
     # ================= FIND SHORTEST PATH =======================
     canonical_pair = compression(
