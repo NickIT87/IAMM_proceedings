@@ -25,20 +25,46 @@ class GraphAPI:
             self._current_position = node
             return True
         return False
+    
+    def check_node_label(self, node_id, label):
+        if label == self._graph.nodes[node_id]["label"]:
+            return True
+        return False
 
 
 # === 2. Agent ===
 class Agent:
     def __init__(self, api):
         self.api = api
+        self.visited_by_walk = []
 
     def move(self):
         neighbors = self.api.get_neighbors()
         if neighbors:
             self.api.move_to(random.choice(neighbors))
 
+    def move_on(self, node):
+        neighbors = self.api.get_neighbors()
+        if neighbors and node in neighbors: 
+            self.api.move_to(node)
+            return True
+        return False
+
     def get_position(self):
         return self.api.get_position()
+    
+    def walk_by_word(self, word):
+        pos = self.api.get_position()
+        self.visited_by_walk.append(pos)
+        for label in word:
+            neighbors = self.api.get_neighbors()
+            if neighbors:
+                for neighbor in neighbors:
+                    if self.api.check_node_label(neighbor, label):
+                        if self.move_on(neighbor):
+                            pos = self.api.get_position()
+                            self.visited_by_walk.append(pos)
+        return self.visited_by_walk[-1]
 
 
 # === 3. Animation functions ===
@@ -94,15 +120,16 @@ def update(frame):
 
 
 # === 4. start animation ===
-G = ap_graph(publication_sample.C, publication_sample.L, "0")
-start_node = 0
-api = GraphAPI(G, start_node)
-agent = Agent(api)
+if __name__ == "__main__":
+    G = ap_graph(publication_sample.C, publication_sample.L, "0")
+    start_node = 0
+    api = GraphAPI(G, start_node)
+    agent = Agent(api)
 
-pos = nx.spring_layout(G, seed=42)
-fig, ax = plt.subplots(figsize=(6, 6))
-ani = FuncAnimation(fig, update, frames=20, init_func=init, interval=1000, repeat=False)
-plt.show()
+    pos = nx.spring_layout(G, seed=42)
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ani = FuncAnimation(fig, update, frames=20, init_func=init, interval=1000, repeat=False)
+    plt.show()
 
 
 # # LIVE DRAW
